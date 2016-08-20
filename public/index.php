@@ -11,6 +11,11 @@ if (PHP_SAPI == 'cli-server') {
 
 require __DIR__ . '/../vendor/autoload.php';
 
+spl_autoload_register(function ($classname) {
+    $path = str_replace("\\", DIRECTORY_SEPARATOR, strtolower($classname));
+    require("../src/" . $path . ".php");
+});
+
 session_start();
 
 // Instantiate the app
@@ -26,5 +31,8 @@ require __DIR__ . '/../src/middleware.php';
 // Register routes
 require __DIR__ . '/../src/routes.php';
 
+$config = [];
+$config['displayErrorDetails'] = true;
+$config['addContentLengthHeader'] = false;
 // Run app
-$app->run();
+$app->run($config);
