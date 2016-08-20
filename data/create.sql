@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS user (
     id int AUTO_INCREMENT PRIMARY KEY,
     email varchar(255),
-    password char(64) NOT NULL
+    password char(64) NOT NULL,
+    salt char(32) NOT NULL,
+    UNIQUE KEY unique_email (email)
 );
 
 CREATE TABLE IF NOT EXISTS privilege (

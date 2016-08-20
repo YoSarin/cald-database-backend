@@ -29,7 +29,32 @@ class Developer extends \App\Common
 
     public function drop($request, $response, $args)
     {
+
+        $database = $this->container->db;
+        $database->query("
+            SET FOREIGN_KEY_CHECKS = 0;
+            DROP TABLE fee;
+            DROP TABLE highschool;
+            DROP TABLE league;
+            DROP TABLE player;
+            DROP TABLE player_at_highschool;
+            DROP TABLE player_at_roster;
+            DROP TABLE player_at_team;
+            DROP TABLE privilege;
+            DROP TABLE roster;
+            DROP TABLE season;
+            DROP TABLE team;
+            DROP TABLE team_representative;
+            DROP TABLE tournament;
+            DROP TABLE user;
+            DROP TABLE user_has_privilege;
+            SET FOREIGN_KEY_CHECKS = 1;
+        ");
+        if ($database->error()[1] !== null) {
+            return $this->container->view->render($response, $database->error(), 500);
+        }
+
         // Render index view
-        return $this->container->view->render($response, ['error' => 'Not implemented'], 404);
+        return $this->container->view->render($response, ['status' => 'OK', 'info' => 'database dropped'], 200);
     }
 }

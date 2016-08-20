@@ -8,3 +8,6 @@ RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [QSA,L]
+
+php_value session.name "token"
+php_value session.use_trans_sid true
