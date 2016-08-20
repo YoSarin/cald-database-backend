@@ -1618,5 +1618,151 @@
             "sql",
             "sqlite"
         ]
+    },
+    {
+        "name": "entomb/slim-json-api",
+        "version": "1.2.3",
+        "version_normalized": "1.2.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/entomb/slim-json-api.git",
+            "reference": "c11e001ab98e7df4dcb7b096fb1c9506d21c7e16"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/entomb/slim-json-api/zipball/c11e001ab98e7df4dcb7b096fb1c9506d21c7e16",
+            "reference": "c11e001ab98e7df4dcb7b096fb1c9506d21c7e16",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-06-13 18:16:16",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "jsonAPI/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jonathan Tavares",
+                "email": "the.entomb@gmail.com",
+                "homepage": "https://github.com/entomb",
+                "role": "Developer"
+            }
+        ],
+        "description": "Slim extension to implement fast JSON API's",
+        "homepage": "https://github.com/entomb/slim-json-api",
+        "keywords": [
+            "api",
+            "json",
+            "middleware",
+            "slim",
+            "view"
+        ]
+    },
+    {
+        "name": "aporat/slim-json-helpers",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/aporat/slim-json-helpers.git",
+            "reference": "82251b3c8c019cacabe572ffbda627c487309ebc"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/aporat/slim-json-helpers/zipball/82251b3c8c019cacabe572ffbda627c487309ebc",
+            "reference": "82251b3c8c019cacabe572ffbda627c487309ebc",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5",
+            "slim/slim": "~3"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^4.0"
+        },
+        "time": "2016-01-11 15:54:43",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "JsonHelpers\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Adar Porat",
+                "email": "adar.porat@gmail.com",
+                "homepage": "http://github.com/aporat"
+            }
+        ],
+        "description": "Slim3 JSON Request & Response Helpers",
+        "homepage": "https://github.com/aporat/slim-json-helpers",
+        "keywords": [
+            "json",
+            "slim"
+        ]
+    },
+    {
+        "name": "akrabat/rka-ip-address-middleware",
+        "version": "0.4",
+        "version_normalized": "0.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/akrabat/rka-ip-address-middleware.git",
+            "reference": "1c9947fdbaad04614e8b15d55f191f11c39293d1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/akrabat/rka-ip-address-middleware/zipball/1c9947fdbaad04614e8b15d55f191f11c39293d1",
+            "reference": "1c9947fdbaad04614e8b15d55f191f11c39293d1",
+            "shasum": ""
+        },
+        "require": {
+            "psr/http-message": "^1.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^4.8",
+            "squizlabs/php_codesniffer": "^2.3",
+            "zendframework/zend-diactoros": "^1.1"
+        },
+        "time": "2015-11-06 10:38:17",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "RKA\\Middleware\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Rob Allen",
+                "email": "rob@akrabat.com",
+                "homepage": "http://akrabat.com"
+            }
+        ],
+        "description": "PSR-7 Middleware that determines the client IP address and stores it as an ServerRequest attribute",
+        "homepage": "http://github.com/akrabat/rka-ip-address-middleware",
+        "keywords": [
+            "IP",
+            "middleware",
+            "psr7"
+        ]
     }
 ]

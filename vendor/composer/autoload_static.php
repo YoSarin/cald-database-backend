@@ -30,6 +30,10 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
             'Slim\\Views\\' => 11,
             'Slim\\' => 5,
         ),
+        'R' => 
+        array (
+            'RKA\\Middleware\\' => 15,
+        ),
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
@@ -37,6 +41,10 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
         'M' => 
         array (
             'Monolog\\' => 8,
+        ),
+        'J' => 
+        array (
+            'JsonHelpers\\' => 12,
         ),
         'I' => 
         array (
@@ -79,6 +87,10 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
         ),
+        'RKA\\Middleware\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/akrabat/rka-ip-address-middleware/src',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
@@ -86,6 +98,10 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'JsonHelpers\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/aporat/slim-json-helpers/src',
         ),
         'Interop\\Container\\' => 
         array (
@@ -117,12 +133,21 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
                 0 => __DIR__ . '/..' . '/pimple/pimple/src',
             ),
         ),
+        'A' => 
+        array (
+            'App\\' => 
+            array (
+                0 => __DIR__ . '/../..' . '/src',
+            ),
+        ),
     );
 
     public static $classMap = array (
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',
+        'JsonApiMiddleware' => __DIR__ . '/..' . '/entomb/slim-json-api/jsonAPI/JsonApiMiddleware.php',
+        'JsonApiView' => __DIR__ . '/..' . '/entomb/slim-json-api/jsonAPI/JsonApiView.php',
         'PHPUnit_Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit_Extensions_GroupTestSuite' => __DIR__ . '/..' . '/phpunit/phpunit/src/Extensions/GroupTestSuite.php',
         'PHPUnit_Extensions_PhptTestCase' => __DIR__ . '/..' . '/phpunit/phpunit/src/Extensions/PhptTestCase.php',

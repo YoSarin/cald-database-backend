@@ -391,9 +391,9 @@ class App
                 while ($amountToRead > 0 && !$body->eof()) {
                     $data = $body->read(min($chunkSize, $amountToRead));
                     echo $data;
-                    
+
                     $amountToRead -= strlen($data);
-                                        
+
                     if (connection_status() != CONNECTION_NORMAL) {
                         break;
                     }

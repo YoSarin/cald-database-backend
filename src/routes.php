@@ -1,12 +1,12 @@
 <?php
 // Routes
-$devController = new controller\Developer($container);
 
-$app->get('/i/[{name}]', function ($request, $response, $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
+$auth = new App\Auth($container);
 
-    // Render index view
-    return $this->renderer->render($response, 'index.phtml', $args);
-});
-$app->get('/developer/install', array($devController, "install"));
+$devController = new App\Controller\Developer($container);
+$userController = new App\Controller\User($container);
+
+$app->get('/developer/install', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "install"]));
+$app->get('/developer/drop', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "drop"]));
+
+$app->post('/user', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "newUser"]));
