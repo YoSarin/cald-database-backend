@@ -1,6 +1,7 @@
 <?php
 use Slim\Http\Request as Request;
 use JsonHelpers\Renderer as JsonRenderer;
+use App\Context;
 use App\ErrorHandler;
 
 if (PHP_SAPI == 'cli-server') {
@@ -22,6 +23,8 @@ $settings = require __DIR__ . '/../src/settings.php';
 $settings['settings']['displayErrorDetails'] = false;
 $settings['addContentLengthHeader'] = false;
 $app = new \Slim\App($settings);
+
+\App\Context::setApp($app);
 
 $app->getContainer()['db'] = new \medoo([
     'database_type' => 'mysql',

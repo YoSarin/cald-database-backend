@@ -3,7 +3,17 @@ CREATE TABLE IF NOT EXISTS user (
     email varchar(255),
     password char(64) NOT NULL,
     salt char(32) NOT NULL,
+    state ENUM('waiting_for_confirmation', 'confirmed', 'blocked', 'password_reset'),
     UNIQUE KEY unique_email (email)
+);
+
+CREATE TABLE IF NOT EXISTS token (
+    id int AUTO_INCREMENT PRIMARY KEY,
+    user_id int NOT NULL,
+    token varchar(64),
+    valid_until DATETIME DEFAULT NULL,
+    type ENUM('email_verification', 'login'),
+    FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 CREATE TABLE IF NOT EXISTS privilege (

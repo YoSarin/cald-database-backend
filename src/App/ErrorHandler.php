@@ -2,20 +2,31 @@
 namespace App;
 
 use Slim\Container;
-use App\Exception\Database;
-use App\Exception\MissingParam;
 
 class ErrorHandler extends Common
 {
     public function handle($request, $response, $exception)
     {
+        $data = ["error" => $exception->getMessage(), "type" => \App\Exception::getType($exception)];
+        $code = 500;
+
         switch (true) {
-            case $exception instanceof Exception\MissingParam:
-                return $this->container->view->render($response, ["error" => $exception->getMessage()], 400);
-            case $exception instanceof Exception\Database:
-                return $this->container->view->render($response, ["error" => "Database went off"], 500);
+            case $exception instanceof \App\Exception\Database:
+                $data['error'] = "Database went off";
+                $code = $exception->getCode();
+                $this->container->logger->error($exception->getMessage());
+                break;
+            case $exception instanceof \App\Exception\Http:
+                $code = $exception->getCode();
+                break;
+            case $exception instanceof \Respect\Validation\Exceptions\AllOfException:
+                $code = 400;
+                $data["error"] = $exception->getFullMessage();
+                break;
             default:
-                return $this->container->view->render($response, ["error" => $exception->getMessage()], 500);
+                $this->container->logger->error($exception->getMessage());
         }
+
+        return $this->container->view->render($response, $data, $code);
     }
 }

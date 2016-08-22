@@ -24,7 +24,10 @@ abstract class Common
 
     protected function requireParams(Request $request, $names)
     {
-        $params = $request->getParams();
+        $params = array_merge(
+            $request->getParams(),
+            $request->getAttribute('route')->getArguments()
+        );
         $missing = [];
         foreach ($names as $name) {
             if (!array_key_exists($name, $params)) {
@@ -35,5 +38,7 @@ abstract class Common
         if (!empty($missing)) {
             throw new \App\Exception\MissingParam("Mandatory params missing: " . implode(', ', $missing));
         }
+
+        return $params;
     }
 }

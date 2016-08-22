@@ -3,7 +3,7 @@ namespace App\Controller;
 
 class Developer extends \App\Common
 {
-    public function install($request, $response, $args)
+    public function create($request, $response, $args)
     {
         // Sample log message
         $this->container->logger->info("Slim-Skeleton '/check' route");
@@ -48,6 +48,7 @@ class Developer extends \App\Common
             DROP TABLE tournament;
             DROP TABLE user;
             DROP TABLE user_has_privilege;
+            DROP TABLE token;
             SET FOREIGN_KEY_CHECKS = 1;
         ");
         if ($database->error()[1] !== null) {

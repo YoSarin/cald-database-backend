@@ -32,6 +32,7 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
         ),
         'R' => 
         array (
+            'Respect\\Validation\\' => 19,
             'RKA\\Middleware\\' => 15,
         ),
         'P' => 
@@ -86,6 +87,10 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
         'Slim\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
+        ),
+        'Respect\\Validation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/respect/validation/library',
         ),
         'RKA\\Middleware\\' => 
         array (
