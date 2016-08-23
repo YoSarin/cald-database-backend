@@ -1,7 +1,7 @@
 <?php
 namespace App\Model;
 
-use App\Exception\User\Duplicate;
+use App\Exception\Database\Duplicate;
 use App\Model\User;
 
 class User extends \App\Model
@@ -24,12 +24,11 @@ class User extends \App\Model
         return $i;
     }
 
-    public function save()
+    protected function onSaveValidation()
     {
         if ($this->isNew() && self::exists(["email" => $this->getEmail()])) {
             throw new Duplicate("User already exists");
         }
-        parent::save();
     }
 
     public function canLogin()
@@ -48,6 +47,20 @@ class User extends \App\Model
     public function verifyPassword($password)
     {
         return $this->getPassword() == $this->hash($password);
+    }
+
+    public static function loggedUser($token)
+    {
+        $t = Token::load(['token' => $token, 'type' => Token::TYPE_LOGIN]);
+        if (count($t) != 1) {
+            return null;
+        }
+        $user = static::load(['id' => $t[0]->getUserId()]);
+        if (count($user) < 1 || !$user[0]->canLogin()) {
+            return null;
+        }
+
+        return $user[0];
     }
 
     private function hash($password)

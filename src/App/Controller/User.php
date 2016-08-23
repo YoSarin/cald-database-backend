@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Common;
-use App\Exception\User\Duplicate;
+use App\Exception\Database\Duplicate;
 use App\Exception\Database;
 use App\Exception\User\Unconfirmed;
 use App\Exception\Http\Http403;
@@ -71,7 +71,6 @@ class User extends \App\Common
             'AND' => [
                 "token" => $token,
                 "type" => Token::TYPE_EMAIL_VERIFICATION,
-                "valid_until[>]" => date("Y-m-d h:i:s", time())
             ]
         ];
         if (!Token::exists($filter)) {

@@ -1,5 +1,5 @@
 <?php
-namespace App\Exception\User;
+namespace App\Exception\Database;
 
 class Duplicate extends \App\Exception\Http\Http403
 {

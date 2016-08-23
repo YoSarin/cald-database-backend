@@ -46,7 +46,6 @@ class Token extends \App\Model
         $filter = [
             "AND" => [
                 "user_id" => $this->getUserId(),
-                "valid_until[>]" => date("Y-m-d H:i:s", time()),
                 "type" => $this->getType()
             ]
         ];
@@ -63,7 +62,13 @@ class Token extends \App\Model
         return hash("sha256", hash("sha256", hash("sha256", rand()) . time()) . $userId);
     }
 
-    public function expireAfterMinutes($minutes) {
+    public function expireAfterMinutes($minutes)
+    {
         $this->setValidUntil(date('Y-m-d H:i:s', strtotime('+ ' . (int)$minutes . ' minute')));
+    }
+
+    protected static function getExplicitCondtions()
+    {
+        return ["valid_until[>]" => date("Y-m-d H:i:s", time())];
     }
 }

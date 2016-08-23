@@ -74,4 +74,16 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
         // Return the response
         return $response;
     }
+
+    public function mockedApp($dbMock)
+    {
+        $containerMock = $this->createMock(\Slim\Container::class);
+        $containerMock->db = $dbMock;
+
+        $appMock = $this->createMock(\Slim\App::class);
+        $appMock->method('getContainer')
+            ->willReturn($containerMock);
+
+        return $appMock;
+    }
 }

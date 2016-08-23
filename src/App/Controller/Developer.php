@@ -40,7 +40,6 @@ class Developer extends \App\Common
             DROP TABLE player_at_highschool;
             DROP TABLE player_at_roster;
             DROP TABLE player_at_team;
-            DROP TABLE privilege;
             DROP TABLE roster;
             DROP TABLE season;
             DROP TABLE team;

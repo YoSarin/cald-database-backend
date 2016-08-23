@@ -15,5 +15,6 @@ $app->post('/user/login', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userControl
 $app->get('/user/login/check', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "check"]));
 $app->post('/user/verify/{hash}', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "verify"]));
 
-
-$app->get('/test', $auth->verify(App\Auth\Check::ALLOW_ALL, [$testController, "test"]));
+$app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));
+$app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$testController, "team"]));
+$app->post('/test/hs/{highschool_id}', $auth->verify(App\Auth\Check::ALLOW_HIGHSCHOOL_VIEW, [$testController, "hs"]));

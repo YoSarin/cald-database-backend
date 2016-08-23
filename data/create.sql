@@ -16,19 +16,13 @@ CREATE TABLE IF NOT EXISTS token (
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
-CREATE TABLE IF NOT EXISTS privilege (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    description TEXT,
-    name varchar(255)
-);
-
 CREATE TABLE IF NOT EXISTS user_has_privilege (
     id int AUTO_INCREMENT PRIMARY KEY,
     user_id int,
-    privilege_id int,
+    privilege ENUM('admin', 'edit', 'view'),
+    entity ENUM('team', 'highschool') DEFAULT NULL,
     entity_id int DEFAULT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (privilege_id) REFERENCES privilege(id)
+    FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 CREATE TABLE IF NOT EXISTS player (
