@@ -12,7 +12,7 @@ use Respect\Validation\Validator;
 
 class User extends \App\Common
 {
-    public function newUser(Request $request, $response, $args)
+    public function create(Request $request, $response, $args)
     {
         $this->requireParams($request, ["email", "password"]);
 
