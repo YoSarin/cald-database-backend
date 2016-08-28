@@ -1,133 +1,243 @@
-CREATE TABLE IF NOT EXISTS user (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    email varchar(255),
-    password char(64) NOT NULL,
-    salt char(32) NOT NULL,
-    state ENUM('waiting_for_confirmation', 'confirmed', 'blocked', 'password_reset'),
-    UNIQUE KEY unique_email (email)
-);
-
-CREATE TABLE IF NOT EXISTS token (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    user_id int NOT NULL,
-    token varchar(64),
-    valid_until DATETIME DEFAULT NULL,
-    type ENUM('email_verification', 'login'),
-    FOREIGN KEY (user_id) REFERENCES user(id)
-);
-
-CREATE TABLE IF NOT EXISTS user_has_privilege (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    user_id int,
-    privilege ENUM('admin', 'edit', 'view'),
-    entity ENUM('team', 'highschool') DEFAULT NULL,
-    entity_id int DEFAULT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id)
-);
-
-CREATE TABLE IF NOT EXISTS player (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    first_name varchar(255),
-    last_name varchar(255),
-    birth_date DATETIME DEFAULT NULL,
-    created_at DATETIME NOT NULL,
-    email varchar(255),
-    phone varchar(32),
-    sex ENUM('male', 'female') DEFAULT NULL,
-    state ENUM('active', 'inactive', 'deleted')
-);
-
-CREATE TABLE IF NOT EXISTS league (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    name varchar(255),
-    cond text default null,
-    cald_fee boolean
-);
-
-CREATE TABLE IF NOT EXISTS season (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    year DATETIME NOT NULL,
-    cald_fee int
-);
-
-CREATE TABLE IF NOT EXISTS tournament (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    name varchar(255),
-    date DATETIME,
-    league_id int,
-    season_id int,
-    FOREIGN KEY (league_id) REFERENCES league(id),
-    FOREIGN KEY (season_id) REFERENCES season(id)
-);
-
-CREATE TABLE IF NOT EXISTS team (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    name varchar(255),
-    founded_at DATETIME default NULL,
-    city varchar(255),
-    www varchar(255),
-    email varchar(255)
-);
-
-CREATE TABLE IF NOT EXISTS roster (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    team_id int,
-    tournament_id int,
-    seeding int DEFAULT NULL,
-    final_result int DEFAULT NULL,
-    FOREIGN KEY(team_id) REFERENCES team(id),
-    FOREIGN KEY(tournament_id) REFERENCES tournament(id)
-);
-
-CREATE TABLE IF NOT EXISTS player_at_team (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    team_id int NOT NULL,
-    player_id int NOT NULL,
-    since DATETIME default NULL,
-    valid boolean default true,
-    FOREIGN KEY(team_id) REFERENCES team(id),
-    FOREIGN KEY(player_id) REFERENCES player(id)
-);
-
-CREATE TABLE IF NOT EXISTS team_representative (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    player_at_team_id int NOT NULL,
-    function ENUM('captain', 'contact'),
-    FOREIGN KEY(player_at_team_id) REFERENCES player_at_team(id)
-);
-
-CREATE TABLE IF NOT EXISTS player_at_roster (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    roster_id int NOT NULL,
-    player_id int NOT NULL,
-    FOREIGN KEY(roster_id) REFERENCES roster(id),
-    FOREIGN KEY(player_id) REFERENCES player(id)
-);
-
-CREATE TABLE IF NOT EXISTS highschool (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    name varchar(255),
-    city varchar(255)
-);
-
-CREATE TABLE IF NOT EXISTS player_at_highschool (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    player_id int,
-    highschool_id int,
-    since DATETIME DEFAULT NULL,
-    valid boolean DEFAULT true,
-    FOREIGN KEY (player_id) REFERENCES player(id),
-    FOREIGN KEY (highschool_id) REFERENCES highschool(id)
-);
-
-
-CREATE TABLE IF NOT EXISTS fee (
-    id int AUTO_INCREMENT PRIMARY KEY,
-    team_id int,
-    season_id int,
-    paid_at DATETIME DEFAULT NULL,
-    fee int,
-    vs int,
-    FOREIGN KEY (team_id) REFERENCES team(id),
-    FOREIGN KEY (season_id) REFERENCES season(id)
-);
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `division` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `cond` text COLLATE utf8_bin,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `fee` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `since` datetime DEFAULT NULL,
+  `amount` int(11) DEFAULT NULL,
+  `type` enum('player_per_season','player_per_tournament','team_per_season','team_per_tournament') COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `fee_needed_for_league` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `league_id` int(11) DEFAULT NULL,
+  `fee_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `league_id` (`league_id`),
+  KEY `fee_id` (`fee_id`),
+  CONSTRAINT `fee_needed_for_league_ibfk_1` FOREIGN KEY (`league_id`) REFERENCES `league` (`id`),
+  CONSTRAINT `fee_needed_for_league_ibfk_2` FOREIGN KEY (`fee_id`) REFERENCES `fee` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Ve které lize musí člověk/tým hrát, aby pro něj poplatek platil. Pokud poplatek patří do více lig, stačí aby hrál jednu z nich. Stejně tak, pokud hraje hráč více lig se stejným poplatkem, platí pouze jednou';
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `fee_payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team_id` int(11) DEFAULT NULL,
+  `season_id` int(11) DEFAULT NULL,
+  `paid_at` datetime DEFAULT NULL,
+  `paid_amount` int(11) DEFAULT NULL,
+  `variable_symbol` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `team_id` (`team_id`),
+  KEY `season_id` (`season_id`),
+  CONSTRAINT `fee_payments_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`),
+  CONSTRAINT `fee_payments_ibfk_2` FOREIGN KEY (`season_id`) REFERENCES `season` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `highschool` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `city` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `league` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `cond` text COLLATE utf8_bin,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `player` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `last_name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `birth_date` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `email` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `phone` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `sex` enum('male','female') COLLATE utf8_bin DEFAULT NULL,
+  `state` enum('active','inactive','deleted') COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1548 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `player_at_highschool` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player_id` int(11) DEFAULT NULL,
+  `highschool_id` int(11) DEFAULT NULL,
+  `since` datetime DEFAULT NULL,
+  `valid` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `player_id` (`player_id`),
+  KEY `highschool_id` (`highschool_id`),
+  CONSTRAINT `player_at_highschool_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`),
+  CONSTRAINT `player_at_highschool_ibfk_2` FOREIGN KEY (`highschool_id`) REFERENCES `highschool` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `player_at_roster` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `roster_id` int(11) NOT NULL,
+  `player_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `roster_id` (`roster_id`),
+  KEY `player_id` (`player_id`),
+  CONSTRAINT `player_at_roster_ibfk_1` FOREIGN KEY (`roster_id`) REFERENCES `roster` (`id`),
+  CONSTRAINT `player_at_roster_ibfk_2` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=34861 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `player_at_team` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team_id` int(11) NOT NULL,
+  `player_id` int(11) NOT NULL,
+  `since` datetime DEFAULT NULL,
+  `valid` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `team_id` (`team_id`),
+  KEY `player_id` (`player_id`),
+  CONSTRAINT `player_at_team_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`),
+  CONSTRAINT `player_at_team_ibfk_2` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1757 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `roster` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team_id` int(11) DEFAULT NULL,
+  `tournament_id` int(11) DEFAULT NULL,
+  `seeding` int(11) DEFAULT NULL,
+  `final_result` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `team_id` (`team_id`),
+  KEY `tournament_id` (`tournament_id`),
+  CONSTRAINT `roster_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`),
+  CONSTRAINT `roster_ibfk_2` FOREIGN KEY (`tournament_id`) REFERENCES `tournament` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2259 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `season` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_czech_ci NOT NULL,
+  `start` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `team` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `founded_at` datetime DEFAULT NULL,
+  `city` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `www` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `active` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `team_representative` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `player_at_team_id` int(11) NOT NULL,
+  `function` enum('captain','contact') COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `player_at_team_id` (`player_at_team_id`),
+  CONSTRAINT `team_representative_ibfk_1` FOREIGN KEY (`player_at_team_id`) REFERENCES `player_at_team` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `token` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `token` varchar(64) COLLATE utf8_bin DEFAULT NULL,
+  `valid_until` datetime DEFAULT NULL,
+  `type` enum('email_verification','login') COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tournament` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `date` datetime DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
+  `season_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `season_id` (`season_id`),
+  CONSTRAINT `tournament_ibfk_1` FOREIGN KEY (`season_id`) REFERENCES `season` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tournament_belongs_to_league_and_division` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `league_id` int(11) DEFAULT NULL,
+  `division_id` int(11) DEFAULT NULL,
+  `tournament_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `league_id` (`league_id`),
+  KEY `tournament_id` (`tournament_id`),
+  KEY `division_id` (`division_id`),
+  CONSTRAINT `tournament_belongs_to_league_and_division_ibfk_1` FOREIGN KEY (`league_id`) REFERENCES `league` (`id`),
+  CONSTRAINT `tournament_belongs_to_league_and_division_ibfk_2` FOREIGN KEY (`tournament_id`) REFERENCES `tournament` (`id`),
+  CONSTRAINT `tournament_belongs_to_league_and_division_ibfk_3` FOREIGN KEY (`division_id`) REFERENCES `division` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `login` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `salt` char(32) COLLATE utf8_bin NOT NULL,
+  `password` char(64) COLLATE utf8_bin NOT NULL,
+  `created_at` datetime NOT NULL,
+  `state` enum('waiting_for_confirmation','confirmed','blocked','password_reset') COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_login` (`login`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `user_has_privilege` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `privilege` enum('admin','edit','view') COLLATE utf8_bin DEFAULT NULL,
+  `entity` enum('team','highschool') COLLATE utf8_bin DEFAULT NULL,
+  `entity_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_has_privilege_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;

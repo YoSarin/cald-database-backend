@@ -14,15 +14,16 @@ class User extends \App\Common
 {
     public function create(Request $request, $response, $args)
     {
-        $this->requireParams($request, ["email", "password"]);
+        $this->requireParams($request, ["email", "password", "login"]);
 
         $email = trim($request->getParam("email"));
         $password = trim($request->getParam("password"));
+        $login = trim($request->getParam("login"));
 
         Validator::email()->assert($email);
         Validator::stringType()->length(6, null)->assert($password);
 
-        $user = \App\Model\User::create($email, $password);
+        $user = \App\Model\User::create($login, $password, $email);
         $user->save();
 
         $token = Token::create(Token::TYPE_EMAIL_VERIFICATION, $user->getId());
@@ -38,15 +39,15 @@ class User extends \App\Common
 
     public function login(Request $request, $response, $args)
     {
-        $this->requireParams($request, ["email", "password"]);
-        $email = trim($request->getParam("email"));
+        $this->requireParams($request, ["login", "password"]);
+        $login = trim($request->getParam("login"));
         $password = trim($request->getParam("password"));
 
-        if (!\App\Model\User::exists(["email" => $email])) {
+        if (!\App\Model\User::exists(["login" => $login])) {
             throw new Http403();
         }
 
-        $user = \App\Model\User::load(["email" => $email])[0];
+        $user = \App\Model\User::load(["login" => $login])[0];
         /** @var $user \App\Model\User */
         if ($user->verifyPassword($password) && $user->canLogin()) {
             $token = Token::create(Token::TYPE_LOGIN, $user->getId());

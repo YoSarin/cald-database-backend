@@ -12,12 +12,13 @@ class User extends \App\Model
     const STATE_PASSWORD_RESET = 'password_reset';
 
     protected static $table = "user";
-    protected static $fields = ["id", "email", "password", "state", "salt"];
+    protected static $fields = ["id", "email", "password", "state", "salt", "login"];
 
-    public static function create($email, $password)
+    public static function create($login, $password, $email)
     {
         $i = new self();
         $i->setEmail($email);
+        $i->setLogin($login);
         $i->setPassword($password);
         $i->setState(self::STATE_WAITING);
 
@@ -26,7 +27,7 @@ class User extends \App\Model
 
     protected function onSaveValidation()
     {
-        if ($this->isNew() && self::exists(["email" => $this->getEmail()])) {
+        if ($this->isNew() && self::exists(["login" => $this->getLogin()])) {
             throw new Duplicate("User already exists");
         }
     }
@@ -65,11 +66,11 @@ class User extends \App\Model
 
     private function hash($password)
     {
-        return hash("sha256", hash("sha256", hash("sha256", $password) . $this->getSalt()) . $this->getEmail());
+        return hash("sha256", hash("sha256", hash("sha256", strtoupper(md5($password))) . $this->getSalt()) . $this->getLogin());
     }
 
     private function generateSalt()
     {
-        $this->setSalt(md5(md5(md5(rand()) . time()) . $this->getEmail()));
+        $this->setSalt(md5(md5(md5(rand()) . time()) . $this->getLogin()));
     }
 }
