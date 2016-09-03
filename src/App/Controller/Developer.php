@@ -5,8 +5,6 @@ class Developer extends \App\Common
 {
     public function create($request, $response, $args)
     {
-        // Sample log message
-        $this->container->logger->info("Slim-Skeleton '/check' route");
         // Initialize
         $database = $this->container->db;
 
@@ -33,21 +31,27 @@ class Developer extends \App\Common
         $database = $this->container->db;
         $database->query("
             SET FOREIGN_KEY_CHECKS = 0;
-            DROP TABLE fee;
-            DROP TABLE highschool;
-            DROP TABLE league;
-            DROP TABLE player;
-            DROP TABLE player_at_highschool;
-            DROP TABLE player_at_roster;
-            DROP TABLE player_at_team;
-            DROP TABLE roster;
-            DROP TABLE season;
-            DROP TABLE team;
-            DROP TABLE team_representative;
-            DROP TABLE tournament;
-            DROP TABLE user;
-            DROP TABLE user_has_privilege;
-            DROP TABLE token;
+            DROP TABLE IF EXISTS fee;
+            DROP TABLE IF EXISTS fee_needed_for_league;
+            DROP TABLE IF EXISTS tournament_belongs_to_league;
+            DROP TABLE IF EXISTS league_fee;
+            DROP TABLE IF EXISTS fee_payments;
+            DROP TABLE IF EXISTS highschool;
+            DROP TABLE IF EXISTS tournament_belongs_to_league_and_division;
+            DROP TABLE IF EXISTS league;
+            DROP TABLE IF EXISTS division;
+            DROP TABLE IF EXISTS player;
+            DROP TABLE IF EXISTS player_at_highschool;
+            DROP TABLE IF EXISTS player_at_roster;
+            DROP TABLE IF EXISTS player_at_team;
+            DROP TABLE IF EXISTS roster;
+            DROP TABLE IF EXISTS season;
+            DROP TABLE IF EXISTS team;
+            DROP TABLE IF EXISTS team_representative;
+            DROP TABLE IF EXISTS tournament;
+            DROP TABLE IF EXISTS user;
+            DROP TABLE IF EXISTS user_has_privilege;
+            DROP TABLE IF EXISTS token;
             SET FOREIGN_KEY_CHECKS = 1;
         ");
         if ($database->error()[1] !== null) {
