@@ -2,12 +2,12 @@
 ## `POST /user`
 **Params**: `email`, `password`, `login`  
 **Auth**: -  
-Vytvoření nového uživatele, mělo by poslat mail s hashem na ověření mailu, ale ještě není implementovaný
+Vytvoření nového uživatele, mělo by poslat mail s hashem na ověření mailu, ale maily ještě neposílá
 
 ## `POST /user/login`
 **Params**: `login`, `password`  
 **Auth**: -  
-Přihlášení uživatele - vrátí token pomocí kterého se pak autenifikují requesty
+Přihlášení uživatele - vrátí token pomocí kterého se pak autentifikují requesty
 
 ## `GET /user/verify/{hash}`
 **Params**: `hash`  
