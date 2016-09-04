@@ -12,23 +12,32 @@ abstract class Model
 
     protected $enrichCondtions = [];
 
-    public static function exists($select)
+    public static function exists($select = null)
     {
-        $select = self::enrichSelect($select);
+        $select = static::enrichSelect($select);
         return Context::getContainer()->db->has(static::table(), $select);
     }
 
-    public static function count($select)
+    public static function count($select = null)
     {
-        $select = self::enrichSelect($select);
+        $select = static::enrichSelect($select);
         return Context::getContainer()->db->count(static::table(), $select);
     }
 
-    public static function load($select)
+    public static function load($select = null)
     {
-        $select = self::enrichSelect($select);
+        $db = Context::getContainer()->db;
+        $select = static::enrichSelect($select);
         $out = [];
-        foreach (Context::getContainer()->db->select(static::table(), static::$fields, $select) as $data) {
+        $rows = $db->select(static::table(), static::$fields, $select);
+
+        if (!empty($db->error()[1])) {
+            var_dump($db->last_query());
+            die();
+            throw new \App\Exception\Database($db->error()[2]);
+        }
+
+        foreach ($rows as $data) {
             $out[] = static::fromArray($data);
         }
 
@@ -37,8 +46,11 @@ abstract class Model
 
     final public static function enrichSelect($select)
     {
+        if ($select == null && static::getExplicitCondtions() == null) {
+            return null;
+        }
         return [
-            "AND" => array_merge(static::getExplicitCondtions(), $select)
+            "AND" => array_merge(static::getExplicitCondtions(), $select ?: array())
         ];
     }
     protected static function getExplicitCondtions()
@@ -59,10 +71,8 @@ abstract class Model
 
     public function __call($name, $args)
     {
-        $field = preg_replace("/^(get|set)_/", "", preg_replace_callback("/[A-Z]+/", function ($matches) {
-            return "_" . strtolower($matches[0]);
-        }, $name));
-        $upperCaseField = (preg_replace("/^(get|set)/", "", $name));
+        $field = preg_replace("/^(get|set)_/", "", static::underscoreNotation($name));
+        $upperCaseField = lcfirst(preg_replace("/^(get|set)/", "", $name));
 
         if (strpos($name, "get") === 0 && in_array($field, static::$fields)) {
             return isset($this->data[$field]) ? $this->data[$field] : null;
@@ -84,6 +94,30 @@ abstract class Model
     public function getData()
     {
         return $this->data;
+    }
+
+    public function getExtendedData(&$loaded = array())
+    {
+        $data = [];
+        if (!array_key_exists(static::table(), $loaded)) {
+            $loaded[static::table()] = [];
+        }
+        $loaded[static::table()][$this->getId()] = $this;
+        array_walk($this->data, function ($value, $key) use (&$data, &$loaded) {
+            if (preg_match("~_id$~", $key)) {
+                $newKey = substr($key, 0, -3);
+                if (!isset($loaded[$newKey][$value])) {
+                    $model = "\\App\\Model\\" . ucfirst(static::camelcaseNotation($newKey));
+                    if (class_exists($model)) {
+                        $data[$newKey] = $model::load(["id" => $value])[0]->getExtendedData($loaded);
+                        return;
+                    }
+                }
+            }
+
+            $data[$key] = $value;
+        });
+        return $data;
     }
 
     public function save()
@@ -136,9 +170,7 @@ abstract class Model
         if (empty(static::$table)) {
             $class = explode("\\", get_called_class());
             $className = array_pop($class);
-            static::$table = trim(preg_replace_callback("/[A-Z]+/", function ($matches) {
-                return "_" . strtolower($matches[0]);
-            }, $className), '_');
+            return static::underscoreNotation($className);
         }
         return static::$table;
     }
@@ -146,5 +178,19 @@ abstract class Model
     final protected function setId($id)
     {
         $this->data["id"] = $id;
+    }
+
+    final public static function underscoreNotation($string)
+    {
+        return trim(preg_replace_callback("/[A-Z]+/", function ($matches) {
+            return "_" . strtolower($matches[0]);
+        }, $string), '_');
+    }
+
+    final public static function camelcaseNotation($string)
+    {
+        return lcfirst(preg_replace_callback("/_([a-z])/", function ($matches) {
+            return strtoupper($matches[1]);
+        }, strtolower($string)));
     }
 }

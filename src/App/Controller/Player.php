@@ -4,45 +4,39 @@ namespace App\Controller;
 use App\Model\UserHasPrivilege;
 use App\Model\User as UserModel;
 
-class Team extends \App\Common
+class Player extends \App\Common
 {
     public function create(\Slim\Http\Request $request, $response, $args)
     {
-        $this->requireParams($request, ["name"]);
+        $this->requireParams($request, ["first_name", "last_name", "birth_date", "sex", "team_id"]);
 
-        $name = trim($request->getParam("name"));
-        $city = trim($request->getParam("city"));
-        $www = trim($request->getParam("www"));
+        $firstName = trim($request->getParam("first_name"));
+        $lastName = trim($request->getParam("last_name"));
+        $birthDate = trim($request->getParam("birth_date"));
+        $sex = trim($request->getParam("sex"));
         $email = trim($request->getParam("email"));
-        $foundedAt = trim($request->getParam("founded_at"));
+        $teamId = trim($request->getParam("team_id"));
 
         if (!empty($email)) {
             Validator::email()->assert($email);
         }
 
-        if (!empty($www)) {
-            Validator::url()->assert($www);
-        }
-
         $user = UserModel::loggedUser($request->getParam('token'));
 
-        $t = \App\Model\Team::create($name, $city, $www, $email, $foundedAt);
-        $t->save();
-
-        $up = UserHasPrivilege::create($user->getId(), UserHasPrivilege::PRIVILEGE_EDIT, UserHasPrivilege::ENTITY_TEAM, $t->getId());
-        $up->save();
+        $p = \App\Model\Player::create($firstName, $lastName, $sex, $email, $birthDate);
+        $p->save();
 
         // Render index view
         return $this->container->view->render(
             $response,
-            ['status' => 'OK', 'info' => 'Team created', "id" => $t->getId()],
+            ['status' => 'OK', 'info' => 'Player added', "id" => $p->getId()],
             200
         );
     }
 
     public function listAll(\Slim\Http\Request $request, $response, $args)
     {
-        $data = \App\Model\Team::load();
+        $data = \App\Model\Player::load();
         return $this->container->view->render(
             $response,
             ['status' => 'OK', 'data' => array_map( function ($item) {

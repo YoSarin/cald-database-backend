@@ -25,7 +25,7 @@ class Player extends \App\Model
 
     protected static $fields = ["id", "first_name", "last_name", "birth_date", "created_at", "email", "phone", "sex", "state"];
 
-    public static function create($firstName, $lastName, $sex, $state = self::STATE_ACTIVE, $email = null, $phone = null, $birthDate = null)
+    public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE)
     {
         $i = new self();
         $i->setFirstName($firstName);

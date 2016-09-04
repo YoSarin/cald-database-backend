@@ -6,6 +6,7 @@ $auth = new App\Auth($container);
 $devController = new App\Controller\Developer($container);
 $userController = new App\Controller\User($container);
 $teamController = new App\Controller\Team($container);
+$listController = new App\Controller\ListItems($container);
 
 $testController = new App\Controller\Test($container);
 
@@ -17,7 +18,10 @@ $app->post('/user/login', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userControl
 $app->get('/user/login/check', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "check"]));
 $app->get('/user/verify/{hash}', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "verify"]));
 
+$app->get('/list/{type}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listController, "listAll"]));
+
 $app->post('/team', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "create"]));
+$app->get('/team/list', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "listAll"]));
 
 $app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));
 $app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$testController, "team"]));
