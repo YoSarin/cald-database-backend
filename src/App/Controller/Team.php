@@ -39,16 +39,4 @@ class Team extends \App\Common
             200
         );
     }
-
-    public function listAll(\Slim\Http\Request $request, $response, $args)
-    {
-        $data = \App\Model\Team::load();
-        return $this->container->view->render(
-            $response,
-            ['status' => 'OK', 'data' => array_map( function ($item) {
-                return $item->getData();
-            }, $data)],
-            200
-        );
-    }
 }

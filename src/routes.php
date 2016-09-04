@@ -15,13 +15,11 @@ $app->post('/developer/drop', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$d
 
 $app->post('/user', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "create"]));
 $app->post('/user/login', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "login"]));
-$app->get('/user/login/check', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "check"]));
 $app->get('/user/verify/{hash}', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "verify"]));
 
 $app->get('/list/{type}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listController, "listAll"]));
 
 $app->post('/team', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "create"]));
-$app->get('/team/list', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "listAll"]));
 
 $app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));
 $app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$testController, "team"]));

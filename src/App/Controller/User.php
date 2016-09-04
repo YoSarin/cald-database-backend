@@ -93,9 +93,4 @@ class User extends \App\Common
         );
     }
 
-    public function check(Request $request, $response, $args)
-    {
-        return $this->container->view->render($response, $_SESSION, 200);
-    }
-
 }
