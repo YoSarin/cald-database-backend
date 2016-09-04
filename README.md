@@ -1,2 +1,2 @@
 # Nová evidence členů ČALD
-[API dokumentace](api)
+[API dokumentace](api.md)
