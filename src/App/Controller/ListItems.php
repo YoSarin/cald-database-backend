@@ -9,7 +9,7 @@ class ListItems extends \App\Common
 {
 
     public static $listable = [
-        "team", "player", "tournament", "roster", "season", "player_at_team"
+        "player", "team", "player_at_team", "roster", "player_at_roster", "tournament", "season"
     ];
 
     public function listAll(\Slim\Http\Request $request, $response, $args)
@@ -22,6 +22,10 @@ class ListItems extends \App\Common
         $filter = null;
         $prefilter = $request->getParam("filter", null);
         $extend = (bool)$request->getParam("extend", false);
+
+        $limit = $request->getParam("limit", null);
+        $offset = $request->getParam("offset", null);
+
         if (!empty($prefilter)) {
             $filter = [];
             array_walk($prefilter, function ($value, $key) use (&$filter) {
@@ -30,7 +34,7 @@ class ListItems extends \App\Common
         }
 
         $model = "\\App\\Model\\" . ucfirst(\App\Model::camelcaseNotation($type));
-        $data = $model::load($filter);
+        $data = $model::load($filter, $limit, $offset);
 
         return $this->container->view->render(
             $response,

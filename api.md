@@ -15,12 +15,14 @@ Přihlášení uživatele - vrátí token pomocí kterého se pak autentifikují
 Ověří hash (pro potvrzování uživatelů etc)
 
 ## `GET /list/{type}`
-**Params**: `type`, `[filter]`, `[extend]`  
-Auth: token  
+**Params**: `type`, `[filter]`, `[extend]`, `[limit]`, `[offset]`  
+**Auth**: token  
 Vrací seznam objektů daného typu.  
-**`type`**: list čeho chceme získat, momentálně podporované jsou: team, player, player_at_team, tournament a season  
+**`type`**: list čeho chceme získat, momentálně podporované jsou: player, team, player_at_team, roster, player_at_roster, tournament a season  
 **`filter`**: je asociativní pole podle kterého se mají výsledky filtrovat, pro detaily jak se to dělá - zkoukni dokumentaci k DB frameworku medoo  
-**`extend`**: je li předán s hodnotou 1, tak aplikace vrátí rozšířené výsledky (místo referencovaných ID načte odkazované záznamy a rovnou je vrátí - používat s rozmyslem)
+**`extend`**: je li předán s hodnotou 1, tak aplikace vrátí rozšířené výsledky (místo referencovaných ID načte odkazované záznamy a rovnou je vrátí - používat s rozmyslem)  
+**`limit`**: počet výsledků které se mají vrátit  
+**`offset`**: kolik výsledků se má přeskočit
 
 ## `POST /team`
 **Params**: `name`, `[city]`, `[www]`, `[email]`, `[founded_at]`  

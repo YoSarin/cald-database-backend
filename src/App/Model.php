@@ -24,11 +24,14 @@ abstract class Model
         return Context::getContainer()->db->count(static::table(), $select);
     }
 
-    public static function load($select = null)
+    public static function load($select = null, $limit = null, $offset = 0)
     {
         $db = Context::getContainer()->db;
         $select = static::enrichSelect($select);
         $out = [];
+        if ($limit) {
+            $select["LIMIT"] = [(int)$offset, (int)$limit];
+        }
         $rows = $db->select(static::table(), static::$fields, $select);
 
         if (!empty($db->error()[1])) {
@@ -49,9 +52,13 @@ abstract class Model
         if ($select == null && static::getExplicitCondtions() == null) {
             return null;
         }
-        return [
-            "AND" => array_merge(static::getExplicitCondtions(), $select ?: array())
-        ];
+        if ($select == null) {
+            return static::getExplicitCondtions();
+        }
+        if (static::getExplicitCondtions() == null) {
+            return $select;
+        }
+        return ["AND" => array_merge(static::getExplicitCondtions(), $select)];
     }
     protected static function getExplicitCondtions()
     {
