@@ -61,4 +61,15 @@ class Developer extends \App\Common
         // Render index view
         return $this->container->view->render($response, ['status' => 'OK', 'info' => 'database dropped'], 200);
     }
+
+    public function healthcheck($request, $response, $args)
+    {
+        $out = [];
+        $ok = true;
+        return $this->container->view->render(
+            $response,
+            ['status' => $ok ? 'OK' : 'FAILED', 'data' => $out],
+            $ok ? 200 : 500
+        );
+    }
 }

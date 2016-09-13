@@ -15,5 +15,13 @@ return [
             'path' => __DIR__ . '/../logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
         ],
+        'db' => [
+            'database_type' => (string)getenv('DB_TYPE') ?: 'mysql',
+            'database_name' => (string)getenv('DB_NAME') ?: 'cald',
+            'server' => 'localhost',
+            'username' => (string)getenv('DB_USER') ?: 'cald',
+            'password' => (string)getenv('DB_PASS') ?: 'cald',
+            'charset' => 'utf8'
+        ]
     ],
 ];

@@ -19,21 +19,18 @@ $loader = require __DIR__ . '/../vendor/autoload.php';
 session_start();
 
 // Instantiate the app
+$dotenv = new \Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
 $settings = require __DIR__ . '/../src/settings.php';
 $settings['settings']['displayErrorDetails'] = false;
 $settings['addContentLengthHeader'] = false;
+
 $app = new \Slim\App($settings);
 
 \App\Context::setApp($app);
 
-$app->getContainer()['db'] = new \medoo([
-    'database_type' => 'mysql',
-    'database_name' => 'cald',
-    'server' => 'localhost',
-    'username' => 'cald',
-    'password' => 'cald',
-    'charset' => 'utf8'
-]);
+$app->getContainer()['db'] = new \medoo($app->getContainer()->get('settings')['db']);
 
 $checkProxyHeaders = true;
 $trustedProxies = ['10.0.0.1', '10.0.0.2'];
