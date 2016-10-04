@@ -35,8 +35,6 @@ abstract class Model
         $rows = $db->select(static::table(), static::$fields, $select);
 
         if (!empty($db->error()[1])) {
-            var_dump($db->last_query());
-            die();
             throw new \App\Exception\Database($db->error()[2]);
         }
 
@@ -110,7 +108,7 @@ abstract class Model
             $loaded[static::table()] = [];
         }
         $loaded[static::table()][$this->getId()] = $this;
-        array_walk($this->data, function ($value, $key) use (&$data, &$loaded) {
+        array_walk($this->getData(), function ($value, $key) use (&$data, &$loaded) {
             if (preg_match("~_id$~", $key)) {
                 $newKey = substr($key, 0, -3);
                 if (!isset($loaded[$newKey][$value])) {

@@ -12,6 +12,7 @@ class Check
     const ALLOW_IP    = 'ALLOW_IP';
     const ALLOW_TOKEN = 'ALLOW_TOKEN';
     const ALLOW_NOONE = 'ALLOW_NOONE';
+    const ALLOW_ADMIN = 'ALLOW_ADMIN';
     const ALLOW_LOCALHOST = 'ALLOW_LOCALHOST';
     const ALLOW_TEAM_VIEW = 'ALLOW_TEAM_VIEW';
     const ALLOW_TEAM_EDIT = 'ALLOW_TEAM_EDIT';
@@ -25,6 +26,7 @@ class Check
         self::ALLOW_IP    => "authAllowIp",
         self::ALLOW_TOKEN => "authAllowToken",
         self::ALLOW_NOONE => "authAllowNoone",
+        self::ALLOW_ADMIN => "authAllowAdmin",
         self::ALLOW_LOCALHOST => "authAllowLocalhost",
         self::ALLOW_TEAM_VIEW => 'authAllowTeamView',
         self::ALLOW_TEAM_EDIT => 'authAllowTeamEdit',

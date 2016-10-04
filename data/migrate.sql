@@ -84,11 +84,12 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.tournament (
     season_id int,
     location varchar(255),
     duration int,
+    deleted boolean DEFAULT false,
     FOREIGN KEY (season_id) REFERENCES season(id)
 )
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
-SELECT t.id, t.name, t.date, t.venue as location, t.duration, s.id as season_id
+SELECT t.id, t.name, t.date, t.venue as location, t.duration, s.id as season_id, false as deleted
 FROM Tournament t
 LEFT JOIN :new_schema_name:.season s ON s.start < t.date and ((SELECT min(s2.start) FROM :new_schema_name:.season s2 WHERE s2.start > s.start) > t.date OR (SELECT min(s2.start) FROM :new_schema_name:.season s2 WHERE s2.start > s.start) is null);
 

@@ -92,5 +92,4 @@ class User extends \App\Common
             200
         );
     }
-
 }

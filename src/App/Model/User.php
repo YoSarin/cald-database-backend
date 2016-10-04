@@ -73,4 +73,12 @@ class User extends \App\Model
     {
         $this->setSalt(md5(md5(md5(rand()) . time()) . $this->getLogin()));
     }
+
+    public function getData()
+    {
+        $d = $this->data;
+        unset($d['password']);
+        unset($d['salt']);
+        return $d;
+    }
 }

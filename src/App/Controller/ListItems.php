@@ -9,7 +9,10 @@ class ListItems extends \App\Common
 {
 
     public static $listable = [
-        "player", "team", "player_at_team", "roster", "player_at_roster", "tournament", "season"
+        "player", "team", "player_at_team",
+        "roster", "player_at_roster", "tournament",
+        "season", "tournament_belongs_to_league_and_division",
+        "division", "league", "user"
     ];
 
     public function listAll(\Slim\Http\Request $request, $response, $args)
