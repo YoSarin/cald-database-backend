@@ -29,3 +29,20 @@ division, league a user (odfiltrované sloupečky salt a password)
 **Params**: `name`, `[city]`, `[www]`, `[email]`, `[founded_at]`  
 **Auth**: token  
 Vytvoří nový tým a dá aktuálně přihlášenému uživateli práva k jeho editaci
+
+## `POST /admin/tournament`
+**Params**: `name`, `date`, `location`, `duration`, `season_id`, `league_ids`, `division_ids`
+**Auth**: token (musí být admin)
+Vytvoří nový turnaj se zadanými parametry
+**`name`**: jméno turnaje
+**`date`**: datum turnaje (YYYY-MM-DD)
+**`location`**: název lokace kde se turnaj koná
+**`duration`**: počet dní kolik bude turnaj probíhat
+**`season_id`**: ID sezóny do které turnaj patří (pro výběr sezóny použij `GET /list/season`)
+**`league_ids`**: pole ID lig (hala|venek|středoškolka|U23|...) do kterých turnaj patří (pro výběr sezóny použij `GET /list/league`)
+**`division_ids`**: pole ID divizí (open|woman|mix) do kterých turnaj patří (pro výběr divize použij `GET /list/division`)
+
+## `DELETE /admin/tournament/{id}`
+**Params**: `id`
+**Auth**: token (musí být admin)
+Označí daný turnaj za smazaný (jen nastavuje příznak v DB, reálně nic nemaže)
