@@ -25,3 +25,7 @@ $app->post('/team', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController,
 $app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));
 $app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$testController, "team"]));
 $app->post('/test/hs/{highschool_id}', $auth->verify(App\Auth\Check::ALLOW_HIGHSCHOOL_VIEW, [$testController, "hs"]));
+
+$app->options('/{routes:.+}', function ($request, $response, $args) {
+    return $response;
+});

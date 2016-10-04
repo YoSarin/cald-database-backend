@@ -15,7 +15,6 @@ class Auth extends Common
     public function verificationCallback($request, $response, $args)
     {
         if (Auth\Check::verify($this->type, $request, $response, $args)) {
-            $response = $response->withHeader('Access-Control-Allow-Origin', '*');
             return call_user_func_array($this->callback, [$request, $response, $args]);
         }
 
