@@ -8,7 +8,7 @@ class Player extends \App\Common
 {
     public function create(\Slim\Http\Request $request, $response, $args)
     {
-        $this->requireParams($request, ["first_name", "last_name", "birth_date", "sex", "team_id"]);
+        $request->requireParams(["first_name", "last_name", "birth_date", "sex", "team_id"]);
 
         $firstName = trim($request->getParam("first_name"));
         $lastName = trim($request->getParam("last_name"));

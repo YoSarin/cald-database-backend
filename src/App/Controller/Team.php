@@ -8,7 +8,7 @@ class Team extends \App\Common
 {
     public function create(\Slim\Http\Request $request, $response, $args)
     {
-        $this->requireParams($request, ["name"]);
+        $request->requireParams(["name"]);
 
         $name = trim($request->getParam("name"));
         $city = trim($request->getParam("city"));

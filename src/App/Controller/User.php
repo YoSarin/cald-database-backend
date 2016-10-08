@@ -14,7 +14,7 @@ class User extends \App\Common
 {
     public function create(Request $request, $response, $args)
     {
-        $this->requireParams($request, ["email", "password", "login"]);
+        $request->requireParams(["email", "password", "login"]);
 
         $email = trim($request->getParam("email"));
         $password = trim($request->getParam("password"));
@@ -39,7 +39,7 @@ class User extends \App\Common
 
     public function login(Request $request, $response, $args)
     {
-        $this->requireParams($request, ["login", "password"]);
+        $request->requireParams(["login", "password"]);
         $login = trim($request->getParam("login"));
         $password = trim($request->getParam("password"));
 
@@ -66,7 +66,7 @@ class User extends \App\Common
 
     public function verify(Request $request, $response, $args)
     {
-        $params = $this->requireParams($request, ["hash"]);
+        $params = $request->requireParams(["hash"]);
         $token = trim($params["hash"]);
         $filter = [
             'AND' => [

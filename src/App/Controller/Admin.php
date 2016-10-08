@@ -33,12 +33,12 @@ class Admin extends \App\Common
 
     public function updateTournament($request, $response, $args)
     {
-        $id = $this->requireParams($request, ["id"]);
+        $id = $request->requireParams(["id"]);
     }
 
     public function deleteTournament($request, $response, $args)
     {
-        $id = $this->requireParams($request, ["id"]);
+        $id = $request->requireParams(["id"]);
 
         $tournaments = Tournament::load(["id" => $id]);
         foreach ($tournaments as $t) {

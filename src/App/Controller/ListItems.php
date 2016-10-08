@@ -17,7 +17,7 @@ class ListItems extends \App\Common
 
     public function listAll(\Slim\Http\Request $request, $response, $args)
     {
-        list($type) = $this->requireParams($request, ["type"]);
+        list($type) = $request->requireParams(["type"]);
         $type = strtolower($type);
         if (!in_array($type, self::$listable)) {
             throw new Http400("Item not listable");
