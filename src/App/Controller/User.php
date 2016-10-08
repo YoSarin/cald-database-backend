@@ -92,4 +92,8 @@ class User extends \App\Common
             200
         );
     }
+
+    public function getCurrent(Request $request, $response, $args)
+    {
+    }
 }
