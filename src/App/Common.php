@@ -20,9 +20,4 @@ abstract class Common
     {
         $this->container->view->render($response, $data, $status);
     }
-
-    protected function requireParams(Request $request, $names)
-    {
-        return $request->requireParams($names);
-    }
 }
