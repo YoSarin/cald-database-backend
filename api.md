@@ -14,6 +14,18 @@ Přihlášení uživatele - vrátí token pomocí kterého se pak autentifikují
 **Auth**: -  
 Ověří hash (pro potvrzování uživatelů etc)
 
+## `GET /user/me`
+**Auth**: token  
+Vratí údaje o přihlášeném uživateli
+
+## `POST /user/me`
+**Params**: `[login]`, `[email]`, `[password]`  
+**Auth**: token  
+Upraví údaje přihlášeného uživatele  
+**`login`**: změnit přihlašovací jméno  
+**`email`**: změnit kontaktní email  
+**`password`**: změnít heslo
+
 ## `GET /list/{type}`
 **Params**: `type`, `[filter]`, `[extend]`, `[limit]`, `[offset]`  
 **Auth**: token  
