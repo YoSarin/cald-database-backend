@@ -95,5 +95,37 @@ class User extends \App\Common
 
     public function getCurrent(Request $request, $response, $args)
     {
+        return $this->container->view->render(
+            $response,
+            ["status" => "OK", "data" => $request->currentUser()->getData()],
+            200
+        );
+    }
+
+    public function updateCurrent(Request $request, $response, $args)
+    {
+        $u = $request->currentUser();
+
+        $login    = trim($request->getParam("login"));
+        $password = trim($request->getParam("password"));
+        $email    = trim($request->getParam("email"));
+
+        if ($login) {
+            $u->setLogin($login);
+        }
+        if ($email) {
+            $u->setEmail($email);
+        }
+        if ($password) {
+            $u->setPassword($password);
+        }
+
+        $u->save();
+
+        return $this->container->view->render(
+            $response,
+            ["status" => "OK", "data" => $request->currentUser()->getData()],
+            200
+        );
     }
 }

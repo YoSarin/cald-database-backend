@@ -1,11 +1,15 @@
 <?php
 namespace App;
+use App\Model\User;
+use App\Exception\Http\Http404;
 
 class Request extends \Slim\Http\Request
 {
+    private $currentUser;
+
     public static function fromRequest(\Slim\Http\Request $r)
     {
-        return new static(
+        $i = new static(
             $r->originalMethod,
             $r->uri,
             $r->headers,
@@ -14,6 +18,8 @@ class Request extends \Slim\Http\Request
             $r->body,
             $r->uploadedFiles = []
         );
+        $i->currentUser = null;
+        return $i;
     }
 
     public function requireParams($names)
@@ -39,8 +45,16 @@ class Request extends \Slim\Http\Request
         return $output;
     }
 
-    public function type()
+    public function currentUser()
     {
-        return ["OK"];
+        if (!$this->currentUser) {
+            list($token) = $this->requireParams(['token']);
+            $tokens = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
+            if (empty($tokens)) {
+                throw new Http404("Not found");
+            }
+            $this->currentUser = \App\Model\User::load(["id" => $tokens[0]->getUserId()])[0];
+        }
+        return $this->currentUser;
     }
 }

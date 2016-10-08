@@ -39,9 +39,7 @@ class User extends \App\Model
 
     public function setPassword($password)
     {
-        if (empty($this->getSalt())) {
-            $this->generateSalt();
-        }
+        $this->generateSalt();
         parent::setPassword($this->hash($password));
     }
 
