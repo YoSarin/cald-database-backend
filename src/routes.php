@@ -23,7 +23,7 @@ $app->post('/user', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "
 $app->post('/user/login', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "login"]));
 $app->get('/user/verify/{hash}', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "verify"]));
 $app->get('/user/me', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$userController, "getCurrent"]));
-$app->post('/user/me', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$userController, "updateCurrent"]));
+$app->put('/user/me', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$userController, "updateCurrent"]));
 
 $app->get('/list/{type}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listController, "listAll"]));
 

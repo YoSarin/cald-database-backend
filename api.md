@@ -18,7 +18,7 @@ Ověří hash (pro potvrzování uživatelů etc)
 **Auth**: token  
 Vratí údaje o přihlášeném uživateli
 
-## `POST /user/me`
+## `PUT /user/me`
 **Params**: `[login]`, `[email]`, `[password]`  
 **Auth**: token  
 Upraví údaje přihlášeného uživatele  
