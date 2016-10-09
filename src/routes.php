@@ -29,7 +29,7 @@ $app->get('/list/{type}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listContr
 
 $app->post('/team', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "create"]));
 
-
+// testing APIs - to be deleted at the end
 $app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));
 $app->get('/test/req', $auth->verify(App\Auth\Check::ALLOW_ALL, [$testController, "request"]));
 $app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$testController, "team"]));

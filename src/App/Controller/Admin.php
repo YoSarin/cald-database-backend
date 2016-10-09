@@ -8,8 +8,7 @@ class Admin extends \App\Common
 {
     public function createTournament($request, $response, $args)
     {
-        list($name, $date, $location, $duration, $season_id, $league_ids, $division_ids) = $this->requireParams(
-            $request,
+        list($name, $date, $location, $duration, $season_id, $league_ids, $division_ids) = $request->requireParams(
             ["name", "date", "location", "duration", "season_id", "league_ids", "division_ids"]
         );
 
