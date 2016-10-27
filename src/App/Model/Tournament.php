@@ -21,4 +21,12 @@ class Tournament extends \App\Model
         $t->setSeasonId($season_id);
         return $t;
     }
+
+    public static function loadTournamentsInSeasonWithFees($seasonId)
+    {
+        return static::load(["season_id" => $seasonId], null, 0, [
+            "[><]tournament_belongs_to_league_and_division (tld)" => ["id" => "tournament_id"],
+            "[><]fee_needed_for_league (ffl)" => ["tld.league_id" => "league_id"]
+        ]);
+    }
 }

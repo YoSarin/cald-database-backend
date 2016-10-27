@@ -40,6 +40,15 @@ class UserHasPrivilege extends \App\Model
         return $i;
     }
 
+    public function privilegeToString()
+    {
+        if ($this->getPrivilege() == 'admin') {
+            return $this->getPrivilege();
+        } else {
+            return $this->getPrivilege() . ':' . $this->getEntity() . ':' . $this->getEntityId();
+        }
+    }
+
     protected function onSaveValidation()
     {
         if ($this->isNew() && self::exists([

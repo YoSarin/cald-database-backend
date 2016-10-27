@@ -1,8 +1,14 @@
 <?php
 namespace App\Controller;
 
+use App\Model\Player;
+use App\Model\Fee;
+use App\Model\Season;
 use App\Model\Tournament;
+use App\Model\PlayerFeeChange;
+use App\Model\FeeNeededForLeague;
 use App\Model\TournamentBelongsToLeagueAndDivision;
+use App\Exception\Http\Http404;
 
 class Admin extends \App\Common
 {
@@ -33,6 +39,16 @@ class Admin extends \App\Common
     public function updateTournament($request, $response, $args)
     {
         $id = $request->requireParams(["id"]);
+
+        $t = Tournament::load(["id" => $id])[0];
+        $t->updateByRequest($request);
+        $t->save();
+
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'data' => $t->getExtendedData()],
+            200
+        );
     }
 
     public function deleteTournament($request, $response, $args)
@@ -48,6 +64,69 @@ class Admin extends \App\Common
         return $this->container->view->render(
             $response,
             ['status' => 'OK'],
+            200
+        );
+    }
+
+    public function pardonFee($request, $response, $args)
+    {
+        list($playerId, $seasonId) = $request->requireParams(["player_id", "season_id"]);
+        if (!Player::exists(["id" => $playerId])) {
+            throw new Http404("player does not exist");
+        }
+        if (!Season::exists(["id" => $seasonId])) {
+            throw new Http404("season does not exist");
+        }
+
+        $feeChange = PlayerFeeChange::create($playerId, $seasonId, 0);
+        $feeChange->save();
+
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'data' => $feeChange->getData()],
+            200
+        );
+    }
+
+    public function cancelPardonFee($request, $response, $args)
+    {
+        list($id) = $request->requireParams(["pardon_id"]);
+
+        $feeChange = PlayerFeeChange::loadById($id);
+        if (empty($feeChange)) {
+            throw new Http404("this fee pardon does not exist");
+        }
+
+        $feeChange->delete();
+
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK'],
+            200
+        );
+    }
+
+    public function getFee($request, $response, $args)
+    {
+        list($id) = $request->requireParams(["season_id"]);
+
+        if (!Season::exists(['id' => $id])) {
+            throw new Http404("No such season");
+        }
+
+        $tournaments = Tournament::loadTournamentsInSeasonWithFees($id);
+
+        return $this->container->view->render(
+            $response,
+            [
+                'status' => 'OK',
+                'data' => array_map(
+                    function ($i) {
+                        return $i->getData();
+                    },
+                    $tournaments
+                )
+            ],
             200
         );
     }

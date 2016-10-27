@@ -1,5 +1,6 @@
 <?php
 namespace App;
+
 use App\Exception\Http\Http500;
 use App\Exception\WrongParam;
 use App\Exception\Database\TreatAsCreated;
@@ -24,7 +25,7 @@ abstract class Model
         return Context::getContainer()->db->count(static::table(), $select);
     }
 
-    public static function load($select = null, $limit = null, $offset = 0)
+    public static function load($select = null, $limit = null, $offset = 0, $joins = [])
     {
         $db = Context::getContainer()->db;
         $select = static::enrichSelect($select);
@@ -32,7 +33,7 @@ abstract class Model
         if ($limit) {
             $select["LIMIT"] = [(int)$offset, (int)$limit];
         }
-        $rows = $db->select(static::table(), static::$fields, $select);
+        $rows = $db->select(static::table(), static::fields(static::table()), $select, $joins);
 
         if (!empty($db->error()[1])) {
             throw new \App\Exception\Database($db->error()[2]);
@@ -43,6 +44,26 @@ abstract class Model
         }
 
         return $out;
+    }
+
+    public static function loadById($id)
+    {
+        $db = Context::getContainer()->db;
+        $select = ["id" => $id];
+        $select = static::enrichSelect($select);
+
+        $rows = $db->select(static::table(), static::$fields, $select);
+
+        if (!empty($db->error()[1])) {
+            throw new \App\Exception\Database($db->error()[2]);
+        }
+
+        foreach ($rows as $data) {
+            // will return first item, as we do not want an array to be returned when loading just one item
+            return static::fromArray($data);
+        }
+
+        return null;
     }
 
     final public static function enrichSelect($select)
@@ -68,6 +89,14 @@ abstract class Model
         $i = new static();
         $i->data = $data;
         return $i;
+    }
+
+    protected static function fields($prefix)
+    {
+        $out = array_map(function ($i) use ($prefix) {
+            return ($prefix . '.' . $i);
+        }, static::$fields);
+        return $out;
     }
 
     protected function __construct()
@@ -108,7 +137,8 @@ abstract class Model
             $loaded[static::table()] = [];
         }
         $loaded[static::table()][$this->getId()] = $this;
-        array_walk($this->getData(), function ($value, $key) use (&$data, &$loaded) {
+        $itemData = $this->getData();
+        array_walk($itemData, function ($value, $key) use (&$data, &$loaded) {
             if (preg_match("~_id$~", $key)) {
                 $newKey = substr($key, 0, -3);
                 if (!isset($loaded[$newKey][$value])) {
@@ -165,6 +195,16 @@ abstract class Model
         }
     }
 
+    public function updateByRequest(\App\Request $r)
+    {
+        foreach (static::$fields as $field) {
+            $v = $r->getParam($field);
+            if ($v) {
+                $this->{"set" . ucfirst(static::camelcaseNotation($field))}($v);
+            }
+        }
+    }
+
     protected function onSaveValidation()
     {
         return true;
@@ -178,6 +218,12 @@ abstract class Model
             return static::underscoreNotation($className);
         }
         return static::$table;
+    }
+
+    final protected static function getRelated()
+    {
+        $related = [];
+        return $related;
     }
 
     final protected function setId($id)

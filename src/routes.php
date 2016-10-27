@@ -18,6 +18,9 @@ $app->get('/healthcheck', $auth->verify(App\Auth\Check::ALLOW_ALL, [$devControll
 $app->post('/admin/tournament', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "createTournament"]));
 $app->put('/admin/tournament/{id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "updateTournament"]));
 $app->delete('/admin/tournament/{id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "deleteTournament"]));
+$app->post('/admin/fee/pardon', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "pardonFee"]));
+$app->delete('/admin/fee/pardon', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "cancelPardonFee"]));
+$app->get('/admin/fee', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "getFee"]));
 
 $app->post('/user', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "create"]));
 $app->post('/user/login', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "login"]));

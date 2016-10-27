@@ -7,6 +7,7 @@ use App\Exception\Database;
 use App\Exception\User\Unconfirmed;
 use App\Exception\Http\Http403;
 use App\Model\Token;
+use App\Model\UserHasPrivilege;
 use Slim\Http\Request;
 use Respect\Validation\Validator;
 
@@ -95,9 +96,18 @@ class User extends \App\Common
 
     public function getCurrent(Request $request, $response, $args)
     {
+        $data = [
+            'user' => $request->currentUser()->getData(),
+            'rights' => array_map(
+                function ($item) {
+                    return $item->privilegeToString();
+                },
+                UserHasPrivilege::load(["user_id" => $request->currentUser()->getId()])
+            )
+        ];
         return $this->container->view->render(
             $response,
-            ["status" => "OK", "data" => $request->currentUser()->getData()],
+            ["status" => "OK", "data" => $data],
             200
         );
     }
