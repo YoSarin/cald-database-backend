@@ -58,3 +58,20 @@ Vytvoří nový turnaj se zadanými parametry
 **Params**: `id`  
 **Auth**: token (musí být admin)  
 Označí daný turnaj za smazaný (jen nastavuje příznak v DB, reálně nic nemaže)
+
+## `GET /admin/fee`
+**Params**: `season_id`  
+**Auth**: token (musí být admin)  
+Vrátí výši příspěvků pro jednotlivé týmy za danou sezónu. Součástí odpovědi je i seznam hráčů, kteří tuto sezónu hráli za více než 1 tým.
+
+## `POST /admin/fee/pardon`
+**Params**: `player_id`, `season_id`  
+**Auth**: token (musí být admin)  
+Odpustí danému hráči poplatky za danou sezónu  
+**`player_id`**: ID hráče, kterému budou příspěvky odpuštěny  
+**`season_id`**: ID sezóny pro kterou odpustek platí
+
+## `DELETE /admin/fee/pardon`
+**Params**:`pardon_id`  
+**Auth**: token (musí být admin)  
+Smaže konkrétní 'odpustek' poplatků pro hráče
