@@ -307,5 +307,5 @@ LEFT JOIN :new_schema_name:.user u ON u.login = t.agent_login
 WHERE t.agent_login IS NOT NULL
 ;
 
-INSERT INTO :new_schema_name:.user (email,login,salt,password,created_at,state) VALUES ('noone@noone.noone','admin','e49f68e084c1cf6507602928dd58b467','7043560ddbe621ddf2dbb0cd83ec8d1822419cd52a86abd5a74fac9006385a21',NULL,'confirmed');
+INSERT INTO :new_schema_name:.user (email,login,salt,password,created_at,state) VALUES ('noone@noone.noone','admin','e49f68e084c1cf6507602928dd58b467','7043560ddbe621ddf2dbb0cd83ec8d1822419cd52a86abd5a74fac9006385a21',NOW(),'confirmed');
 INSERT INTO :new_schema_name:.user_has_privilege (user_id, privilege) SELECT id as user_id, 'admin' as privilege FROM :new_schema_name:.user WHERE email = 'noone@noone.noone';

@@ -35,7 +35,7 @@ abstract class Model
                 $select["id"] = [$select["id"]];
             }
             foreach ($select["id"] as $key => $id) {
-                $data = fromCache($id);
+                $data = static::fromCache($id);
                 if ($data) {
                     $out[] = static::fromArray($data);
                     unset($select["id"][$key]);
