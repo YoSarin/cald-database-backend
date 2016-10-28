@@ -39,4 +39,13 @@ class Player extends \App\Model
 
         return $i;
     }
+
+    public static function loadPlayersParticipatingAtTLD($tlds)
+    {
+        return static::load(["tournament_belongs_to_league_and_division.id" => $tlds], null, 0, [
+            "[><]player_at_roster" => ["player.id" => "player_id"],
+            "[><]roster" => ["player_at_roster.roster_id" => "id"],
+            "[><]tournament_belongs_to_league_and_division" => ["roster.tournament_belongs_to_league_and_division_id" => "id"]
+        ]);
+    }
 }

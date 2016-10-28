@@ -146,23 +146,38 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.fee (
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
 SELECT
-	null as id, "ČALD poplatek" as name, "2005-11-01 00:00:00" as since, 150 as amount, 'player_per_season' as type UNION ALL SELECT
-	null as id, "ČALD poplatek" as name, "2007-11-01 00:00:00" as since, 200 as amount, 'player_per_season' as type UNION ALL SELECT
-	null as id, "ČALD poplatek" as name, "2009-11-01 00:00:00" as since, 250 as amount, 'player_per_season' as type UNION ALL SELECT
-	null as id, "ČALD poplatek" as name, "2013-12-01 00:00:00" as since, 350 as amount, 'player_per_season' as type;
+	null as id, "ČALD poplatek 2006+" as name, "2005-11-01 00:00:00" as since, 150 as amount, 'player_per_season' as type UNION ALL SELECT
+	null as id, "ČALD poplatek 2007+" as name, "2007-11-01 00:00:00" as since, 200 as amount, 'player_per_season' as type UNION ALL SELECT
+	null as id, "ČALD poplatek 2010+" as name, "2009-11-01 00:00:00" as since, 250 as amount, 'player_per_season' as type UNION ALL SELECT
+	null as id, "ČALD poplatek 2013+" as name, "2013-12-01 00:00:00" as since, 350 as amount, 'player_per_season' as type;
+
+CREATE TABLE IF NOT EXISTS :new_schema_name:.player_fee_change (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  player_id int,
+  season_id int,
+  amount int,
+  FOREIGN KEY (player_id) REFERENCES player(id),
+  FOREIGN KEY (season_id) REFERENCES season(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.fee_needed_for_league (
     id int AUTO_INCREMENT PRIMARY KEY,
 	league_id int,
 	fee_id int,
+    since DATETIME,
+    valid boolean DEFAULT true,
     FOREIGN KEY (league_id) REFERENCES league(id),
     FOREIGN KEY (fee_id) REFERENCES fee(id)
 )
 COMMENT "Ve které lize musí člověk/tým hrát, aby pro něj poplatek platil. Pokud poplatek patří do více lig, stačí aby hrál jednu z nich. Stejně tak, pokud hraje hráč více lig se stejným poplatkem, platí pouze jednou"
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
-SELECT null as id, l.id as league_id, f.id as fee_id
+SELECT null as id, l.id as league_id, f.id as fee_id, f.since as since, false as valid
 FROM :new_schema_name:.league l, :new_schema_name:.fee f where l.name in ('Mistrovství ČR', 'Halové Mistrovství ČR');
+
+UPDATE :new_schema_name:.fee_needed_for_league SET valid = true WHERE since = (SELECT m FROM (SELECT max(since) as m FROM :new_schema_name:.fee_needed_for_league) t );
+
+ALTER TABLE :new_schema_name:.fee DROP COLUMN since;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.roster (
     id int AUTO_INCREMENT PRIMARY KEY,
