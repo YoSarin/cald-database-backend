@@ -13,6 +13,8 @@ abstract class Model
 
     protected $enrichCondtions = [];
 
+    protected static $cache = [];
+
     public static function exists($select = null)
     {
         $select = static::enrichSelect($select);
@@ -27,15 +29,38 @@ abstract class Model
 
     public static function load($select = null, $limit = null, $offset = 0, $joins = [])
     {
+        $out = [];
+        if (count($select) == 1 && isset($select["id"])) {
+            if (!is_array($select["id"])) {
+                $select["id"] = [$select["id"]];
+            }
+            foreach ($select["id"] as $key => $id) {
+                $data = fromCache($id);
+                if ($data) {
+                    $out[] = static::fromArray($data);
+                    unset($select["id"][$key]);
+                }
+            }
+        }
         $db = Context::getContainer()->db;
         $select = static::enrichSelect($select);
-        $out = [];
         if ($limit) {
             $select["LIMIT"] = [(int)$offset, (int)$limit];
         }
-        $rows = $db->select(static::table(), static::fields(static::table()), $select, $joins);
+        if (!empty($joins)) {
+            $fields = static::fields(static::table());
+            foreach ($joins as $name => $relation) {
+                $table = preg_replace("~^(\[[^\]]+\])?\s*([a-zA-Z0-9\-\_]+).*$~", "$2", $name);
+                $fields = array_merge($fields, call_user_func(['\\App\\Model\\' . ucfirst(self::camelcaseNotation($table)), 'fields'], $table));
+            }
+            $rows = $db->select(static::table(), $joins, $fields, $select);
+        } else {
+            $rows = $db->select(static::table(), static::fields(static::table()), $select);
+        }
 
         if (!empty($db->error()[1])) {
+            var_dump($db->error());
+            die();
             throw new \App\Exception\Database($db->error()[2]);
         }
 
@@ -48,22 +73,8 @@ abstract class Model
 
     public static function loadById($id)
     {
-        $db = Context::getContainer()->db;
-        $select = ["id" => $id];
-        $select = static::enrichSelect($select);
-
-        $rows = $db->select(static::table(), static::$fields, $select);
-
-        if (!empty($db->error()[1])) {
-            throw new \App\Exception\Database($db->error()[2]);
-        }
-
-        foreach ($rows as $data) {
-            // will return first item, as we do not want an array to be returned when loading just one item
-            return static::fromArray($data);
-        }
-
-        return null;
+        $out = static::load(["id" => $id]);
+        return array_pop($out);
     }
 
     final public static function enrichSelect($select)
@@ -79,6 +90,7 @@ abstract class Model
         }
         return ["AND" => array_merge(static::getExplicitCondtions(), $select)];
     }
+
     protected static function getExplicitCondtions()
     {
         return [];
@@ -86,17 +98,50 @@ abstract class Model
 
     protected static function fromArray($data)
     {
+        $t = static::table();
         $i = new static();
-        $i->data = $data;
+        foreach ($data as $table => $row) {
+            if ($table == $t) {
+                $i->data = $row;
+                /*
+                foreach ($row as $column => $value) {
+                    var_dump($column);
+                    var_dump($value);
+                    $i->data[substr($column, strlen($table . '_'))] = $value;
+                }*/
+                static::cache($row);
+            } else {
+                call_user_func(['\\App\\Model\\' . ucfirst(self::camelcaseNotation($table)), 'fromArray'], [$table => $row]);
+            }
+        }
         return $i;
+    }
+
+    protected static function cache($row)
+    {
+        if (!isset($row["id"])) {
+            return;
+        }
+        if (!isset(self::$cache[static::table()])) {
+            self::$cache[static::table()] = [];
+        }
+        self::$cache[static::table()][$row["id"]] = $row;
+    }
+
+    protected static function fromCache($id)
+    {
+        if (!isset(self::$cache[static::table()][$id])) {
+            return null;
+        }
+        return self::$cache[static::table()][$id];
     }
 
     protected static function fields($prefix)
     {
         $out = array_map(function ($i) use ($prefix) {
-            return ($prefix . '.' . $i);
+            return ($prefix . '.' . $i . '(' . $prefix . '_' . $i . ')');
         }, static::$fields);
-        return $out;
+        return [$prefix => $out];
     }
 
     protected function __construct()
@@ -144,7 +189,7 @@ abstract class Model
                 if (!isset($loaded[$newKey][$value])) {
                     $model = "\\App\\Model\\" . ucfirst(static::camelcaseNotation($newKey));
                     if (class_exists($model)) {
-                        $data[$newKey] = $model::load(["id" => $value])[0]->getExtendedData($loaded);
+                        $data[$newKey] = $model::loadById($value)->getExtendedData($loaded);
                         return;
                     }
                 }

@@ -730,7 +730,11 @@ class medoo
 			}
 			else
 			{
-				$stack[ $key ] = $data[ $key ];
+				if (preg_match("~([a-zA-Z0-9\-\_]+)\s*\(([^\)]+)\)$~", $key, $matches)) {
+					$stack[$matches[1]] = $data[$matches[2]];
+				} else {
+					$stack[ $key ] = $data[ $key ];
+				}
 			}
 		}
 	}
@@ -740,7 +744,7 @@ class medoo
 		$column = $where == null ? $join : $columns;
 
 		$is_single_column = (is_string($column) && $column !== '*');
-		
+
 		$query = $this->query($this->select_context($table, $join, $columns, $where));
 
 		$stack = array();
@@ -947,7 +951,7 @@ class medoo
 				{
 					return $data[ 0 ][ preg_replace('/^[\w]*\./i', "", $column) ];
 				}
-				
+
 				if ($column === '*')
 				{
 					return $data[ 0 ];

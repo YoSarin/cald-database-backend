@@ -151,6 +151,15 @@ SELECT
 	null as id, "ČALD poplatek 2010+" as name, "2009-11-01 00:00:00" as since, 250 as amount, 'player_per_season' as type UNION ALL SELECT
 	null as id, "ČALD poplatek 2013+" as name, "2013-12-01 00:00:00" as since, 350 as amount, 'player_per_season' as type;
 
+CREATE TABLE IF NOT EXISTS :new_schema_name:.player_fee_change (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  player_id int,
+  season_id int,
+  amount int,
+  FOREIGN KEY (player_id) REFERENCES player(id),
+  FOREIGN KEY (season_id) REFERENCES season(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
 CREATE TABLE IF NOT EXISTS :new_schema_name:.fee_needed_for_league (
     id int AUTO_INCREMENT PRIMARY KEY,
 	league_id int,
