@@ -41,6 +41,9 @@ abstract class Model
                     unset($select["id"][$key]);
                 }
             }
+            if (empty($select["id"])) {
+                unset($select["id"]);
+            }
         }
         $db = Context::getContainer()->db;
         $select = static::enrichSelect($select);
@@ -59,9 +62,7 @@ abstract class Model
         }
 
         if (!empty($db->error()[1])) {
-            var_dump($db->error());
-            die();
-            throw new \App\Exception\Database($db->error()[2]);
+            throw new \App\Exception\Database($db->error()[2] . ': ' . $db->last_query());
         }
 
         foreach ($rows as $data) {
@@ -133,7 +134,7 @@ abstract class Model
         if (!isset(self::$cache[static::table()][$id])) {
             return null;
         }
-        return self::$cache[static::table()][$id];
+        return [static::table() => self::$cache[static::table()][$id]];
     }
 
     protected static function fields($prefix)
@@ -186,10 +187,11 @@ abstract class Model
         array_walk($itemData, function ($value, $key) use (&$data, &$loaded) {
             if (preg_match("~_id$~", $key)) {
                 $newKey = substr($key, 0, -3);
-                if (!isset($loaded[$newKey][$value])) {
+                if ($value && !isset($loaded[$newKey][$value])) {
                     $model = "\\App\\Model\\" . ucfirst(static::camelcaseNotation($newKey));
                     if (class_exists($model)) {
-                        $data[$newKey] = $model::loadById($value)->getExtendedData($loaded);
+                        $item = $model::loadById($value);
+                        $data[$newKey] = $item->getExtendedData($loaded);
                         return;
                     }
                 }
@@ -223,7 +225,7 @@ abstract class Model
             $this->setId($id);
         }
         if (!empty($db->error()[1])) {
-            throw new \App\Exception\Database($db->error()[2]);
+            throw new \App\Exception\Database($db->error()[2] . ': ' . $db->last_query());
         }
     }
 
@@ -236,7 +238,7 @@ abstract class Model
         $db->delete(static::table(), ['id' => $this->getId()]);
 
         if (!empty($db->error()[1])) {
-            throw new \App\Exception\Database($db->error()[2]);
+            throw new \App\Exception\Database($db->error()[2] . ': ' . $db->last_query());
         }
     }
 

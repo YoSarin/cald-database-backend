@@ -20,4 +20,9 @@ class Context
     {
         return self::$app->getContainer();
     }
+
+    public static function logger()
+    {
+        return self::$app->getContainer()->logger;
+    }
 }
