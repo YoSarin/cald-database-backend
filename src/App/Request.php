@@ -34,7 +34,7 @@ class Request extends \Slim\Http\Request
             if (!array_key_exists($name, $params)) {
                 $missing[] = $name;
             } else {
-                $output[] = $params[$name];
+                $output[$name] = $params[$name];
             }
         }
 
@@ -56,5 +56,15 @@ class Request extends \Slim\Http\Request
             $this->currentUser = \App\Model\User::load(["id" => $tokens[0]->getUserId()])[0];
         }
         return $this->currentUser;
+    }
+
+    public function getToken()
+    {
+        $token = $this->getParam('token');
+        if (empty($token)) {
+            $token = $this->headers->get('X-Auth-Token');
+        }
+
+        return $token;
     }
 }

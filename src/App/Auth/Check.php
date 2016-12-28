@@ -50,7 +50,8 @@ class Check
 
     public static function authAllowToken($request, $response, $args)
     {
-        $token = $request->getParam("token");
+        $token = $request->getToken();
+
         if (empty($token)) {
             throw new \App\Exception\Http\Http400("Missing token parameter");
         }
@@ -67,7 +68,7 @@ class Check
         if (!static::authAllowToken($request, $response, $args)) {
             return false;
         }
-        $token = $request->getParam("token");
+        $token = $request->getToken();
 
         $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
         if (count($t) < 1) {
@@ -93,7 +94,7 @@ class Check
             return false;
         }
 
-        $token = $request->getParam("token");
+        $token = $request->getToken();
 
         $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
         if (count($t) < 1) {
@@ -121,7 +122,7 @@ class Check
             return false;
         }
 
-        $token = $request->getParam("token");
+        $token = $request->getToken();
 
         $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
         if (count($t) < 1) {
@@ -149,7 +150,7 @@ class Check
             return false;
         }
 
-        $token = $request->getParam("token");
+        $token = $request->getToken();
 
         $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
         if (count($t) < 1) {
@@ -177,7 +178,7 @@ class Check
             return false;
         }
 
-        $token = $request->getParam("token");
+        $token = $request->getToken();
 
         $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
         if (count($t) < 1) {
@@ -205,7 +206,7 @@ class Check
             return false;
         }
 
-        $token = $request->getParam("token");
+        $token = $request->getToken();
 
         $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
         if (count($t) < 1) {
@@ -241,7 +242,7 @@ class Check
             return false;
         }
 
-        $token = $request->getParam("token");
+        $token = $request->getToken();
 
         $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
         if (count($t) < 1) {

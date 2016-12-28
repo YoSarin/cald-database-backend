@@ -8,7 +8,7 @@ class Test extends \App\Common
 {
     public function test($request, $response, $args)
     {
-        $user = UserModel::loggedUser($request->getParam('token'));
+        $user = UserModel::loggedUser($request->getToken());
         $p = UserHasPrivilege::create($user->getId(), UserHasPrivilege::PRIVILEGE_EDIT, UserHasPrivilege::ENTITY_TEAM, 1);
         $p->save();
         return $this->container->view->render($response, $p->getData(), 200);

@@ -75,3 +75,25 @@ Odpustí danému hráči poplatky za danou sezónu
 **Params**:`pardon_id`  
 **Auth**: token (musí být admin)  
 Smaže konkrétní 'odpustek' poplatků pro hráče
+
+
+## `POST /player`
+**Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`
+**Auth**: token
+Vytvoří nového hráče
+**`first_name`**: Křestní jméno nového hráče
+**`last_name`**: Příjmení hráče
+**`birth_date`**: Datum narození, formát YYYY-MM-DD
+**`sex`**: Pohlaví (male/female)
+**`email`**: Mail hráče (nepovinný)
+**`phone`**: Telefon na hráče (nepovinné)
+
+## `POST /team/{team_id}/player/{player_id}`
+**Params**: `team_id`, `player_id`
+**Auth**: token, musí být správce týmu
+Přidá existujícího hráče do týmu jako člena. Hráč nemůže být členem dvou týmů současně
+
+## `DELETE /team/{team_id}/player/{player_id}`
+**Params**: `team_id`, `player_id`
+**Auth**: token, musí být správce týmu
+Odstraní existujícího hráče z týmu

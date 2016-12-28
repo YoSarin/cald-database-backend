@@ -8,22 +8,25 @@ class Player extends \App\Common
 {
     public function create(\Slim\Http\Request $request, $response, $args)
     {
-        $request->requireParams(["first_name", "last_name", "birth_date", "sex", "team_id"]);
+        $request->requireParams(["first_name", "last_name", "birth_date", "sex"]);
 
         $firstName = trim($request->getParam("first_name"));
         $lastName = trim($request->getParam("last_name"));
         $birthDate = trim($request->getParam("birth_date"));
         $sex = trim($request->getParam("sex"));
         $email = trim($request->getParam("email"));
-        $teamId = trim($request->getParam("team_id"));
+        $phone = trim($request->getParam("phone"));
 
-        if (!empty($email)) {
-            Validator::email()->assert($email);
-        }
-
-        $user = UserModel::loggedUser($request->getParam('token'));
+        $user = UserModel::loggedUser($request->getToken());
 
         $p = \App\Model\Player::create($firstName, $lastName, $sex, $email, $birthDate);
+        if (!empty($email)) {
+            Validator::email()->assert($email);
+            $p->setEmail($email);
+        }
+        if (!empty($phone)) {
+            $p->setPhone($phone);
+        }
         $p->save();
 
         // Render index view

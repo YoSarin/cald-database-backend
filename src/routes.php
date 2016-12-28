@@ -7,12 +7,14 @@ $devController = new App\Controller\Developer($container);
 $adminController = new App\Controller\Admin($container);
 $userController = new App\Controller\User($container);
 $teamController = new App\Controller\Team($container);
+$playerController = new App\Controller\Player($container);
 $listController = new App\Controller\ListItems($container);
 
 $testController = new App\Controller\Test($container);
 
 $app->post('/developer/create', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "create"]));
 $app->post('/developer/drop', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "drop"]));
+$app->get('/developer/jezisek', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "jezisek"]));
 $app->get('/healthcheck', $auth->verify(App\Auth\Check::ALLOW_ALL, [$devController, "healthcheck"]));
 
 $app->post('/admin/tournament', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "createTournament"]));
@@ -31,6 +33,10 @@ $app->put('/user/me', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$userControlle
 $app->get('/list/{type}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listController, "listAll"]));
 
 $app->post('/team', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "create"]));
+$app->post('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "addPlayer"]));
+$app->delete('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "removePlayer"]));
+
+$app->post('/player', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "create"]));
 
 // testing APIs - to be deleted at the end
 $app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));
