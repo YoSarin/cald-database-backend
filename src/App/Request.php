@@ -34,7 +34,7 @@ class Request extends \Slim\Http\Request
             if (!array_key_exists($name, $params)) {
                 $missing[] = $name;
             } else {
-                $output[$name] = $params[$name];
+                $output[] = $params[$name];
             }
         }
 

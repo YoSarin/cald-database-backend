@@ -20,6 +20,7 @@ class Check
     const ALLOW_HIGHSCHOOL_EDIT = 'ALLOW_HIGHSCHOOL_EDIT';
     const ALLOW_PLAYER_VIEW = 'ALLOW_PLAYER_VIEW';
     const ALLOW_PLAYER_EDIT = 'ALLOW_PLAYER_EDIT';
+    const ALLOW_ROSTER_EDIT = 'ALLOW_ROSTER_EDIT';
 
     private static $verifications = [
         self::ALLOW_ALL   => "authAllowAll",
@@ -34,6 +35,7 @@ class Check
         self::ALLOW_HIGHSCHOOL_EDIT => 'authAllowHighSchoolEdit',
         self::ALLOW_PLAYER_VIEW => 'authAllowPlayerEdit',
         self::ALLOW_PLAYER_EDIT => 'authAllowPlayerEdit',
+        self::ALLOW_ROSTER_EDIT => 'authAllowRosterEdit',
     ];
 
     public static function verify($type, $request, $response, $args)
@@ -113,10 +115,10 @@ class Check
 
     private static function authAllowTeamEdit($request, $response, $args)
     {
-        if (!isset($args["team_id"])) {
+        list($teamId) = $request->requireParams(["team_id"]);
+        if (empty($teamId)) {
             throw new \App\Exception\Http\Http400("Missing team_id in url");
         }
-        $teamId = $args["team_id"];
 
         if (!static::authAllowToken($request, $response, $args)) {
             return false;
@@ -250,6 +252,39 @@ class Check
         }
 
         $p = \App\Model\PlayerAtTeam::load(["player_id" => $playerId]);
+        if (count($p) < 1) {
+            throw new \App\Exception\Http\Http404();
+        }
+
+        return \App\Model\UserHasPrivilege::exists([
+            "AND" => [
+                "user_id" => $t[0]->getUserId(),
+                "entity" => \App\Model\UserHasPrivilege::ENTITY_HIGHSCHOOL,
+                "entity_id"  => $p[0]->getTeamId(),
+                "privilege" => \App\Model\UserHasPrivilege::PRIVILEGE_EDIT
+            ]
+        ]);
+    }
+
+    private static function authAllowRosterEdit($request, $response, $args)
+    {
+        if (!isset($args["roster_id"])) {
+            throw new \App\Exception\Http\Http400("Missing roster_id in url");
+        }
+        $playerId = $args["roster_id"];
+
+        if (!static::authAllowToken($request, $response, $args)) {
+            return false;
+        }
+
+        $token = $request->getToken();
+
+        $t = \App\Model\Token::load(["token" => $token, "type" => \App\Model\Token::TYPE_LOGIN]);
+        if (count($t) < 1) {
+            return false;
+        }
+
+        $p = \App\Model\Roster::load(["roster_id" => $playerId]);
         if (count($p) < 1) {
             throw new \App\Exception\Http\Http404();
         }

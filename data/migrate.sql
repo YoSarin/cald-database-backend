@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.player_at_team (
     team_id int NOT NULL,
     player_id int NOT NULL,
     since DATETIME default NULL,
+    until DATETIME default NULL,
     valid boolean default true,
     FOREIGN KEY(team_id) REFERENCES team(id),
     FOREIGN KEY(player_id) REFERENCES player(id)
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.player_at_team (
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
 SELECT
-	m.id, m.team_id, m.user_id as player_id, m.dateOfRegistration as since, (m.id = m2.id) as valid
+	m.id, m.team_id, m.user_id as player_id, m.dateOfRegistration as since, null as until, (m.id = m2.id) as valid
 FROM TeamMembership m
 LEFT JOIN (SELECT max(id) as id, user_id FROM TeamMembership GROUP BY user_id) m2 ON m2.user_id = m.user_id;
 

@@ -38,16 +38,16 @@ class Team extends \App\Common
         // Render index view
         return $this->container->view->render(
             $response,
-            ['status' => 'OK', 'info' => 'Team created', "id" => $t->getId()],
+            ['status' => 'OK', 'info' => 'Team created', "data" => $t->getData()],
             200
         );
     }
 
     public function addPlayer(\App\Request $request, $response, $args)
     {
-        $params = $request->requireParams(["team_id", "player_id"]);
-        $player = \App\Model\Player::loadById($params['player_id']);
-        $team = \App\Model\Team::loadById($params['team_id']);
+        list($teamId, $playerId) = $request->requireParams(["team_id", "player_id"]);
+        $player = \App\Model\Player::loadById($playerId);
+        $team = \App\Model\Team::loadById($teamId);
 
         if (\App\Model\PlayerAtTeam::exists(['player_id' => $player->getId(), 'valid' => true])) {
             throw new \App\Exception\Http\Http400($player->getFullName() . ' is already active in some other team.');
@@ -64,9 +64,9 @@ class Team extends \App\Common
 
     public function removePlayer(\App\Request $request, $response, $args)
     {
-        $params = $request->requireParams(["team_id", "player_id"]);
-        $player = \App\Model\Player::loadById($params['player_id']);
-        $team = \App\Model\Team::loadById($params['team_id']);
+        list($teamId, $playerId) = $request->requireParams(["team_id", "player_id"]);
+        $player = \App\Model\Player::loadById($playerId);
+        $team = \App\Model\Team::loadById($teamId);
         $contracts = \App\Model\PlayerAtTeam::load(['player_id' => $player->getId(), 'team_id' => $team->getId(), 'valid' => true]);
         if (count($contracts) <= 0) {
             throw new \App\Exception\Http\Http400($player->getFullName() . ' is not active in this team.');
@@ -74,6 +74,7 @@ class Team extends \App\Common
 
         foreach ($contracts as $playerAtTeam) {
             $playerAtTeam->setValid(false);
+            $playerAtTeam->setUntil(date("Y-m-d H:i:s", time()));
             $playerAtTeam->save();
         }
 

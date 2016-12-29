@@ -39,9 +39,9 @@ class Admin extends \App\Common
 
     public function updateTournament($request, $response, $args)
     {
-        $id = $request->requireParams(["id"]);
+        list($id) = $request->requireParams(["id"]);
 
-        $t = Tournament::load(["id" => $id])[0];
+        $t = Tournament::loadById($id);
         $t->updateByRequest($request);
         $t->save();
 
@@ -54,9 +54,9 @@ class Admin extends \App\Common
 
     public function deleteTournament($request, $response, $args)
     {
-        $id = $request->requireParams(["id"]);
+        list($id) = $request->requireParams(["id"]);
 
-        $tournaments = Tournament::load(["id" => $id]);
+        $tournaments = Tournament::loadById($id);
         foreach ($tournaments as $t) {
             $t->setDeleted(true);
             $t->save();

@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `player_at_highschool` (
   `player_id` int(11) DEFAULT NULL,
   `highschool_id` int(11) DEFAULT NULL,
   `since` datetime DEFAULT NULL,
+  `until` datetime DEFAULT NULL,
   `valid` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `player_id` (`player_id`),

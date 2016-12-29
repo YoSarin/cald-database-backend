@@ -9,6 +9,7 @@ $userController = new App\Controller\User($container);
 $teamController = new App\Controller\Team($container);
 $playerController = new App\Controller\Player($container);
 $listController = new App\Controller\ListItems($container);
+$rosterController = new App\Controller\Roster($container);
 
 $testController = new App\Controller\Test($container);
 
@@ -37,6 +38,11 @@ $app->post('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::A
 $app->delete('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "removePlayer"]));
 
 $app->post('/player', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "create"]));
+
+$app->post('/roster', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$rosterController, "create"]));
+$app->delete('/roster/{roster_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "remove"]));
+$app->post('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "addPlayer"]));
+$app->delete('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "removePlayer"]));
 
 // testing APIs - to be deleted at the end
 $app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));

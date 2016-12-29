@@ -67,8 +67,8 @@ class User extends \App\Common
 
     public function verify(Request $request, $response, $args)
     {
-        $params = $request->requireParams(["hash"]);
-        $token = trim($params["hash"]);
+        list($hash) = $request->requireParams(["hash"]);
+        $token = trim($hash);
         $filter = [
             'AND' => [
                 "token" => $token,

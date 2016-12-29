@@ -1,3 +1,5 @@
+Včechna create/modify API by měla vracet na výstupu json, obsahující pole `data`, s daty o vytvořeném/měněném objektu.  
+
 # Dostupná API:
 ## `POST /user`
 **Params**: `email`, `password`, `login`  

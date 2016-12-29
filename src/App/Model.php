@@ -15,10 +15,14 @@ abstract class Model
 
     protected static $cache = [];
 
-    public static function exists($select = null)
+    public static function exists($select = null, $joins = [])
     {
         $select = static::enrichSelect($select);
-        return Context::getContainer()->db->has(static::table(), $select);
+        if (!empty($joins)) {
+            return Context::getContainer()->db->has(static::table(), $joins, $select);
+        } else {
+            return Context::getContainer()->db->has(static::table(), $select);
+        }
     }
 
     public static function count($select = null)

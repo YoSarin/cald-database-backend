@@ -5,7 +5,7 @@ use \App\Exception\Database\Duplicate;
 
 class PlayerAtTeam extends \App\Model
 {
-    protected static $fields = ["id", "player_id", "team_id", "since", "valid"];
+    protected static $fields = ["id", "player_id", "team_id", "since", "until", "valid"];
 
     public static function create($playerId, $teamId)
     {
