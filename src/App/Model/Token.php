@@ -50,8 +50,6 @@ class Token extends \App\Model
             ]
         ];
         if ($this->isNew() && self::exists($filter)) {
-            var_dump(self::exists($filter));
-            var_dump(self::load($filter));
             $other = self::load($filter)[0];
             $this->setId($other->getId());
             $this->setToken($other->getToken());
