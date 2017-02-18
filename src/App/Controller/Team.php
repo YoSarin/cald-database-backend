@@ -130,4 +130,73 @@ class Team extends \App\Common
             200
         );
     }
+
+    public function addUserPriviledge(\App\Request $request, $response, $args)
+    {
+        list($teamId, $userId, $privilege) = $request->requireParams(['team_id', 'user_id', 'privilege']);
+
+        if (!in_array($privilege, [\App\Model\UserHasPrivilege::PRIVILEGE_EDIT, \App\Model\UserHasPrivilege::PRIVILEGE_VIEW])) {
+            throw new \App\Exception\Http\AppExceptionHttpHttp400("wrong privilege");
+        }
+
+        $alreadyCan = \App\Model\UserHasPrivilege::load([
+            "AND" => [
+                "user_id" => $userId,
+                "OR" => [
+                    "AND" => [
+                        "entity" => \App\Model\UserHasPrivilege::ENTITY_TEAM,
+                        "entity_id"  => $teamId,
+                        "privilege" => [
+                            \App\Model\UserHasPrivilege::PRIVILEGE_EDIT,
+                            $privilege,
+                        ]
+                    ],
+                    "privilege" => \App\Model\UserHasPrivilege::PRIVILEGE_ADMIN,
+                ]
+            ]
+        ]);
+
+        if (empty($alreadyCan)) {
+            $newPrivilege = \App\Model\UserHasPrivilege::create($userId, $privilege, \App\Model\UserHasPrivilege::ENTITY_TEAM, $teamId);
+            $newPrivilege->save();
+        }
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'info' => 'Privilege created (or already present)'],
+            200
+        );
+    }
+
+    public function removeUserPriviledge(\App\Request $request, $response, $args)
+    {
+        list($teamId, $userId, $privilege) = $request->requireParams(['team_id', 'user_id', 'privilege']);
+
+        if (!in_array($privilege, [\App\Model\UserHasPrivilege::PRIVILEGE_EDIT, \App\Model\UserHasPrivilege::PRIVILEGE_VIEW])) {
+            throw new \App\Exception\Http\AppExceptionHttpHttp400("wrong privilege");
+        }
+
+        $toRemove = \App\Model\UserHasPrivilege::load([
+            "AND" => [
+                "user_id" => $userId,
+                "entity" => \App\Model\UserHasPrivilege::ENTITY_TEAM,
+                "entity_id"  => $teamId,
+                "privilege" => $privilege,
+            ]
+        ]);
+
+        if (!empty($toRemove)) {
+            $toRemove[0]->delete();
+            return $this->container->view->render(
+                $response,
+                ['status' => 'OK', 'info' => 'Privilege removed'],
+                200
+            );
+        } else {
+            return $this->container->view->render(
+                $response,
+                ['status' => 'Not found', 'info' => 'nothing to remove'],
+                404
+            );
+        }
+    }
 }

@@ -7,6 +7,8 @@ Včechna create/modify API by měla vracet na výstupu json, obsahující pole `
 + [Změna dat týmu](#post-teamid)
 + [Přidání hráče do týmu](#post-teamteam_idplayerplayer_id)
 + [Odebrání hráče z týmu](#delete-teamteam_idplayerplayer_id)
++ [Přiřazení týmu agentovi](#post-teamteam_iduseruser_id)
++ [Odebrání týmu agentovi](#delete-teamteam_iduseruser_id)
 
 # Dostupná API:
 ## `POST /user`
@@ -123,3 +125,15 @@ Přidá existujícího hráče do týmu jako člena. Hráč nemůže být člene
 **Params**: `team_id`, `player_id`  
 **Auth**: token, musí být správce týmu  
 Odstraní existujícího hráče z týmu  
+
+## `POST /team/{team_id}/user/{user_id}`  
+**Params**: `team_id`, `player_id`, `privilege`  
+**Auth**: token, musí být správce týmu  
+Dá uživateli práva k týmu
+**`privilege`**: právo které chceme dát uživateli (view|edit)  
+
+## `DELETE /team/{team_id}/user/{user_id}`  
+**Params**: `team_id`, `player_id`, `privilege`  
+**Auth**: token, musí být správce týmu  
+Odebere uživateli práva k týmu  
+**`privilege`**: právo které chceme odebrat uživateli (view|edit)  
