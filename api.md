@@ -1,5 +1,13 @@
 Včechna create/modify API by měla vracet na výstupu json, obsahující pole `data`, s daty o vytvořeném/měněném objektu.  
 
+# Akce
++[Vytvoření nového hráče](#post-player)
++[Změna dat hráče](#post-playerid)
++[Vytvoření nového týmu](#post-team)
++[Změna dat týmu](#post-teamid)
++[Přidání hráče do týmu](#post-teamteam_idplayerplayer_id)
++[Odebrání hráče z týmu](#delete-teamteam_idplayerplayer_id)
+
 # Dostupná API:
 ## `POST /user`
 **Params**: `email`, `password`, `login`  
@@ -88,6 +96,17 @@ Smaže konkrétní 'odpustek' poplatků pro hráče
 **Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`  
 **Auth**: token  
 Vytvoří nového hráče  
+**`first_name`**: Křestní jméno nového hráče  
+**`last_name`**: Příjmení hráče  
+**`birth_date`**: Datum narození, formát YYYY-MM-DD  
+**`sex`**: Pohlaví (male/female)  
+**`email`**: Mail hráče (nepovinný)  
+**`phone`**: Telefon na hráče (nepovinné)
+
+## `POST /player/{player_id}`  
+**Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`  
+**Auth**: token, musí být správce týmu  
+Upraví data hráče  
 **`first_name`**: Křestní jméno nového hráče  
 **`last_name`**: Příjmení hráče  
 **`birth_date`**: Datum narození, formát YYYY-MM-DD  
