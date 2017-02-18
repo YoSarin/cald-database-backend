@@ -129,7 +129,7 @@ Odstraní existujícího hráče z týmu
 ## `POST /team/{team_id}/user/{user_id}`  
 **Params**: `team_id`, `player_id`, `privilege`  
 **Auth**: token, musí být správce týmu  
-Dá uživateli práva k týmu
+Dá uživateli práva k týmu  
 **`privilege`**: právo které chceme dát uživateli (view|edit)  
 
 ## `DELETE /team/{team_id}/user/{user_id}`  
