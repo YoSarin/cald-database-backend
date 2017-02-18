@@ -1,12 +1,12 @@
 Včechna create/modify API by měla vracet na výstupu json, obsahující pole `data`, s daty o vytvořeném/měněném objektu.  
 
 # Akce
-+[Vytvoření nového hráče](#post-player)
-+[Změna dat hráče](#post-playerid)
-+[Vytvoření nového týmu](#post-team)
-+[Změna dat týmu](#post-teamid)
-+[Přidání hráče do týmu](#post-teamteam_idplayerplayer_id)
-+[Odebrání hráče z týmu](#delete-teamteam_idplayerplayer_id)
++ [Vytvoření nového hráče](#post-player)
++ [Změna dat hráče](#post-playerid)
++ [Vytvoření nového týmu](#post-team)
++ [Změna dat týmu](#post-teamid)
++ [Přidání hráče do týmu](#post-teamteam_idplayerplayer_id)
++ [Odebrání hráče z týmu](#delete-teamteam_idplayerplayer_id)
 
 # Dostupná API:
 ## `POST /user`
@@ -103,7 +103,7 @@ Vytvoří nového hráče
 **`email`**: Mail hráče (nepovinný)  
 **`phone`**: Telefon na hráče (nepovinné)
 
-## `POST /player/{player_id}`  
+## `POST /player/{id}`  
 **Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`  
 **Auth**: token, musí být správce týmu  
 Upraví data hráče  
