@@ -1,11 +1,13 @@
 <?php
 namespace App\Controller;
 
-use App\Model\PlayerAtTeam;
-use App\Model\UserHasPrivilege;
-use App\Model\User as UserModel;
-use App\Model\Player;
-use App\Exception\Http\Http400;
+use \App\Model\PlayerAtTeam;
+use \App\Model\UserHasPrivilege;
+use \App\Model\User as UserModel;
+use \App\Model\Player;
+use \App\Exception\Http\Http400;
+use \Respect\Validation\Exceptions\SizeException;
+use \Respect\Validation\Validator;
 
 class Team extends \App\Common
 {
@@ -39,6 +41,50 @@ class Team extends \App\Common
         return $this->container->view->render(
             $response,
             ['status' => 'OK', 'info' => 'Team created', "data" => $t->getData()],
+            200
+        );
+    }
+
+    public function update(\App\Request $request, $response, $args) {
+        $teamId = $request->requireParams(["team_id"]);
+
+        $name = trim($request->getParam("name"));
+        $city = trim($request->getParam("city"));
+        $www = trim($request->getParam("www"));
+        $email = trim($request->getParam("email"));
+
+        if (!empty($email)) {
+            Validator::email()->assert($email);
+        }
+
+        if (!empty($www)) {
+            Validator::url()->assert($www);
+        }
+
+        $user = UserModel::loggedUser($request->getToken());
+
+        $t = \App\Model\Team::loadById($teamId);
+        if (!empty($name)) {
+            $t->setName($name);
+        }
+        if (!empty($city)) {
+            $t->setCity($city);
+        }
+        if (!empty($www)) {
+            $t->setWww($www);
+        }
+        if (!empty($email)) {
+            $t->setEmail($email);
+        }
+        $t->save();
+
+        $up = UserHasPrivilege::create($user->getId(), UserHasPrivilege::PRIVILEGE_EDIT, UserHasPrivilege::ENTITY_TEAM, $t->getId());
+        $up->save();
+
+        // Render index view
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'info' => 'Team updated', "data" => $t->getData()],
             200
         );
     }

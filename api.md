@@ -44,6 +44,11 @@ division, league a user (odfiltrované sloupečky salt a password)
 **Auth**: token  
 Vytvoří nový tým a dá aktuálně přihlášenému uživateli práva k jeho editaci
 
+## `POST /team/{id}`
+**Params**: `[name]`, `[city]`, `[www]`, `[email]`  
+**Auth**: token, musí být správce týmu
+Upravuje data týmu
+
 ## `POST /admin/tournament`
 **Params**: `name`, `date`, `location`, `duration`, `season_id`, `league_ids`, `division_ids`  
 **Auth**: token (musí být admin)  
