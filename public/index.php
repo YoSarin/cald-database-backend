@@ -26,6 +26,11 @@ $settings = require __DIR__ . '/../src/settings.php';
 $settings['settings']['displayErrorDetails'] = false;
 $settings['addContentLengthHeader'] = false;
 
+if (file_exists(__DIR__ . '/../src/settings.local.php')) {
+    $localSettings = require __DIR__ . '/../src/settings.local.php';
+    $settings['settings'] = array_merge($settings['settings'], $localSettings['settings']);
+}
+
 $app = new \Slim\App($settings);
 
 \App\Context::setApp($app);

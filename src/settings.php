@@ -5,6 +5,8 @@ return [
         'displayErrorDetails' => true, // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
 
+        'hostname' => 'https://cald.cz',
+
         // Renderer settings
         'renderer' => [
             'template_path' => __DIR__ . '/../templates/',
@@ -23,6 +25,9 @@ return [
             'username' => (string)getenv('DB_USER') ?: 'cald',
             'password' => (string)getenv('DB_PASS') ?: 'cald',
             'charset' => 'utf8'
-        ]
+        ],
+        'mailer' => [
+            'sender' => 'no-reply@cald.cz'
+        ],
     ],
 ];

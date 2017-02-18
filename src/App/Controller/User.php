@@ -30,10 +30,20 @@ class User extends \App\Common
         $token = Token::create(Token::TYPE_EMAIL_VERIFICATION, $user->getId());
         $token->save();
 
+        $mailSend = (new \App\Mailer($this->container->get('settings')['mailer']['sender']))->send(
+            $email,
+            _("ČALD evidence členů: potvrzení registrace"),
+            sprintf(
+                _("Prosím potvrďte existenci svého mailu přes následující odkaz: %s/user/verify/%s"),
+                $this->container->get('settings')['hostname'],
+                $token->getToken()
+            )
+        );
+
         // Render index view
         return $this->container->view->render(
             $response,
-            ['status' => 'OK', 'info' => 'User created', "id" => $user->getId()],
+            ['status' => 'OK', 'info' => 'User created', "id" => $user->getId(),"mail_send" => $mailSend],
             200
         );
     }

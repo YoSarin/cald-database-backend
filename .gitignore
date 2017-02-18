@@ -1,3 +1,4 @@
 /logs/*
 !/logs/README.md
 /public/.env
+src/settings.local.php

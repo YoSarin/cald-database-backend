@@ -116,6 +116,7 @@ CREATE TABLE IF NOT EXISTS `player_at_team` (
   `team_id` int(11) NOT NULL,
   `player_id` int(11) NOT NULL,
   `since` datetime DEFAULT NULL,
+  `until` datetime DEFAULT NULL,
   `valid` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `team_id` (`team_id`),
