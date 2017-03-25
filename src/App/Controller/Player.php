@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Model\UserHasPrivilege;
 use App\Model\User as UserModel;
+use Respect\Validation\Validator;
 
 class Player extends \App\Common
 {
