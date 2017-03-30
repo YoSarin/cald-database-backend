@@ -9,6 +9,7 @@ use App\Model\PlayerFeeChange;
 use App\Model\FeeNeededForLeague;
 use App\Model\TournamentBelongsToLeagueAndDivision;
 use App\Exception\Http\Http404;
+use App\Exception\WrongParam;
 use App\Context;
 
 class Admin extends \App\Common
@@ -170,6 +171,40 @@ class Admin extends \App\Common
                     'duplicate_players' => $duplicatePlayers
                 ]
             ],
+            200
+        );
+    }
+
+    public function updateUser(\App\Request $request, $response, $args)
+    {
+        list($id) = $request->requireParams(["user_id"]);
+        $login    = trim($request->getParam("login"));
+        $password = trim($request->getParam("password"));
+        $email    = trim($request->getParam("email"));
+        $state    = trim($request->getParam("state"));
+
+        $u = \App\Model\User::load(["id" => (int)$id])[0];
+
+        if ($login) {
+            $u->setLogin($login);
+        }
+        if ($email) {
+            $u->setEmail($email);
+        }
+        if ($password) {
+            $u->setPassword($password);
+        }
+        if ($state && in_array($state, \App\Model\User::allowedStates())) {
+            $u->setState($state);
+        } else if ($state) {
+            throw new WrongParam("State must be one of '" . implode("', '", \App\Model\User::allowedStates()) . "'");
+        }
+
+        $u->save();
+
+        return $this->container->view->render(
+            $response,
+            ["status" => "OK", "data" => $u->getData()],
             200
         );
     }

@@ -30,6 +30,11 @@ class User extends \App\Model
         return $i;
     }
 
+    public static function allowedStates()
+    {
+        return [self::STATE_WAITING, self::STATE_CONFIRMED, self::STATE_BLOCKED, self::STATE_PASSWORD_RESET];
+    }
+
     protected function onSaveValidation()
     {
         if ($this->isNew() && self::exists(["login" => $this->getLogin()])) {
