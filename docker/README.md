@@ -1,8 +1,8 @@
-= Docker
-== Build kontejneru
+# Docker
+## Build kontejneru
 `sudo docker build -t cald-database-backend .`  
 
-== Spuštění
+## Spuštění
 `sudo docker run -d -e DB_HOST=172.17.0.1 cald-database-backend`  
 Další env proměnný jsou:  
 + `DB_USER`  
