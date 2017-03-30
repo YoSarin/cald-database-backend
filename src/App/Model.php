@@ -261,7 +261,7 @@ abstract class Model
         return true;
     }
 
-    final protected static function table()
+    final public static function table()
     {
         if (empty(static::$table)) {
             $class = explode("\\", get_called_class());
@@ -294,5 +294,25 @@ abstract class Model
         return lcfirst(preg_replace_callback("/_([a-z])/", function ($matches) {
             return strtoupper($matches[1]);
         }, strtolower($string)));
+    }
+
+    final public static function usedTables()
+    {
+        $dirname = __DIR__ . '/Model';
+        $dir = opendir($dirname);
+        while (false !== ($entry = readdir($dir))) {
+            $filename = $dirname . '/' . $entry;
+            if (is_file($filename)) {
+                require_once $filename;
+            }
+        }
+        closedir($dir);
+        $tables = [];
+        foreach(get_declared_classes() as $class){
+            if(is_subclass_of($class, '\App\Model')) {
+                $tables[] = $class::table();
+            }
+        }
+        return $tables;
     }
 }

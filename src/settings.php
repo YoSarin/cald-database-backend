@@ -21,7 +21,7 @@ return [
         'db' => [
             'database_type' => (string)getenv('DB_TYPE') ?: 'mysql',
             'database_name' => (string)getenv('DB_NAME') ?: 'cald',
-            'server' => 'localhost',
+            'server' => (string)getenv('DB_HOST') ?: '127.0.0.1',
             'username' => (string)getenv('DB_USER') ?: 'cald',
             'password' => (string)getenv('DB_PASS') ?: 'cald',
             'charset' => 'utf8'

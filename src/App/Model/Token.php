@@ -34,7 +34,7 @@ class Token extends \App\Model
 
     public function save()
     {
-        \Respect\Validation\Validator::intVal()->notEmpty()->assert($this->getUserId());
+        \Respect\Validation\Validator::intVal()->assert($this->getUserId());
         \Respect\Validation\Validator::regex('/^[\d]{4}-[\d]{2}-[\d]{2} [\d]{2}:[\d]{2}:[\d]{2}$/')
             ->assert($this->getValidUntil());
         \Respect\Validation\Validator::contains($this->getType())->assert(self::$types);

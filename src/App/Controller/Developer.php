@@ -64,8 +64,28 @@ class Developer extends \App\Common
 
     public function healthcheck($request, $response, $args)
     {
-        $out = [];
+        $out['database'] = [
+            'status' => 'OK',
+        ];
         $ok = true;
+
+        $this->container->db->action(function ($db) use (&$out, &$ok) {
+            $tables = \App\Model::usedTables();
+            foreach ($tables as $table) {
+                $db->query('SELECT count(*) FROM ' . $table);
+                $err = $db->error();
+                if (!empty($err[2])) {
+                    $ok = false;
+                    $out['database']['status'] = 'DOWN';
+                    $out['database'][$table] = [
+                        'status' => 'DOWN',
+                        'error' => $err[2],
+                    ];
+                }
+            }
+            return false;
+        });
+
         return $this->container->view->render(
             $response,
             ['status' => $ok ? 'OK' : 'FAILED', 'data' => $out],
