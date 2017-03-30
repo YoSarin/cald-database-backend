@@ -34,7 +34,7 @@ Odpustí danému hráči poplatky za danou sezónu
 Smaže konkrétní 'odpustek' poplatků pro hráče
 
 ## `PUT /admin/user/{user_id}`
-**Params**: `email`, `login`, `password`, `state`
-**Auth**: token, musí být admin
-Upraví data pro daného uživatele
-**`state`**: změní stav, může být jeden z 'waiting_for_confirmation', 'confirmed', 'blocked', 'password_reset'
+**Params**: `email`, `login`, `password`, `state`  
+**Auth**: token, musí být admin  
+Upraví data pro daného uživatele  
+**`state`**: změní stav, může být jeden z 'waiting_for_confirmation', 'confirmed', 'blocked', 'password_reset'  
