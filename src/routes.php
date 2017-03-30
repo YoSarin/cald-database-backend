@@ -15,7 +15,6 @@ $testController = new App\Controller\Test($container);
 
 $app->post('/developer/create', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "create"]));
 $app->post('/developer/drop', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "drop"]));
-$app->get('/developer/jezisek', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "jezisek"]));
 $app->get('/healthcheck', $auth->verify(App\Auth\Check::ALLOW_ALL, [$devController, "healthcheck"]));
 
 $app->post('/admin/tournament', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "createTournament"]));

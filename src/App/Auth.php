@@ -1,6 +1,7 @@
 <?php
 namespace App;
 use App\Auth\Check;
+use App\Context;
 
 class Auth extends Common
 {
@@ -14,6 +15,9 @@ class Auth extends Common
 
     public function verificationCallback($request, $response, $args)
     {
+        try {
+            Context::setUser($request->currentUser());
+        } catch (\Exception $e) {}
         if (Auth\Check::verify($this->type, $request, $response, $args)) {
             return call_user_func_array($this->callback, [$request, $response, $args]);
         }

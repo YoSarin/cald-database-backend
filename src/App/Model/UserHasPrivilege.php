@@ -2,6 +2,7 @@
 namespace App\Model;
 
 use \App\Exception\Database\Duplicate;
+use App\Model\User;
 
 class UserHasPrivilege extends \App\Model
 {
@@ -38,6 +39,19 @@ class UserHasPrivilege extends \App\Model
         $i->setEntityId($entityId);
 
         return $i;
+    }
+
+    public function canBeViewedBy(\App\Model\User $user)
+    {
+        foreach ($user->privileges() as $privilege) {
+            if ($privilege->getPrivilege() == self::PRIVILEGE_ADMIN) {
+                return true;
+            }
+            if ($privilege->getEntity() == $this->getEntity() && $privilege->getEntityId() == $this->getEntityId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function privilegeToString()

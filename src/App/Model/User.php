@@ -2,7 +2,10 @@
 namespace App\Model;
 
 use App\Exception\Database\Duplicate;
+use App\Exception\Http\Http403;
 use App\Model\User;
+use App\Model\UserHasPrivilege;
+use App\Context;
 
 class User extends \App\Model
 {
@@ -13,6 +16,8 @@ class User extends \App\Model
 
     protected static $table = "user";
     protected static $fields = ["id", "email", "password", "state", "salt", "login"];
+
+    private $privileges;
 
     public static function create($login, $password, $email)
     {
@@ -78,5 +83,32 @@ class User extends \App\Model
         unset($d['password']);
         unset($d['salt']);
         return $d;
+    }
+
+    public function privileges()
+    {
+        if ($this->privileges == null) {
+            $this->privileges = UserHasPrivilege::load([
+                "user_id" => (int)$this->getId(),
+            ]);
+        }
+        return $this->privileges;
+    }
+
+    public function getExtendedData(&$loaded=array())
+    {
+        $currentUser = \App\Context::currentUser();
+        if (!$currentUser) {
+            throw new \Http403();
+        }
+        $data = $this->getData();
+        $data["privileges"] = array();
+        $privileges = $this->privileges();
+        foreach ($privileges as $privilege) {
+            if ($privilege->canBeViewedBy($currentUser)) {
+                $data["privileges"][] = $privilege->getData();
+            }
+        }
+        return $data;
     }
 }
