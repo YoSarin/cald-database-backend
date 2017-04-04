@@ -74,4 +74,8 @@ class UserHasPrivilege extends \App\Model
             throw new Duplicate("Privilege already exists");
         }
     }
+
+    public function isAdmin() {
+        return $this->getPrivilege() == static::PRIVILEGE_ADMIN;
+    }
 }

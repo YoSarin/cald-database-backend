@@ -47,6 +47,10 @@ class Check
         if (!method_exists(__CLASS__, $method)) {
             return false;
         }
+        $loggedUser = \App\Model\User::loggedUser($request->getToken());
+        if ($loggedUser && $loggedUser->isAdmin()) {
+            return true;
+        }
         return call_user_func_array([__CLASS__, $method], [$request, $response, $args]);
     }
 

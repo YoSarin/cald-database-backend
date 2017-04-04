@@ -100,6 +100,15 @@ class User extends \App\Model
         return $this->privileges;
     }
 
+    public function isAdmin() {
+        foreach ($this->privileges() as $privilege) {
+            if ($privilege->isAdmin()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function getExtendedData(&$loaded=array())
     {
         $currentUser = \App\Context::currentUser();
