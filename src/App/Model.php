@@ -79,7 +79,7 @@ abstract class Model
     public static function loadById($id)
     {
         $out = static::load(["id" => $id]);
-        return array_pop($out);
+        return $out[0];
     }
 
     final public static function enrichSelect($select)
