@@ -6,7 +6,7 @@ class Tournament extends \App\Model
     protected static $fields = ["id", "name", "date", "location", "duration", "season_id", "deleted"];
 
 
-    protected static function getExplicitCondtions()
+    protected static function getExplicitConditions()
     {
         return ["deleted" => false];
     }
