@@ -275,7 +275,7 @@ class Check
         if (!isset($args["roster_id"])) {
             throw new \App\Exception\Http\Http400("Missing roster_id in url");
         }
-        $playerId = $args["roster_id"];
+        $rosterId = $args["roster_id"];
 
         if (!static::authAllowToken($request, $response, $args)) {
             return false;
@@ -288,7 +288,7 @@ class Check
             return false;
         }
 
-        $p = \App\Model\Roster::load(["roster_id" => $playerId]);
+        $p = \App\Model\Roster::load(["id" => $rosterId]);
         if (count($p) < 1) {
             throw new \App\Exception\Http\Http404();
         }

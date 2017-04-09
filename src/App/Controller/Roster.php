@@ -42,7 +42,7 @@ class Roster extends \App\Common
             throw new Http404("Wrong roster_id");
         }
 
-        if (PlayerAtRoster::exists(['player_id' => $playerId, 'tournament_id' => $roster->getTournamentId()], ["[>]roster" => ["roster_id" => "id"]])) {
+        if (PlayerAtRoster::exists(["AND" => ['player_id' => $playerId, 'tournament_id' => $roster->getTournamentId()]], ["[>]roster" => ["roster_id" => "id"]])) {
             throw new Http400("Player is already on roster of another team");
         }
 

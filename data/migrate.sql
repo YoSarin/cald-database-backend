@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.player_at_roster (
     id int AUTO_INCREMENT PRIMARY KEY,
     roster_id int NOT NULL,
     player_id int NOT NULL,
-    FOREIGN KEY(roster_id) REFERENCES roster(id),
+    FOREIGN KEY(roster_id) REFERENCES roster(id) ON DELETE CASCADE,
     FOREIGN KEY(player_id) REFERENCES player(id)
 )
 DEFAULT CHARACTER SET = utf8

@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `player_at_roster` (
   PRIMARY KEY (`id`),
   KEY `roster_id` (`roster_id`),
   KEY `player_id` (`player_id`),
-  CONSTRAINT `player_at_roster_ibfk_1` FOREIGN KEY (`roster_id`) REFERENCES `roster` (`id`),
+  CONSTRAINT `player_at_roster_ibfk_1` FOREIGN KEY (`roster_id`) REFERENCES `roster` (`id`) ON CASCADE DELETE,
   CONSTRAINT `player_at_roster_ibfk_2` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=34861 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
