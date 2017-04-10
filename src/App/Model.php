@@ -90,10 +90,10 @@ abstract class Model
         if ($select == null) {
             return static::getExplicitCondtions();
         }
-        if (count($select) > 0) {
-            $select = ["AND" => $select];
-        }
         if (static::getExplicitCondtions() == null) {
+            if (count($select) > 0) {
+                $select = ["AND" => $select];
+            }
             return $select;
         }
         return ["AND" => array_merge(static::getExplicitCondtions(), $select)];

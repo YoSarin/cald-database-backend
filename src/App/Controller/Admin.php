@@ -57,11 +57,9 @@ class Admin extends \App\Common
     {
         list($id) = $request->requireParams(["id"]);
 
-        $tournaments = Tournament::loadById($id);
-        foreach ($tournaments as $t) {
-            $t->setDeleted(true);
-            $t->save();
-        }
+        $t = Tournament::loadById($id);
+        $t->setDeleted(true);
+        $t->save();
 
         return $this->container->view->render(
             $response,
