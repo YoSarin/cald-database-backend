@@ -296,7 +296,7 @@ class Check
         return \App\Model\UserHasPrivilege::exists([
             "AND" => [
                 "user_id" => $t[0]->getUserId(),
-                "entity" => \App\Model\UserHasPrivilege::ENTITY_HIGHSCHOOL,
+                "entity" => \App\Model\UserHasPrivilege::ENTITY_TEAM,
                 "entity_id"  => $p[0]->getTeamId(),
                 "privilege" => \App\Model\UserHasPrivilege::PRIVILEGE_EDIT
             ]
