@@ -121,11 +121,11 @@ abstract class Model
             }
             self::$queryCount++;
             $rows = $db->select(static::table(), $joins, $fields, $select);
-            echo "DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")\n";
+            // echo "DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")\n";
         } else {
             self::$queryCount++;
             $rows = $db->select(static::table(), static::fields(static::table()), $select);
-            echo "DB calls: " . self::$queryCount . " simple (" . static::table() . ")\n";
+            // echo "DB calls: " . self::$queryCount . " simple (" . static::table() . ")\n";
         }
 
         if (!empty($db->error()[1])) {
