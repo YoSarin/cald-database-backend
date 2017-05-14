@@ -174,12 +174,6 @@ abstract class Model
         foreach ($data as $table => $row) {
             if ($table == $t) {
                 $i->data = $row;
-                /*
-                foreach ($row as $column => $value) {
-                    var_dump($column);
-                    var_dump($value);
-                    $i->data[substr($column, strlen($table . '_'))] = $value;
-                }*/
                 static::cache($row);
             } else {
                 $table = explode(self::MAGICAL_SEPARATOR_FOR_ALIASES, $table)[0];
