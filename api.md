@@ -9,6 +9,7 @@ Včechna create/modify API by měla vracet na výstupu json, obsahující pole `
 + [Odebrání hráče z týmu](#delete-teamteam_idplayerplayer_id)
 + [Přiřazení týmu agentovi](#post-teamteam_iduseruser_id)
 + [Odebrání týmu agentovi](#delete-teamteam_iduseruser_id)
++ [Zobrazení poplatků týmu za sezónu](#)
 + [Admin API](admin.md)
 
 # Dostupná API:
@@ -103,3 +104,8 @@ Dá uživateli práva k týmu
 **Auth**: token, musí být správce týmu  
 Odebere uživateli práva k týmu  
 **`privilege`**: právo které chceme odebrat uživateli (view|edit)  
+
+## `GET /team/{team_id}/season/{season_id}/fee`  
+**Params**: `team_id`, `season_id`  
+**Auth**: token, musí být správce týmu  
+Zobrazí poplatky které by měl tým za danou sezonu zaplatit ČALDu
