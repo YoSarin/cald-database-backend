@@ -7,6 +7,6 @@ class FeeNeededForLeague extends \App\Model
 
     protected static function getExplicitCondtions()
     {
-        return ["active" => true];
+        return [self::table() . ".active" => true];
     }
 }

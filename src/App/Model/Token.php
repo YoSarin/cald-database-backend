@@ -69,6 +69,6 @@ class Token extends \App\Model
 
     protected static function getExplicitCondtions()
     {
-        return ["valid_until[>]" => date("Y-m-d H:i:s", time())];
+        return [self::table() . ".valid_until[>]" => date("Y-m-d H:i:s", time())];
     }
 }

@@ -62,7 +62,7 @@ class Player extends \App\Model
     }
 
     public function getExtendedData(&$loaded = array()) {
-        return static::getExtendedData($loaded);
+        return parent::getExtendedData($loaded);
     }
 
 }

@@ -26,6 +26,6 @@ class PlayerAtTeam extends \App\Model
 
     protected static function getExplicitCondtions()
     {
-        return ["valid" => true];
+        return [self::table() . ".valid" => true];
     }
 }

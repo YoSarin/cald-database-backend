@@ -8,7 +8,7 @@ class Tournament extends \App\Model
 
     protected static function getExplicitCondtions()
     {
-        return ["deleted" => false];
+        return [self::table() . ".deleted" => false];
     }
 
     public static function create($name, $date, $location, $duration, $season_id)

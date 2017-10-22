@@ -7,9 +7,12 @@ use App\Exception\Database\TreatAsCreated;
 
 abstract class Model
 {
+    const MAGICAL_SEPARATOR_FOR_ALIASES = '___';
     protected static $table = null;
     protected static $fields = [];
     protected $data = [];
+
+    protected static $queryCount = 0;
 
     protected $enrichCondtions = [];
 
@@ -31,8 +34,62 @@ abstract class Model
         return Context::getContainer()->db->count(static::table(), $select);
     }
 
+    public static function extendedJoins(&$joins = [], $alias = "")
+    {
+        foreach(static::$fields as $field) {
+            if (preg_match("~_id$~", $field)) {
+                $tableName = substr($field, 0, -3);
+                $joinAlias = $tableName . static::MAGICAL_SEPARATOR_FOR_ALIASES . static::table();
+                $joinName = "[>]" . $tableName . "(" . $joinAlias . ")";
+                if (!isset($joins[$joinName])) {
+                    if ($alias == "") {
+                        $alias = static::table();
+                    }
+                    $joins[$joinName] = [$alias . "." . $field => "id"];
+                    $model = "\\App\\Model\\" . ucfirst(static::camelcaseNotation($tableName));
+                    if (class_exists($model)) {
+                        $model::extendedJoins($joins, $joinAlias);
+                    }
+                }
+            }
+        }
+    }
+
+    public function getExtendedData(&$loaded = array())
+    {
+        $data = [];
+        if (!array_key_exists(static::table(), $loaded)) {
+            $loaded[static::table()] = [];
+        }
+        $loaded[static::table()][$this->getId()] = $this;
+        $itemData = $this->getData();
+        array_walk($itemData, function ($value, $key) use (&$data, &$loaded) {
+            if (preg_match("~_id$~", $key)) {
+                $newKey = substr($key, 0, -3);
+                if ($value && !isset($loaded[$newKey][$value])) {
+                    $model = "\\App\\Model\\" . ucfirst(static::camelcaseNotation($newKey));
+                    if (class_exists($model)) {
+                        $item = $model::loadById($value);
+                        $data[$newKey] = $item->getExtendedData($loaded);
+                        return;
+                    }
+                }
+            }
+
+            $data[$key] = $value;
+        });
+        return $data;
+    }
+
     public static function load($select = null, $limit = null, $offset = 0, $joins = [])
     {
+        foreach ($select as $key => $value) {
+            if (strpos($key, '.') === false) {
+                $select[self::table() . "." . $key] = $value;
+                unset($select[$key]);
+            }
+        }
+
         $out = [];
         if (count($select) == 1 && isset($select["id"])) {
             if (!is_array($select["id"])) {
@@ -47,6 +104,7 @@ abstract class Model
             }
             if (empty($select["id"])) {
                 unset($select["id"]);
+                return $out;
             }
         }
         $db = Context::getContainer()->db;
@@ -57,12 +115,24 @@ abstract class Model
         if (!empty($joins)) {
             $fields = static::fields(static::table());
             foreach ($joins as $name => $relation) {
-                $table = preg_replace("~^(\[[^\]]+\])?\s*([a-zA-Z0-9\-\_]+).*$~", "$2", $name);
-                $fields = array_merge($fields, call_user_func(['\\App\\Model\\' . ucfirst(self::camelcaseNotation($table)), 'fields'], $table));
+                preg_match("~^(\[[^\]]+\])?\s*([a-zA-Z0-9\-\_]+)(\((.*)\))?$~", $name, $matches);
+                if (!isset($matches[2])) {
+                    continue;
+                }
+                $table = $matches[2];
+                if ($matches[4]) {
+                    $prefix = $matches[4];
+                }
+                $newFields = call_user_func(['\\App\\Model\\' . ucfirst(self::camelcaseNotation($table)), 'fields'], $prefix);
+                $fields = array_merge($fields, $newFields);
             }
+            self::$queryCount++;
             $rows = $db->select(static::table(), $joins, $fields, $select);
+            // echo "DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")\n";
         } else {
+            self::$queryCount++;
             $rows = $db->select(static::table(), static::fields(static::table()), $select);
+            // echo "DB calls: " . self::$queryCount . " simple (" . static::table() . ")\n";
         }
 
         if (!empty($db->error()[1])) {
@@ -96,7 +166,8 @@ abstract class Model
             }
             return $select;
         }
-        return ["AND" => array_merge(static::getExplicitCondtions(), $select)];
+        $out = ["AND" => array_merge(static::getExplicitCondtions(), $select)];
+        return $out;
     }
 
     protected static function getExplicitCondtions()
@@ -111,15 +182,13 @@ abstract class Model
         foreach ($data as $table => $row) {
             if ($table == $t) {
                 $i->data = $row;
-                /*
-                foreach ($row as $column => $value) {
-                    var_dump($column);
-                    var_dump($value);
-                    $i->data[substr($column, strlen($table . '_'))] = $value;
-                }*/
                 static::cache($row);
             } else {
-                call_user_func(['\\App\\Model\\' . ucfirst(self::camelcaseNotation($table)), 'fromArray'], [$table => $row]);
+                $table = explode(self::MAGICAL_SEPARATOR_FOR_ALIASES, $table)[0];
+                $class = '\\App\\Model\\' . ucfirst(self::camelcaseNotation($table));
+                if (class_exists($class)) {
+                    call_user_func([$class, 'fromArray'], [$table => $row]);
+                }
             }
         }
         return $i;
@@ -181,32 +250,6 @@ abstract class Model
     public function getData()
     {
         return $this->data;
-    }
-
-    public function getExtendedData(&$loaded = array())
-    {
-        $data = [];
-        if (!array_key_exists(static::table(), $loaded)) {
-            $loaded[static::table()] = [];
-        }
-        $loaded[static::table()][$this->getId()] = $this;
-        $itemData = $this->getData();
-        array_walk($itemData, function ($value, $key) use (&$data, &$loaded) {
-            if (preg_match("~_id$~", $key)) {
-                $newKey = substr($key, 0, -3);
-                if ($value && !isset($loaded[$newKey][$value])) {
-                    $model = "\\App\\Model\\" . ucfirst(static::camelcaseNotation($newKey));
-                    if (class_exists($model)) {
-                        $item = $model::loadById($value);
-                        $data[$newKey] = $item->getExtendedData($loaded);
-                        return;
-                    }
-                }
-            }
-
-            $data[$key] = $value;
-        });
-        return $data;
     }
 
     public function save()
