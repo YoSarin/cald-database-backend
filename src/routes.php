@@ -39,6 +39,7 @@ $app->delete('/team/{team_id}/user/{user_id}', $auth->verify(App\Auth\Check::ALL
 $app->post('/team/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "update"]));
 $app->post('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "addPlayer"]));
 $app->delete('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "removePlayer"]));
+$app->get('/team/{team_id}/season/{season_id}/fee', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "getFee"]));
 
 $app->post('/player', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "create"]));
 $app->post('/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "update"]));
@@ -49,7 +50,7 @@ $app->post('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Chec
 $app->delete('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "removePlayer"]));
 
 // testing APIs - to be deleted at the end
-$app->post('/test', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$testController, "test"]));
+$app->get('/test', $auth->verify(App\Auth\Check::ALLOW_ALL, [$testController, "test"]));
 $app->get('/test/req', $auth->verify(App\Auth\Check::ALLOW_ALL, [$testController, "request"]));
 $app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$testController, "team"]));
 $app->post('/test/hs/{highschool_id}', $auth->verify(App\Auth\Check::ALLOW_HIGHSCHOOL_VIEW, [$testController, "hs"]));

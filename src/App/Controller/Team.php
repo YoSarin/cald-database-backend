@@ -199,4 +199,25 @@ class Team extends \App\Common
             );
         }
     }
+
+    public function getFee(\App\Request $request, $response, $args) {
+        list($teamId, $seasonId) = $request->requireParams(['team_id', 'season_id']);
+
+        if (!\App\Model\Season::exists(['id' => $seasonId])) {
+            throw new \App\Exception\Http\Http404("No such season");
+        }
+        if (!\App\Model\Team::exists(['id' => $teamId])) {
+            throw new \App\Exception\Http\Http404("No such team");
+        }
+
+        $data = \App\Model\Team::getFee($seasonId, $teamId);
+        return $this->container->view->render(
+            $response,
+            [
+                'status' => 'OK',
+                'data' => $data
+            ],
+            200
+        );
+    }
 }
