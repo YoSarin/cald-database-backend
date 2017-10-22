@@ -2,6 +2,7 @@
 namespace App\Model;
 
 use \App\Exception\Database\Duplicate;
+use App\Model\PlayerAtTeam;
 
 class Player extends \App\Model
 {
@@ -53,4 +54,16 @@ class Player extends \App\Model
             "[><]tournament_belongs_to_league_and_division" => ["roster.tournament_belongs_to_league_and_division_id" => "id"]
         ]);
     }
+
+    public static function extendedJoins(&$joins = [], $alias = "") {
+        $joins["[>]player_at_team(player_at_team___player)"] = ["id" => "player_id"];
+        PlayerAtTeam::extendedJoins($joins, "player_at_team___player");
+        parent::extendedJoins($joins, $alias);
+    }
+
+    public function getExtendedData(&$loaded = array()) {
+        static::getExtendedData($loaded);
+        $loaded
+    }
+
 }

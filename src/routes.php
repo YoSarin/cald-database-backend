@@ -39,6 +39,7 @@ $app->delete('/team/{team_id}/user/{user_id}', $auth->verify(App\Auth\Check::ALL
 $app->post('/team/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "update"]));
 $app->post('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "addPlayer"]));
 $app->delete('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "removePlayer"]));
+$app->get('/team/{team_id}/season/{season_id}/fee', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "getFee"]));
 
 $app->post('/player', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "create"]));
 $app->post('/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "update"]));
