@@ -108,4 +108,4 @@ Odebere uživateli práva k týmu
 ## `GET /team/{team_id}/season/{season_id}/fee`  
 **Params**: `team_id`, `season_id`  
 **Auth**: token, musí být správce týmu  
-Zobrazí poplatky které by měl tým za danou sezonu zaplatit ČALDu
+Zobrazí poplatky které by měl tým za danou sezonu zaplatit ČALDu  
