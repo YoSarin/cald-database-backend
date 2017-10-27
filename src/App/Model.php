@@ -83,10 +83,12 @@ abstract class Model
 
     public static function load($select = null, $limit = null, $offset = 0, $joins = [])
     {
-        foreach ($select as $key => $value) {
-            if (strpos($key, '.') === false && !in_array($key, ['OR', 'AND'])) {
-                $select[self::table() . "." . $key] = $value;
-                unset($select[$key]);
+        if ($select) {
+            foreach ($select as $key => $value) {
+                if (strpos($key, '.') === false && !in_array($key, ['OR', 'AND'])) {
+                    $select[self::table() . "." . $key] = $value;
+                    unset($select[$key]);
+                }
             }
         }
 
