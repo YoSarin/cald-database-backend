@@ -39,7 +39,7 @@ for team in fees:
     ]
     team_duplicates = [duplicity for duplicity in team_data["data"]["duplicate_players"]]
 
-    print "%20s %s %s" % (team, len(fees[team]["players"]), fees[team]["fee"])
+    print "%20s [#%3s] %s %s" % (team, fees[team]["id"], len(fees[team]["players"]), fees[team]["fee"])
 
     total += fees[team]["fee"]
 

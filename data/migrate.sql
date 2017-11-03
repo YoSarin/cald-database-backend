@@ -217,7 +217,7 @@ LEFT JOIN Member m ON m.id = trm.member_id
 LEFT JOIN :new_schema_name:.tournament_belongs_to_league_and_division tld ON r.tournament_id = tld.tournament_id
 LEFT JOIN :new_schema_name:.division d ON d.id = tld.division_id
 LEFT JOIN :new_schema_name:.roster cr ON cr.tournament_belongs_to_league_and_division_id = tld.id AND cr.team_id = r.team_id
-WHERE LOWER(trm.teamName) LIKE COALESCE(d.name, '%');
+WHERE LOWER(trm.teamName) LIKE CONCAT(d.name, '%');
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.fee_payments (
     id int AUTO_INCREMENT PRIMARY KEY,
