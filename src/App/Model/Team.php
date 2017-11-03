@@ -36,7 +36,7 @@ class Team extends \App\Model
             $teamCondition = "and htm.id = " . (int)$teamId;
         }
 
-        $query = "select DISTINCT p.id as player_id, CONCAT(p.first_name, ' ', p.last_name) as player, group_concat(distinct tm.name separator '|') as team, f.amount, htm.name as home_team
+        $query = "select DISTINCT p.id as player_id, CONCAT(p.first_name, ' ', p.last_name) as player, group_concat(distinct tm.name separator '|') as team, f.amount, htm.name as home_team, htm.id as home_team_id
         from tournament t
         left join season s on s.id = t.season_id
         left join tournament_belongs_to_league_and_division tld ON tld.tournament_id = t.id
@@ -70,6 +70,7 @@ class Team extends \App\Model
                 $out[$row['home_team']] = [
                     "fee" => 0,
                     "players" => [],
+                    "id" => $row['home_team_id'],
                 ];
             }
             $out[$row['home_team']]["fee"] += (int)$row['amount'];
