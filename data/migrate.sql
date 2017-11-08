@@ -1,8 +1,8 @@
 SET NAMES 'utf8';
 SET CHARACTER SET utf8;
 
-DROP SCHEMA IF EXISTS :new_schema_name:;
-CREATE SCHEMA IF NOT EXISTS :new_schema_name:;
+DROP DATABASE IF EXISTS :new_schema_name:;
+CREATE DATABASE IF NOT EXISTS :new_schema_name:;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.team (
     id int AUTO_INCREMENT PRIMARY KEY,
@@ -18,6 +18,15 @@ COLLATE = utf8_bin
 SELECT t.id, t.name, t.dateOfRegistration as founded_at, t.city, t.www, t.email, (tt.element is NULL) as active
 FROM Team t
 LEFT JOIN Team_tags tt ON tt.Team_id = t.id and tt.element = 'inactive';
+
+
+CREATE TABLE IF NOT EXISTS :new_schema_name:.season(
+    id int AUTO_INCREMENT PRIMARY KEY,
+    start DATETIME NOT NULL
+)
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin
+SELECT null as id, name, startDate as start FROM Season;
 
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.player (
@@ -43,18 +52,22 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.player_at_team (
     id int AUTO_INCREMENT PRIMARY KEY,
     team_id int NOT NULL,
     player_id int NOT NULL,
-    since DATETIME default NULL,
-    until DATETIME default NULL,
+    first_season INT,
+    last_season INT DEFAULT NULL,
     valid boolean default true,
     FOREIGN KEY(team_id) REFERENCES team(id),
-    FOREIGN KEY(player_id) REFERENCES player(id)
+    FOREIGN KEY(player_id) REFERENCES player(id),
+    FOREIGN KEY(first_season) REFERENCES season(id),
+    FOREIGN KEY(last_season) REFERENCES season(id)
 )
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
 SELECT
-	m.id, m.team_id, m.user_id as player_id, m.dateOfRegistration as since, null as until, (m.id = m2.id) as valid
+	m.id, m.team_id, m.user_id as player_id, COALESCE(s.id, 1) as first_season, null as until, (m.id = m2.id) as valid
 FROM TeamMembership m
-LEFT JOIN (SELECT max(id) as id, user_id FROM TeamMembership GROUP BY user_id) m2 ON m2.user_id = m.user_id;
+LEFT JOIN (SELECT max(id) as id, user_id FROM TeamMembership GROUP BY user_id) m2 ON m2.user_id = m.user_id
+LEFT JOIN :new_schema_name:.season s ON s.start <= m.dateOfRegistration
+WHERE s.id IN (SELECT MAX(id) FROM :new_schema_name:.season WHERE start <= m.dateOfRegistration) OR s.id IS NULL;
 
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.team_representative (
@@ -69,14 +82,6 @@ SELECT
 	null as id, m.id as player_at_team_id, 'captain' as function
 	FROM Team
 	INNER JOIN TeamMembership m ON Team.captain_id = m.user_id and Team.id = m.team_id;
-
-CREATE TABLE IF NOT EXISTS :new_schema_name:.season(
-    id int AUTO_INCREMENT PRIMARY KEY,
-    start DATETIME NOT NULL
-)
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_bin
-SELECT null as id, name, startDate as start FROM Season;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.tournament (
     id int AUTO_INCREMENT PRIMARY KEY,
@@ -140,17 +145,17 @@ LEFT JOIN :new_schema_name:.league l_in ON l_in.name = 'Halové Mistrovství ČR
 CREATE TABLE IF NOT EXISTS :new_schema_name:.fee (
     id int AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
-    since DATETIME,
+    since_season int,
     amount int,
     type ENUM('player_per_season', 'player_per_tournament', 'team_per_season', 'team_per_tournament')
 )
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
 SELECT
-	null as id, "ČALD poplatek 2006+" as name, "2005-11-01 00:00:00" as since, 150 as amount, 'player_per_season' as type UNION ALL SELECT
-	null as id, "ČALD poplatek 2007+" as name, "2007-11-01 00:00:00" as since, 200 as amount, 'player_per_season' as type UNION ALL SELECT
-	null as id, "ČALD poplatek 2010+" as name, "2009-11-01 00:00:00" as since, 250 as amount, 'player_per_season' as type UNION ALL SELECT
-	null as id, "ČALD poplatek 2013+" as name, "2013-12-01 00:00:00" as since, 350 as amount, 'player_per_season' as type;
+	-- null as id, "ČALD poplatek 2006+" as name, "2005-11-01 00:00:00" as since, 150 as amount, 'player_per_season' as type UNION ALL SELECT
+	null as id, "ČALD poplatek 2007+" as name, 1 as since_season, 200 as amount, 'player_per_season' as type UNION ALL SELECT
+	null as id, "ČALD poplatek 2010+" as name, 2 as since_season, 250 as amount, 'player_per_season' as type UNION ALL SELECT
+	null as id, "ČALD poplatek 2013+" as name, 7 as since_season, 350 as amount, 'player_per_season' as type;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.player_fee_change (
   id int AUTO_INCREMENT PRIMARY KEY,
@@ -165,25 +170,27 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.fee_needed_for_league (
     id int AUTO_INCREMENT PRIMARY KEY,
 	league_id int,
 	fee_id int,
-    since DATETIME,
+    since_season int,
     valid boolean DEFAULT true,
     FOREIGN KEY (league_id) REFERENCES league(id),
-    FOREIGN KEY (fee_id) REFERENCES fee(id)
+    FOREIGN KEY (fee_id) REFERENCES fee(id),
+    FOREIGN KEY (since_season) REFERENCES season(id)
 )
 COMMENT "Ve které lize musí člověk/tým hrát, aby pro něj poplatek platil. Pokud poplatek patří do více lig, stačí aby hrál jednu z nich. Stejně tak, pokud hraje hráč více lig se stejným poplatkem, platí pouze jednou"
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
-SELECT null as id, l.id as league_id, f.id as fee_id, f.since as since, false as valid
+SELECT null as id, l.id as league_id, f.id as fee_id, f.since_season as since_season, false as valid
 FROM :new_schema_name:.league l, :new_schema_name:.fee f where l.name in ('Mistrovství ČR', 'Halové Mistrovství ČR');
 
-UPDATE :new_schema_name:.fee_needed_for_league SET valid = true WHERE since = (SELECT m FROM (SELECT max(since) as m FROM :new_schema_name:.fee_needed_for_league) t );
+UPDATE :new_schema_name:.fee_needed_for_league SET valid = true WHERE since_season = (SELECT m FROM (SELECT max(since_season) as m FROM :new_schema_name:.fee_needed_for_league) t );
 
-ALTER TABLE :new_schema_name:.fee DROP COLUMN since;
+ALTER TABLE :new_schema_name:.fee DROP COLUMN since_season;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.roster (
     id int AUTO_INCREMENT PRIMARY KEY,
     team_id int,
     tournament_belongs_to_league_and_division_id int,
+    name VARCHAR(255) DEFAULT NULL,
     seeding int DEFAULT NULL,
     final_result int DEFAULT NULL,
     FOREIGN KEY(team_id) REFERENCES team(id),
@@ -192,12 +199,12 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.roster (
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin
 SELECT
-	null as id, r.team_id, tld.id as tournament_belongs_to_league_and_division_id, null as seeding, null as final_result
+	null as id, r.team_id, tld.id as tournament_belongs_to_league_and_division_id, trm.teamName as name, null as seeding, null as final_result
 FROM TeamRoster r
 LEFT JOIN TeamRosterMember trm ON trm.roster_id = r.id
 LEFT JOIN :new_schema_name:.tournament_belongs_to_league_and_division tld ON r.tournament_id = tld.tournament_id
 LEFT JOIN :new_schema_name:.division d ON d.id = tld.division_id
-WHERE LOWER(trm.teamName) LIKE COALESCE(d.name, '%')
+WHERE LOWER(trm.teamName) LIKE CONCAT(d.name, '%')
 GROUP BY r.id, trm.teamName;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.player_at_roster (
@@ -216,7 +223,7 @@ LEFT JOIN TeamRosterMember trm ON trm.roster_id = r.id
 LEFT JOIN Member m ON m.id = trm.member_id
 LEFT JOIN :new_schema_name:.tournament_belongs_to_league_and_division tld ON r.tournament_id = tld.tournament_id
 LEFT JOIN :new_schema_name:.division d ON d.id = tld.division_id
-LEFT JOIN :new_schema_name:.roster cr ON cr.tournament_belongs_to_league_and_division_id = tld.id AND cr.team_id = r.team_id
+LEFT JOIN :new_schema_name:.roster cr ON cr.tournament_belongs_to_league_and_division_id = tld.id AND cr.team_id = r.team_id AND cr.name = trm.teamName
 WHERE LOWER(trm.teamName) LIKE CONCAT(d.name, '%');
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.fee_payments (
@@ -252,10 +259,11 @@ CREATE TABLE IF NOT EXISTS :new_schema_name:.player_at_highschool (
     id int AUTO_INCREMENT PRIMARY KEY,
     player_id int,
     highschool_id int,
-    since DATETIME DEFAULT NULL,
+    since_season int,
     valid boolean DEFAULT true,
     FOREIGN KEY (player_id) REFERENCES player(id),
-    FOREIGN KEY (highschool_id) REFERENCES highschool(id)
+    FOREIGN KEY (highschool_id) REFERENCES highschool(id),
+    FOREIGN KEY (since_season) REFERENCES season(id)
 )
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_bin;
@@ -308,5 +316,39 @@ LEFT JOIN :new_schema_name:.user u ON u.login = t.agent_login
 WHERE t.agent_login IS NOT NULL
 ;
 
+-- VIEWS
+CREATE OR REPLACE VIEW :new_schema_name:.tournament_fee AS
+SELECT t.id as tournament_id, tld.id as tournament_belongs_to_league_and_division_id, f.id as fee_id, f.amount, f.type, s.id as season_id
+    FROM :new_schema_name:.season s
+    LEFT JOIN :new_schema_name:.tournament t ON s.id = t.season_id
+    LEFT JOIN :new_schema_name:.tournament_belongs_to_league_and_division tld ON tld.tournament_id = t.id
+    LEFT JOIN :new_schema_name:.fee_needed_for_league ffl ON ffl.league_id = tld.league_id AND ffl.since_season <= s.id
+    LEFT JOIN :new_schema_name:.fee f ON f.id = ffl.fee_id
+    WHERE ffl.id = (
+        SELECT ffl.id FROM :new_schema_name:.fee_needed_for_league ffl
+        LEFT JOIN :new_schema_name:.season s2 on s2.id = ffl.since_season
+        WHERE since_season <= s.id
+        AND ffl.league_id = tld.league_id
+        ORDER BY s2.start DESC LIMIT 1
+    );
+
+
 INSERT INTO :new_schema_name:.user (email,login,salt,password,created_at,state) VALUES ('noone@noone.noone','admin','e49f68e084c1cf6507602928dd58b467','7043560ddbe621ddf2dbb0cd83ec8d1822419cd52a86abd5a74fac9006385a21',NOW(),'confirmed');
 INSERT INTO :new_schema_name:.user_has_privilege (user_id, privilege) SELECT id as user_id, 'admin' as privilege FROM :new_schema_name:.user WHERE email = 'noone@noone.noone';
+
+/** DEV-ONLY:
+GRANT ALL ON :new_schema_name:.* TO 'cald'@'%';
+
+INSERT INTO :new_schema_name:.token (user_id, token, valid_until, type)
+    SELECT id, 'token', '2999-01-01 00:00:00', 'login' FROM :new_schema_name:.user WHERE email = 'noone@noone.noone';
+
+CREATE OR REPLACE VIEW :new_schema_name:.roosters AS
+    select distinct s.name as season_name, tm.name as team_name, p.id, p.last_name
+    from :new_schema_name:.tournament t
+    left join :new_schema_name:.season s on t.season_id = s.id
+    left join :new_schema_name:.tournament_belongs_to_league_and_division tld on tld.tournament_id = t.id
+    left join :new_schema_name:.roster r on r.tournament_belongs_to_league_and_division_id = tld.id
+    left join :new_schema_name:.player_at_roster pr on pr.roster_id = r.id
+    left join :new_schema_name:.player p on pr.player_id = p.id
+    left join :new_schema_name:.team tm on r.team_id = tm.id
+:DEV-ONLY **/

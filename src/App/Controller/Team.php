@@ -91,14 +91,15 @@ class Team extends \App\Common
 
     public function addPlayer(\App\Request $request, $response, $args)
     {
-        list($teamId, $playerId) = $request->requireParams(["team_id", "player_id"]);
+        list($teamId, $playerId, $seasonId) = $request->requireParams(["team_id", "player_id", "season_id"]);
         $player = \App\Model\Player::loadById($playerId);
         $team = \App\Model\Team::loadById($teamId);
+        $season = \App\Model\Season::loadById($seasonId);
 
         if (\App\Model\PlayerAtTeam::exists(['player_id' => $player->getId(), 'valid' => true])) {
             throw new \App\Exception\Http\Http400($player->getFullName() . ' is already active in some other team.');
         }
-        $playerAtTeam = \App\Model\PlayerAtTeam::create($player->getId(), $team->getId());
+        $playerAtTeam = \App\Model\PlayerAtTeam::create($player->getId(), $team->getId(), $season->getId());
         $playerAtTeam->save();
 
         return $this->container->view->render(
@@ -110,9 +111,10 @@ class Team extends \App\Common
 
     public function removePlayer(\App\Request $request, $response, $args)
     {
-        list($teamId, $playerId) = $request->requireParams(["team_id", "player_id"]);
+        list($teamId, $playerId, $seasonId) = $request->requireParams(["team_id", "player_id", "season_id"]);
         $player = \App\Model\Player::loadById($playerId);
         $team = \App\Model\Team::loadById($teamId);
+        $season = \App\Model\Season::loadById($seasonId);
         $contracts = \App\Model\PlayerAtTeam::load(['player_id' => $player->getId(), 'team_id' => $team->getId(), 'valid' => true]);
         if (count($contracts) <= 0) {
             throw new \App\Exception\Http\Http400($player->getFullName() . ' is not active in this team.');
@@ -120,7 +122,7 @@ class Team extends \App\Common
 
         foreach ($contracts as $playerAtTeam) {
             $playerAtTeam->setValid(false);
-            $playerAtTeam->setUntil(date("Y-m-d H:i:s", time()));
+            $playerAtTeam->setLastSeason($season->getId());
             $playerAtTeam->save();
         }
 

@@ -13,13 +13,13 @@ def call(url):
 
 season_id = 9
 
-admin_data = call('http://172.17.0.2/admin/fee?season_id=%s' % season_id)
+admin_data = call('http://cald/admin/fee?season_id=%s' % season_id)
 fees = admin_data['data']['fee']
 duplicities = admin_data['data']['duplicate_players']
 total = 0
 for team in fees:
     team_id = fees[team]['id']
-    team_data = call('http://172.17.0.2/team/%s/season/%u/fee'
+    team_data = call('http://cald/team/%s/season/%u/fee'
                      % (team_id, season_id))
     admin_missing = [
         player for player

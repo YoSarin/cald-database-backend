@@ -5,14 +5,14 @@ use \App\Exception\Database\Duplicate;
 
 class PlayerAtTeam extends \App\Model
 {
-    protected static $fields = ["id", "player_id", "team_id", "since", "until", "valid"];
+    protected static $fields = ["id", "player_id", "team_id", "first_season", "last_season", "valid"];
 
-    public static function create($playerId, $teamId)
+    public static function create($playerId, $teamId, $seasonId)
     {
         $i = new self();
         $i->setPlayerId($playerId);
         $i->setTeamId($teamId);
-        $i->setSince(date("Y-m-d H:i:s", time()));
+        $i->setFirstSeason($seasonId);
 
         return $i;
     }

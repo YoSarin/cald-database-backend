@@ -25,7 +25,7 @@ class Team extends \App\Model
         if ($this->isNew() && self::exists([
             "name" => $this->getName()
         ])) {
-            throw new Duplicate("Privilege already exists");
+            throw new Duplicate("Team already exists");
         }
     }
 
@@ -35,6 +35,22 @@ class Team extends \App\Model
         if ($teamId) {
             $teamCondition = "and htm.id = " . (int)$teamId;
         }
+
+        $tournament_fee_query = "
+            SELECT * FROM tournament_fee
+            FROM season s
+            LEFT JOIN tournament t ON s.id = t.season_id
+            LEFT JOIN tournament_belongs_to_league_and_division tld ON tld.tournament_id = t.id
+            LEFT JOIN fee_needed_for_league ffl ON ffl.league_id = tld.league_id AND ffl.since_season <= s.id
+            LEFT JOIN fee f ON f.id = ffl.fee_id
+            WHERE ffl.id = (
+                SELECT ffl.id FROM fee_needed_for_league ffl
+                LEFT JOIN season s2 on s2.id = ffl.since_season
+                WHERE since_season <= s.id
+                ORDER BY s2.start DESC LIMIT 1)
+        ";
+
+        // $data = \App\Context::getContainer()->db->query($query);
 
         $query = "select DISTINCT p.id as player_id, CONCAT(p.first_name, ' ', p.last_name) as player, group_concat(distinct tm.name separator '|') as team, f.amount, htm.name as home_team, htm.id as home_team_id
         from tournament t
@@ -51,9 +67,9 @@ class Team extends \App\Model
         left join player_at_team pt on pt.player_id = p.id
         left join team htm on htm.id = pt.team_id
         where t.season_id = " . (int)$seasonId . "
-        and pt.since < s.start and pt.since >= (SELECT max(since) from player_at_team where player_id = p.id and since < s.start)
+        and pt.first_season < s.id and pt.first_season >= (SELECT max(first_season) from player_at_team where player_id = p.id and first_season < s.id)
         " . $teamCondition . "
-        and ffl.id = (select max(id) from fee_needed_for_league fl where fl.since < s.start)
+        and ffl.id = (select max(id) from fee_needed_for_league fl where fl.since_season < s.id)
         group by p.id, f.id, htm.id
         order by htm.id asc";
 
