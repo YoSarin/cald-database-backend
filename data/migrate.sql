@@ -316,23 +316,6 @@ LEFT JOIN :new_schema_name:.user u ON u.login = t.agent_login
 WHERE t.agent_login IS NOT NULL
 ;
 
--- VIEWS
-CREATE OR REPLACE VIEW :new_schema_name:.tournament_fee AS
-SELECT t.id as tournament_id, tld.id as tournament_belongs_to_league_and_division_id, f.id as fee_id, f.amount, f.type, s.id as season_id
-    FROM :new_schema_name:.season s
-    LEFT JOIN :new_schema_name:.tournament t ON s.id = t.season_id
-    LEFT JOIN :new_schema_name:.tournament_belongs_to_league_and_division tld ON tld.tournament_id = t.id
-    LEFT JOIN :new_schema_name:.fee_needed_for_league ffl ON ffl.league_id = tld.league_id AND ffl.since_season <= s.id
-    LEFT JOIN :new_schema_name:.fee f ON f.id = ffl.fee_id
-    WHERE ffl.id = (
-        SELECT ffl.id FROM :new_schema_name:.fee_needed_for_league ffl
-        LEFT JOIN :new_schema_name:.season s2 on s2.id = ffl.since_season
-        WHERE since_season <= s.id
-        AND ffl.league_id = tld.league_id
-        ORDER BY s2.start DESC LIMIT 1
-    );
-
-
 INSERT INTO :new_schema_name:.user (email,login,salt,password,created_at,state) VALUES ('noone@noone.noone','admin','e49f68e084c1cf6507602928dd58b467','7043560ddbe621ddf2dbb0cd83ec8d1822419cd52a86abd5a74fac9006385a21',NOW(),'confirmed');
 INSERT INTO :new_schema_name:.user_has_privilege (user_id, privilege) SELECT id as user_id, 'admin' as privilege FROM :new_schema_name:.user WHERE email = 'noone@noone.noone';
 
@@ -342,7 +325,7 @@ GRANT ALL ON :new_schema_name:.* TO 'cald'@'%';
 INSERT INTO :new_schema_name:.token (user_id, token, valid_until, type)
     SELECT id, 'token', '2999-01-01 00:00:00', 'login' FROM :new_schema_name:.user WHERE email = 'noone@noone.noone';
 
-CREATE OR REPLACE VIEW :new_schema_name:.roosters AS
+CREATE OR REPLACE VIEW :new_schema_name:.rosters AS
     select distinct s.name as season_name, tm.name as team_name, p.id, p.last_name
     from :new_schema_name:.tournament t
     left join :new_schema_name:.season s on t.season_id = s.id

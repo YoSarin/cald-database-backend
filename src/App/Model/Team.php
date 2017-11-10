@@ -36,42 +36,36 @@ class Team extends \App\Model
             $teamCondition = "and htm.id = " . (int)$teamId;
         }
 
-        $tournament_fee_query = "
-            SELECT * FROM tournament_fee
-            FROM season s
-            LEFT JOIN tournament t ON s.id = t.season_id
-            LEFT JOIN tournament_belongs_to_league_and_division tld ON tld.tournament_id = t.id
-            LEFT JOIN fee_needed_for_league ffl ON ffl.league_id = tld.league_id AND ffl.since_season <= s.id
-            LEFT JOIN fee f ON f.id = ffl.fee_id
-            WHERE ffl.id = (
-                SELECT ffl.id FROM fee_needed_for_league ffl
-                LEFT JOIN season s2 on s2.id = ffl.since_season
-                WHERE since_season <= s.id
-                ORDER BY s2.start DESC LIMIT 1)
-        ";
-
-        // $data = \App\Context::getContainer()->db->query($query);
-
-        $query = "select DISTINCT p.id as player_id, CONCAT(p.first_name, ' ', p.last_name) as player, group_concat(distinct tm.name separator '|') as team, f.amount, htm.name as home_team, htm.id as home_team_id
-        from tournament t
-        left join season s on s.id = t.season_id
-        left join tournament_belongs_to_league_and_division tld ON tld.tournament_id = t.id
-        left join roster r on r.tournament_belongs_to_league_and_division_id = tld.id
+        $query = "
+        select
+        	pr.player_id, group_concat(distinct tm.name separator '|') as team_played,
+            (CASE f.type WHEN 'player_per_season' THEN f.amount ELSE sum(f.amount) END) as amount,
+            htm.name as home_team, htm.id home_team_id, CONCAT(p.first_name, ' ', p.last_name) as player
+        from player p
+        left join player_at_roster pr on pr.player_id = p.id
+        left join roster r on r.id = pr.roster_id
+        left join tournament_belongs_to_league_and_division tld on tld.id = r.tournament_belongs_to_league_and_division_id
+        left join tournament t on t.id = tld.tournament_id
         left join team tm on tm.id = r.team_id
-        left join player_at_roster pr on pr.roster_id = r.id
-        left join player p on p.id = pr.player_id
-        left join league l on tld.league_id = l.id
-        left join fee_needed_for_league ffl on ffl.league_id = l.id
-        left join fee f on f.id = ffl.fee_id
-        left join player_fee_change pfc on pfc.player_id = pr.player_id and pfc.season_id = t.season_id
-        left join player_at_team pt on pt.player_id = p.id
-        left join team htm on htm.id = pt.team_id
+        left join (
+        	select f.*, ffl.league_id
+        	from fee f
+        	left join fee_needed_for_league ffl ON ffl.fee_id = f.id
+        	where ffl.since_season = (
+        		select since_season from fee_needed_for_league where league_id = ffl.league_id and ffl.since_season <= " . (int)$seasonId . " order by since_season desc limit 1
+        	)
+        ) f ON f.league_id = tld.league_id
+        left join (
+        	select t.id, t.name, pt.player_id
+        	from player_at_team pt
+        	left join team t ON pt.team_id = t.id
+        	where pt.id = (
+        		select id from player_at_team where player_id = pt.player_id and first_season <= " . (int)$seasonId . " order by first_season desc limit 1
+        	)
+        ) htm ON htm.player_id = pr.player_id
         where t.season_id = " . (int)$seasonId . "
-        and pt.first_season < s.id and pt.first_season >= (SELECT max(first_season) from player_at_team where player_id = p.id and first_season < s.id)
         " . $teamCondition . "
-        and ffl.id = (select max(id) from fee_needed_for_league fl where fl.since_season < s.id)
-        group by p.id, f.id, htm.id
-        order by htm.id asc";
+        group by pr.player_id";
 
         $data = \App\Context::getContainer()->db->query($query);
 
@@ -99,7 +93,7 @@ class Team extends \App\Model
                     "teams" => []
                 ];
             }
-            $players[$playerId]["teams"] = explode("|", $row["team"]);
+            $players[$playerId]["teams"] = explode("|", $row["team_played"]);
         }
 
         $duplicatePlayers = array_filter($players, function ($teams) {
