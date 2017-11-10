@@ -2,3 +2,5 @@
 !/logs/README.md
 /public/.env
 src/settings.local.php
+/data/specific_migrate.sql
+/data/src
