@@ -319,6 +319,8 @@ WHERE t.agent_login IS NOT NULL
 INSERT INTO :new_schema_name:.user (email,login,salt,password,created_at,state) VALUES ('noone@noone.noone','admin','e49f68e084c1cf6507602928dd58b467','7043560ddbe621ddf2dbb0cd83ec8d1822419cd52a86abd5a74fac9006385a21',NOW(),'confirmed');
 INSERT INTO :new_schema_name:.user_has_privilege (user_id, privilege) SELECT id as user_id, 'admin' as privilege FROM :new_schema_name:.user WHERE email = 'noone@noone.noone';
 
+
+
 INSERT INTO :new_schema_name:.player (id, first_name, last_name, birth_date, created_at, email, phone, sex, state) VALUES
 (1674, 'Barbora', 'Hajná', '1991-07-26 00:00:00', '2017-08-15 14:07:31', 'hajna.bara@seznam.cz', NULL, 'female', 'active'),
 (1675, 'Lucie', 'Österreicherová', '2000-06-17 00:00:00', '2017-08-15 14:09:31', 'lu.osterr@gmail.com', NULL, 'female', 'active'),
@@ -368,6 +370,57 @@ INSERT INTO :new_schema_name:.player (id, first_name, last_name, birth_date, cre
 (1719, 'Alena', 'Franců', '', '2017-10-05 12:09:00', 'aja.francu@gmail.com', NULL, 'female', 'active'),
 (1720, 'Tereza', 'Nejedlá', '', '2017-10-05 12:10:18', 'tereza.nejedla@volny.cz', NULL, 'female', 'active'),
 (1721, 'Kristina', 'Redenšek', '', '2017-10-31 18:42:11', '', NULL, 'female', 'active');
+
+
+UPDATE :new_schema_name:.player_at_team SET valid = 0, last_season = 9 WHERE id IN (1233, 1514, 1915);
+
+INSERT INTO :new_schema_name:.player_at_team (id, team_id, player_id, first_season, until, valid) VALUES
+(1931, 12, 1687, 10, NULL, 1),
+(1946, 1, 1702, 10, NULL, 1),
+(1924, 24, 1680, 10, NULL, 1),
+(1956, 4, 1712, 10, NULL, 1),
+(1939, 51, 1695, 10, NULL, 1),
+(1959, 20, 1715, 10, NULL, 1),
+(1947, 1, 1703, 10, NULL, 1),
+(1932, 24, 1688, 10, NULL, 1),
+(1951, 59, 1707, 10, NULL, 1),
+(1923, 59, 1679, 10, NULL, 1),
+(1938, 51, 1694, 10, NULL, 1),
+(1950, 24, 1706, 10, NULL, 1),
+(1948, 1, 1704, 10, NULL, 1),
+(1957, 4, 1713, 10, NULL, 1),
+(1925, 10, 1681, 10, NULL, 1),
+(1949, 9, 1705, 10, NULL, 1),
+(1937, 51, 1693, 10, NULL, 1),
+(1922, 59, 1678, 10, NULL, 1),
+(1917, 60, 1384, 10, NULL, 1),
+(1945, 1, 1701, 10, NULL, 1),
+(1930, 9, 1686, 10, NULL, 1),
+(1958, 20, 1714, 10, NULL, 1),
+(1940, 1, 1696, 10, NULL, 1),
+(1920, 59, 1676, 10, NULL, 1),
+(1952, 24, 1708, 10, NULL, 1),
+(1935, 15, 1691, 10, NULL, 1),
+(1942, 8, 1698, 10, NULL, 1),
+(1927, 10, 1683, 10, NULL, 1),
+(1934, 2, 1690, 10, NULL, 1),
+(1919, 1, 1675, 10, NULL, 1),
+(1955, 49, 1711, 10, NULL, 1),
+(1928, 24, 1684, 10, NULL, 1),
+(1960, 5, 1716, 10, NULL, 1),
+(1943, 1, 1699, 10, NULL, 1),
+(1961, 5, 1717, 10, NULL, 1),
+(1933, 1, 1689, 10, NULL, 1),
+(1918, 1, 1674, 10, NULL, 1),
+(1929, 24, 1685, 10, NULL, 1),
+(1954, 24, 1710, 10, NULL, 1),
+(1944, 1, 1700, 10, NULL, 1),
+(1936, 51, 1692, 10, NULL, 1),
+(1953, 24, 1709, 10, NULL, 1),
+(1941, 8, 1697, 10, NULL, 1),
+(1926, 10, 1682, 10, NULL, 1),
+(1921, 59, 1677, 10, NULL, 1),
+(1916, 5, 1673, 10, NULL, 1);
 
 INSERT INTO :new_schema_name:.tournament (id, name, date, location, duration, season_id, deleted) VALUES
 (88, 'Kvalifikace MČR Mix', STR_TO_DATE('2017-09-23 01:00:00','%Y-%m-%d %H:%i:%s'), 'Vrhaveč a Neznašovy', 2, 10, 0),
