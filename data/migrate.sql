@@ -205,7 +205,7 @@ LEFT JOIN TeamRosterMember trm ON trm.roster_id = r.id
 LEFT JOIN :new_schema_name:.tournament_belongs_to_league_and_division tld ON r.tournament_id = tld.tournament_id
 LEFT JOIN :new_schema_name:.division d ON d.id = tld.division_id
 WHERE LOWER(trm.teamName) LIKE CONCAT(d.name, '%')
-GROUP BY r.id, trm.teamName;
+GROUP BY r.id, trm.teamName, tld.id;
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.player_at_roster (
     id int AUTO_INCREMENT PRIMARY KEY,
@@ -244,7 +244,7 @@ FROM PendingPayment p
 LEFT JOIN PendingPayment_Member pm ON pm.PendingPayment_id = p.id
 LEFT JOIN :new_schema_name:.season s ON s.start < p.date and ((SELECT min(s2.start) FROM :new_schema_name:.season s2 WHERE s2.start > s.start) > p.date OR (SELECT min(s2.start) FROM :new_schema_name:.season s2 WHERE s2.start > s.start) is null)
 WHERE p.validated
-GROUP BY p.id
+GROUP BY p.id, s.id
 );
 
 CREATE TABLE IF NOT EXISTS :new_schema_name:.highschool (
@@ -334,42 +334,42 @@ INSERT INTO :new_schema_name:.player (id, first_name, last_name, birth_date, cre
 (1683, 'Vojtěch', 'Mašín', '1999-03-24 00:00:00', '2017-08-16 22:23:46', 'vojtamasin@volny.cz', NULL, 'male', 'active'),
 (1684, 'Lucie', 'Čermáková', '1998-10-23 00:00:00', '2017-08-16 22:30:36', 'lucie.cermak@seznam.cz', NULL, 'female', 'active'),
 (1685, 'Filip', 'Černík', '2000-01-13 00:00:00', '2017-08-17 06:56:43', 'fil.cernik@gmail.com', NULL, 'male', 'active'),
-(1686, 'Barbora', 'Pinlová', '', '2017-08-17 15:01:58', '', NULL, 'female', 'active'),
+(1686, 'Barbora', 'Pinlová', NULL, '2017-08-17 15:01:58', '', NULL, 'female', 'active'),
 (1687, 'Dominika', 'Králíková', '2000-07-21 00:00:00', '2017-08-17 15:12:41', 'kralikovadominika@seznam.cz', NULL, 'female', 'active'),
 (1688, 'Leona', 'Kryštofová', '2002-05-17 00:00:00', '2017-08-17 21:02:46', 'leous.krys@seznam.cz', NULL, 'female', 'active'),
 (1689, 'Stepan', 'Kupka', '1997-03-31 00:00:00', '2017-08-18 13:28:57', 'stepan.kupka@gmail.cz', NULL, 'male', 'active'),
 (1690, 'Eliška', 'Benešová', '2000-12-16 00:00:00', '2017-08-18 15:06:08', 'benes.elik@seznam.cz', NULL, 'female', 'active'),
 (1691, 'Ester', 'Pínová', '2001-03-14 00:00:00', '2017-08-20 23:36:17', '', NULL, 'female', 'active'),
-(1692, 'Jakub', 'Kocka', '', '2017-08-25 19:44:02', '', NULL, 'male', 'active'),
-(1693, 'David', 'Ogurčák', '', '2017-08-25 19:44:14', '', NULL, 'male', 'active'),
-(1694, 'Martin', 'Cibula', '', '2017-08-25 19:44:24', '', NULL, 'male', 'active'),
-(1695, 'Juraj', 'Trappl', '', '2017-08-25 19:46:46', '', NULL, 'male', 'active'),
-(1696, 'Vojtěch', 'Žák', '', '2017-08-25 19:51:00', '', NULL, 'male', 'active'),
-(1697, 'Pavla', 'Feitová', '', '2017-09-02 07:00:24', 'pavla.feitova@seznam.cz', NULL, 'female', 'active'),
-(1698, 'Tereza', 'Košičárová', '', '2017-09-02 07:02:14', 'terezaraptor1@seznam.cz', NULL, 'female', 'active'),
+(1692, 'Jakub', 'Kocka', NULL, '2017-08-25 19:44:02', '', NULL, 'male', 'active'),
+(1693, 'David', 'Ogurčák', NULL, '2017-08-25 19:44:14', '', NULL, 'male', 'active'),
+(1694, 'Martin', 'Cibula', NULL, '2017-08-25 19:44:24', '', NULL, 'male', 'active'),
+(1695, 'Juraj', 'Trappl', NULL, '2017-08-25 19:46:46', '', NULL, 'male', 'active'),
+(1696, 'Vojtěch', 'Žák', NULL, '2017-08-25 19:51:00', '', NULL, 'male', 'active'),
+(1697, 'Pavla', 'Feitová', NULL, '2017-09-02 07:00:24', 'pavla.feitova@seznam.cz', NULL, 'female', 'active'),
+(1698, 'Tereza', 'Košičárová', NULL, '2017-09-02 07:02:14', 'terezaraptor1@seznam.cz', NULL, 'female', 'active'),
 (1699, 'Markéta', 'Placerová', '2002-02-10 00:00:00', '2017-09-06 15:07:05', 'maky313@seznam.cz', NULL, 'female', 'active'),
 (1700, 'Michaela', 'Dorovínová', '2001-09-23 00:00:00', '2017-09-06 15:08:29', 'misadorovinova@email.cz', NULL, 'female', 'active'),
 (1701, 'Kristýna', 'Jandová', '2000-06-21 00:00:00', '2017-09-06 15:09:11', 'jandova.tyna@seznam.cz', NULL, 'female', 'active'),
 (1702, 'Urša', 'Jakopin', '1996-07-10 00:00:00', '2017-09-06 15:17:26', 'timirtm@gmail.com', NULL, 'female', 'active'),
 (1703, 'Aurora', 'Lesnik', '2001-10-02 00:00:00', '2017-09-06 15:24:00', 'aurora.lesnik@gmail.com', NULL, 'female', 'active'),
 (1704, 'Nikola', 'Holub', '2000-06-12 00:00:00', '2017-09-06 15:35:17', 'nikola.holub@volny.cz', NULL, 'male', 'active'),
-(1705, 'Jesse', 'Gan', '', '2017-09-07 16:26:37', 'jesse13579@gmail.com', NULL, 'male', 'active'),
+(1705, 'Jesse', 'Gan', NULL, '2017-09-07 16:26:37', 'jesse13579@gmail.com', NULL, 'male', 'active'),
 (1706, 'Daniel', 'Gladiš', '1993-10-12 00:00:00', '2017-09-08 09:03:06', 'daniel.gladisml@seznam.cz', NULL, 'male', 'active'),
 (1707, 'Josef', 'Czyž', '2000-07-21 00:00:00', '2017-09-21 11:14:49', 'josef.czyz@email.cz', NULL, 'male', 'active'),
 (1708, 'Vít', 'Voráč', '1998-05-13 00:00:00', '2017-09-21 11:16:50', 'vit.vorac@seznam.cz', NULL, 'male', 'active'),
 (1709, 'Markéta', 'Lihotzká', '1996-02-22 00:00:00', '2017-09-21 11:19:41', 'mlihotzka@seznam.cz', NULL, 'female', 'active'),
 (1710, 'Filip', 'Šútovský', '2001-02-11 00:00:00', '2017-09-21 11:22:06', 'sutovskyfilip@gmail.com', NULL, 'male', 'active'),
-(1711, 'Kateřina', 'Nečasová', '', '2017-09-21 12:56:31', '', NULL, 'female', 'active'),
-(1712, 'Kai', 'Jensen', '', '2017-09-21 14:06:47', 'kaiba_1@comcast.net', NULL, 'male', 'active'),
+(1711, 'Kateřina', 'Nečasová', NULL, '2017-09-21 12:56:31', '', NULL, 'female', 'active'),
+(1712, 'Kai', 'Jensen', NULL, '2017-09-21 14:06:47', 'kaiba_1@comcast.net', NULL, 'male', 'active'),
 (1713, 'Anna', 'Čížková', '2002-11-02 00:00:00', '2017-09-21 14:07:15', 'anickazirou@seznam.cz', NULL, 'female', 'active'),
 (1714, 'Dorota', 'Špásová', '2001-12-21 00:00:00', '2017-09-22 11:33:40', '', NULL, 'female', 'active'),
 (1715, 'Tereza', 'Šimonová', '2001-05-02 00:00:00', '2017-09-22 11:34:24', '', NULL, 'female', 'active'),
 (1716, 'Lucie', 'Galíková', '2000-06-02 00:00:00', '2017-09-22 16:35:04', 'neuvedeno@mail.xyz', NULL, 'female', 'active'),
-(1717, 'Katarína', 'Sitová', '', '2017-09-22 16:35:51', '', NULL, 'female', 'active'),
-(1718, 'Magdalena', 'Feitová', '', '2017-10-05 12:08:23', 'maja.feitova@seznam.cz', NULL, 'female', 'active'),
-(1719, 'Alena', 'Franců', '', '2017-10-05 12:09:00', 'aja.francu@gmail.com', NULL, 'female', 'active'),
-(1720, 'Tereza', 'Nejedlá', '', '2017-10-05 12:10:18', 'tereza.nejedla@volny.cz', NULL, 'female', 'active'),
-(1721, 'Kristina', 'Redenšek', '', '2017-10-31 18:42:11', '', NULL, 'female', 'active');
+(1717, 'Katarína', 'Sitová', NULL, '2017-09-22 16:35:51', '', NULL, 'female', 'active'),
+(1718, 'Magdalena', 'Feitová', NULL, '2017-10-05 12:08:23', 'maja.feitova@seznam.cz', NULL, 'female', 'active'),
+(1719, 'Alena', 'Franců', NULL, '2017-10-05 12:09:00', 'aja.francu@gmail.com', NULL, 'female', 'active'),
+(1720, 'Tereza', 'Nejedlá', NULL, '2017-10-05 12:10:18', 'tereza.nejedla@volny.cz', NULL, 'female', 'active'),
+(1721, 'Kristina', 'Redenšek', NULL, '2017-10-31 18:42:11', '', NULL, 'female', 'active');
 
 
 UPDATE :new_schema_name:.player_at_team SET valid = 0, last_season = 9 WHERE id IN (1233, 1514, 1915);

@@ -14,5 +14,9 @@ if [ $dev ]; then
    sed -i 's/\/\*\* DEV-ONLY://g' $dir/specific_migrate.sql
    sed -i 's/:DEV-ONLY \*\*\///g' $dir/specific_migrate.sql
 fi
-mysql -D $source_db -u $user -p < $dir/specific_migrate.sql && echo "migration done"
+
+if [ ! $host ]; then
+   export host="localhost"
+fi
+mysql -D $source_db -u $user -p -h $host< $dir/specific_migrate.sql && echo "migration done"
 # rm $dir/specific_migrate.sql
