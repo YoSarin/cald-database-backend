@@ -9,6 +9,7 @@ Včechna create/modify API by měla vracet na výstupu json, obsahující pole `
 + [Odebrání hráče z týmu](#delete-teamteam_idplayerplayer_id)
 + [Přiřazení týmu agentovi](#post-teamteam_iduseruser_id)
 + [Odebrání týmu agentovi](#delete-teamteam_iduseruser_id)
++ [Historie hráče](#get-playerplayer_idhistory)
 + [Zobrazení poplatků týmu za sezónu](#)
 + [Admin API](admin.md)
 
@@ -84,14 +85,16 @@ Upraví data hráče
 **`phone`**: Telefon na hráče (nepovinné)  
 
 ## `POST /team/{team_id}/player/{player_id}`  
-**Params**: `team_id`, `player_id`  
+**Params**: `team_id`, `player_id`, `season_id`  
 **Auth**: token, musí být správce týmu  
-Přidá existujícího hráče do týmu jako člena. Hráč nemůže být členem dvou týmů současně  
+Přidá existujícího hráče do týmu jako člena. Hráč nemůže být členem dvou týmů současně.  
+**`season_id`**: ID první sezóny kdy hráč za tým hrál  
 
 ## `DELETE /team/{team_id}/player/{player_id}`  
-**Params**: `team_id`, `player_id`  
+**Params**: `team_id`, `player_id`, `season_id`  
 **Auth**: token, musí být správce týmu  
 Odstraní existujícího hráče z týmu  
+**`season-id`**: ID poslední sezóny, kdy hráč byl členem daného týmu  
 
 ## `POST /team/{team_id}/user/{user_id}`  
 **Params**: `team_id`, `player_id`, `privilege`  
@@ -104,6 +107,11 @@ Dá uživateli práva k týmu
 **Auth**: token, musí být správce týmu  
 Odebere uživateli práva k týmu  
 **`privilege`**: právo které chceme odebrat uživateli (view|edit)  
+
+## `GET /player/{player_id}/history`
+**Params**: `player_id`  
+**Auth**: token  
+Vrátí historii uživatele - sezóny kdy byl členem týmu a ČALD turnaje, kterých se v těchto sezónách účastnil  
 
 ## `GET /team/{team_id}/season/{season_id}/fee`  
 **Params**: `team_id`, `season_id`  

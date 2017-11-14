@@ -134,12 +134,12 @@ abstract class Model
             }
             self::$queryCount++;
             $rows = $db->select(static::table(), $joins, $fields, $select);
-            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")");
+            // \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")");
         } else {
             self::$queryCount++;
             $rows = $db->select(static::table(), static::fields(static::table()), $select);
-            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ")");
-            \App\Context::getContainer()->logger->info($db->last_query());
+            // \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ")");
+            // \App\Context::getContainer()->logger->info($db->last_query());
         }
 
         if (!empty($db->error()[1])) {
