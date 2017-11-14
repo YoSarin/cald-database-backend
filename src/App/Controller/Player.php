@@ -1,7 +1,11 @@
 <?php
 namespace App\Controller;
 
+use App\Model\Tournament;
+use App\Model\PlayerAtTeam;
+use App\Model\PlayerAtRoster;
 use App\Model\UserHasPrivilege;
+use App\Model\TournamentBelongsToLeagueAndDivision;
 use App\Model\User as UserModel;
 use Respect\Validation\Validator;
 
@@ -80,6 +84,68 @@ class Player extends \App\Common
             ['status' => 'OK', 'info' => 'Player updated', "data" => $p->getData()],
             200
         );
+    }
+
+    public function history(\Slim\Http\Request $request, $response, $args)
+    {
+        $playerId = $request->requireParams(["player_id"]);
+        $player = \App\Model\Player::loadById($playerId);
+        $seasons = \App\Model\Season::load();
+
+        $data = [
+            "player" => $player->getData(),
+            // array_values to not have wrongly indexed array
+            // array_filter to get rid of empty values
+            "seasons" => array_values(array_filter(
+                array_map(function ($season) use ($playerId) {
+                    $homeTeams = \App\Model\Team::load(["AND" => ["player_at_team.player_id" => $playerId, "player_at_team.first_season" => $season->getId()]], null, 0, [
+                        "[><]player_at_team" => ["team.id" => "team_id"],
+                    ], true);
+                    if (!$homeTeams) {
+                        $homeTeams = \App\Model\Team::load(["AND" => ["player_at_team.player_id" => $playerId, "player_at_team.first_season[<=]" => $season->getId()], "ORDER" => ["player_at_team.first_season" => "ASC"]], 1, 0, [
+                            "[><]player_at_team" => ["team.id" => "team_id"],
+                        ], true);
+                    }
+                    if (!$homeTeams) {
+                        return;
+                    }
+                    $rosters = \App\Model\Roster::load(["AND" => ["player_at_roster.player_id" => $playerId, "tournament.season_id" => $season->getId()]], null, 0, [
+                        "[><]tournament_belongs_to_league_and_division(tournament_belongs_to_league_and_division)" => ["roster.tournament_belongs_to_league_and_division_id" => "id"],
+                        "[><]tournament(tournament)" => ["tournament_belongs_to_league_and_division.tournament_id" => "id"],
+                        "[><]player_at_roster(player_at_roster)" => ["roster.id" => "roster_id"],
+                        "[><]team(team)" => ["roster.team_id" => "id"],
+                    ]);
+
+                    return [
+                        "season" => $season->getData(),
+                        "home_teams" => array_map(function ($team) { return $team->getData(); }, $homeTeams),
+                        "tournaments" => array_map(function($roster) use ($playerId) {
+                            $tld = \App\Model\TournamentBelongsToLeagueAndDivision::loadById($roster->getTournamentBelongsToLeagueAndDivisionId());
+                            $tournament = \App\Model\Tournament::loadById($tld->getTournamentId());
+                            $team = \App\Model\Team::loadById($roster->getTeamId());
+                            return [
+                                "tournament" => $tournament->getData(),
+                                "team" => $team->getData(),
+                            ];
+                        }, $rosters),
+                    ];
+                }, $seasons),
+                function ($item) { return $item != null; }
+            ))
+        ];
+
+        return $this->container->view->render(
+            $response,
+            $data,
+            200
+        );
+
+        /*
+        $teamIds = array_merge($teamMemberIds, $teamPlayerIds);
+        $seasonIds = array_merge($seasonMemberIds, $seasonPlayerIds);
+        $teams = \App\Model\Team::load(["id" => $teamIds], null, 0, [], true);
+        $seasons = \App\Model\Season::load(["id" => $seasonIds], null, 0, [], true);
+        */
     }
 
     public function listAll(\Slim\Http\Request $request, $response, $args)

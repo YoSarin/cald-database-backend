@@ -81,7 +81,7 @@ abstract class Model
         return $data;
     }
 
-    public static function load($select = null, $limit = null, $offset = 0, $joins = [])
+    public static function load($select = null, $limit = null, $offset = 0, $joins = [], $skipEnrich = false)
     {
         if ($select) {
             foreach ($select as $key => $value) {
@@ -110,7 +110,9 @@ abstract class Model
             }
         }
         $db = Context::getContainer()->db;
-        $select = static::enrichSelect($select);
+        if (!$skipEnrich) {
+            $select = static::enrichSelect($select);
+        }
         if ($limit) {
             $select["LIMIT"] = [(int)$offset, (int)$limit];
         }
@@ -122,19 +124,22 @@ abstract class Model
                     continue;
                 }
                 $table = $matches[2];
-                if ($matches[4]) {
+                if (isset($matches[4])) {
                     $prefix = $matches[4];
+                } else {
+                    $prefix = $table;
                 }
                 $newFields = call_user_func(['\\App\\Model\\' . ucfirst(self::camelcaseNotation($table)), 'fields'], $prefix);
                 $fields = array_merge($fields, $newFields);
             }
             self::$queryCount++;
             $rows = $db->select(static::table(), $joins, $fields, $select);
-            // echo "DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")\n";
+            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")");
         } else {
             self::$queryCount++;
             $rows = $db->select(static::table(), static::fields(static::table()), $select);
-            // echo "DB calls: " . self::$queryCount . " simple (" . static::table() . ")\n";
+            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ")");
+            \App\Context::getContainer()->logger->info($db->last_query());
         }
 
         if (!empty($db->error()[1])) {
