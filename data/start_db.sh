@@ -2,8 +2,6 @@
 cd $(dirname $0)
 MYSQL_ROOT_PASSWORD=cald
 docker build -t cald-db .
-export CID
-export IP
 CID=$(docker run --rm -d --expose=3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_USER=cald -e MYSQL_PASSWORD=cald --name=cald-db cald-db)
 trap "echo ' -> stopping docker'; docker stop $CID; exit" SIGHUP SIGINT SIGTERM
 
