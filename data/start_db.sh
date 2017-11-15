@@ -26,7 +26,7 @@ echo " OK"
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald -e "GRANT ALL ON cald.* to 'cald'@'%';" && \
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald_original -e 'GRANT ALL ON cald_original to "cald"@"%";' && \
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald_original -e "GRANT ALL ON cald_original.* to 'cald'@'%';" && \
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald_original < caldMembersRecord.mysql && \
+    mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald_original < src/caldMembersRecord.mysql && \
     source_db=cald_original target_db=cald user=root pass=$MYSQL_ROOT_PASSWORD host=$IP ./migrate.sh && \
     docker logs -f $CID \
 ) || (\
