@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage="Usage:
-    source_db={source_db_name} target_db={target_db_name} user={db_user_name} [dev=1] ./migrate.sh"
+    source_db={source_db_name} target_db={target_db_name} user={db_user_name} [dev=1] [host=localhost] [pass=<password>] ./migrate.sh"
 
 dir="$(dirname "$0")"
 
@@ -16,7 +16,12 @@ if [ $dev ]; then
 fi
 
 if [ ! $host ]; then
-   export host="localhost"
+   host="localhost"
 fi
-mysql -D $source_db -u $user -p -h $host< $dir/specific_migrate.sql && echo "migration done"
+
+if [ $pass ]; then
+   mysql -D $source_db -u $user -p$pass -h $host< $dir/specific_migrate.sql && echo "migration done"
+else
+   mysql -D $source_db -u $user -p$pass -h $host< $dir/specific_migrate.sql && echo "migration done"
+fi
 # rm $dir/specific_migrate.sql
