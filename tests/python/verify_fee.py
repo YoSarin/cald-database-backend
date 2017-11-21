@@ -1,25 +1,15 @@
 #!/usr/bin/python
-import urllib2
-import json
-
-
-def call(url):
-    req = urllib2.Request(url)
-    req.add_header('X-Auth-Token', "token")
-    resp = urllib2.urlopen(req)
-    content = json.loads(resp.read())
-    return content
-
+from lib import call
 
 season_id = 9
 
-admin_data = call('http://cald/admin/fee?season_id=%s' % season_id)
+admin_data = call('admin/fee?season_id=%s' % season_id)
 fees = admin_data['data']['fee']
 duplicities = admin_data['data']['duplicate_players']
 total = 0
 for team in fees:
     team_id = fees[team]['id']
-    team_data = call('http://cald/team/%s/season/%u/fee'
+    team_data = call('team/%s/season/%u/fee'
                      % (team_id, season_id))
     admin_missing = [
         player for player
@@ -37,19 +27,27 @@ for team in fees:
         in duplicities
         if team in duplicities[duplicity]["teams"]
     ]
-    team_duplicates = [duplicity for duplicity in team_data["data"]["duplicate_players"]]
+    team_duplicates = [
+        duplicity for duplicity in team_data["data"]["duplicate_players"]
+    ]
 
-    print "%20s [#%3s] %s %s" % (team, fees[team]["id"], len(fees[team]["players"]), fees[team]["fee"])
+    print "%20s [#%3s] %s %s" % (
+        team, fees[team]["id"], len(fees[team]["players"]), fees[team]["fee"]
+    )
 
     total += fees[team]["fee"]
 
     ok = True
     if (len(set(admin_duplicities) - set(team_duplicates)) > 0):
         ok = False
-        print "%20s team is missing duplicities: %s" % (team, ", ".join(set(admin_duplicities) - set(team_duplicates)))
+        print "%20s team is missing duplicities: %s" % (
+            team, ", ".join(set(admin_duplicities) - set(team_duplicates))
+        )
     if (len(set(team_duplicates) - set(admin_duplicities)) > 0):
         ok = False
-        print "%20s admin is missing duplicities: %s" % (team, ", ".join(set(team_duplicates) - set(admin_duplicities)))
+        print "%20s admin is missing duplicities: %s" % (
+            team, ", ".join(set(team_duplicates) - set(admin_duplicities))
+        )
         print team_data["data"]["duplicate_players"]
         print duplicities[duplicity]["teams"]
     if (len(admin_missing) > 0):

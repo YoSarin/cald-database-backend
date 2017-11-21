@@ -85,7 +85,7 @@ abstract class Model
     {
         if ($select) {
             foreach ($select as $key => $value) {
-                if (strpos($key, '.') === false && !in_array($key, ['OR', 'AND'])) {
+                if (strpos($key, '.') === false && !in_array($key, ['OR', 'AND', 'ORDER'])) {
                     $select[self::table() . "." . $key] = $value;
                     unset($select[$key]);
                 }
