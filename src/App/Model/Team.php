@@ -39,7 +39,7 @@ class Team extends \App\Model
         $query = "
         select
         	pr.player_id, group_concat(distinct tm.name separator '|') as team_played,
-            (CASE f.type WHEN 'player_per_season' THEN f.amount ELSE sum(f.amount) END) as amount,
+            COALESCE(pfc.amount, (CASE f.type WHEN 'player_per_season' THEN f.amount ELSE sum(f.amount) END)) as amount,
             htm.name as home_team, htm.id home_team_id, CONCAT(p.first_name, ' ', p.last_name) as player
         from player p
         left join player_at_roster pr on pr.player_id = p.id
@@ -63,6 +63,7 @@ class Team extends \App\Model
         		select id from player_at_team where player_id = pt.player_id and first_season <= " . (int)$seasonId . " order by first_season desc limit 1
         	)
         ) htm ON htm.player_id = pr.player_id
+        left join player_fee_change pfc on pfc.player_id = p.id AND pfc.season_id = t.season_id
         where t.season_id = " . (int)$seasonId . "
         " . $teamCondition . "
         group by pr.player_id";
