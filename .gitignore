@@ -4,3 +4,5 @@
 src/settings.local.php
 /data/specific_migrate.sql
 /data/src
+*.pyc
+*.patch
