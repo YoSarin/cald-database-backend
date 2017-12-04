@@ -1571,7 +1571,7 @@ return array(
     'Symfony\\Component\\Yaml\\Unescaper' => $vendorDir . '/symfony/yaml/Unescaper.php',
     'Symfony\\Component\\Yaml\\Yaml' => $vendorDir . '/symfony/yaml/Yaml.php',
     'Tests\\Functional\\BaseTestCase' => $baseDir . '/tests/functional/BaseTestCase.php',
-    'Tests\\Functional\\ModelTest' => $baseDir . '/tests/functional/ModelTest.php',
+    'Tests\\Functional\\Model\\ModelTest' => $baseDir . '/tests/functional/model/ModelTest.php',
     'Text_Template' => $vendorDir . '/phpunit/php-text-template/src/Template.php',
     'Webmozart\\Assert\\Assert' => $vendorDir . '/webmozart/assert/src/Assert.php',
     'phpDocumentor\\Reflection\\DocBlock' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlock.php',

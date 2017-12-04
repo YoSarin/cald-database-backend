@@ -1718,7 +1718,7 @@ class ComposerStaticInitdd023c8dd47a8656123cd3c094e50e9b
         'Symfony\\Component\\Yaml\\Unescaper' => __DIR__ . '/..' . '/symfony/yaml/Unescaper.php',
         'Symfony\\Component\\Yaml\\Yaml' => __DIR__ . '/..' . '/symfony/yaml/Yaml.php',
         'Tests\\Functional\\BaseTestCase' => __DIR__ . '/../..' . '/tests/functional/BaseTestCase.php',
-        'Tests\\Functional\\ModelTest' => __DIR__ . '/../..' . '/tests/functional/ModelTest.php',
+        'Tests\\Functional\\Model\\ModelTest' => __DIR__ . '/../..' . '/tests/functional/model/ModelTest.php',
         'Text_Template' => __DIR__ . '/..' . '/phpunit/php-text-template/src/Template.php',
         'Webmozart\\Assert\\Assert' => __DIR__ . '/..' . '/webmozart/assert/src/Assert.php',
         'phpDocumentor\\Reflection\\DocBlock' => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src/DocBlock.php',

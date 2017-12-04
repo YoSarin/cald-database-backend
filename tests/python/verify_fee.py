@@ -11,15 +11,16 @@ for team in fees:
     team_id = fees[team]['id']
     team_data = call('team/%s/season/%u/fee'
                      % (team_id, season_id))
+
     admin_missing = [
-        player for player
+        player['name'] for player
         in fees[team]["players"]
         if player not in team_data["data"]["fee"][team]["players"]
     ]
     team_missing = [
-        player for player
+        player["name"] for player
         in team_data["data"]["fee"][team]["players"]
-        if player not in fees[team]["players"]
+        if player not in [p["name"] for p in fees[team]["players"]]
     ]
 
     admin_duplicities = [
@@ -38,12 +39,11 @@ for team in fees:
     total += fees[team]["fee"]
 
     ok = True
-    if (len(set(admin_duplicities) - set(team_duplicates)) > 0):
+    if (len(set(team_duplicates) - set(admin_duplicities)) > 0):
         ok = False
         print "%20s team is missing duplicities: %s" % (
             team, ", ".join(set(admin_duplicities) - set(team_duplicates))
         )
-    if (len(set(team_duplicates) - set(admin_duplicities)) > 0):
         ok = False
         print "%20s admin is missing duplicities: %s" % (
             team, ", ".join(set(team_duplicates) - set(admin_duplicities))

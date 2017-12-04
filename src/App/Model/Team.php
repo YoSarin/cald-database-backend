@@ -85,12 +85,16 @@ class Team extends \App\Model
                 ];
             }
             $out[$row['home_team']]["fee"] += (int)$row['amount'];
-            $out[$row['home_team']]['players'][] = $row['player'];
+            $out[$row['home_team']]['players'][] = [
+                "name" => $row['player'],
+                "fee" => $row['amount']
+            ];
 
             if (!isset($players[$playerId])) {
                 $players[$playerId] = [
                     "id" => $playerId,
                     "name" => $row['player'],
+                    "fee" => $row['amount'],
                     "teams" => []
                 ];
             }
