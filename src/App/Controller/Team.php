@@ -97,7 +97,10 @@ class Team extends \App\Common
         $season = \App\Model\Season::loadById($seasonId);
 
         if (\App\Model\PlayerAtTeam::exists(['player_id' => $player->getId(), 'valid' => true])) {
-            throw new \App\Exception\Http\Http400($player->getFullName() . ' is already active in some other team.');
+            throw new \App\Exception\Http\Http400($player->getFullName() . ' is still active in some other team.');
+        }
+        if (\App\Model\PlayerAtTeam::exists(['player_id' => $player->getId(), 'last_season[>=]' => $seasonId])) {
+            throw new \App\Exception\Http\Http400($player->getFullName() . ' was in season ' . $season->getName() . ' active in another team.');
         }
         $playerAtTeam = \App\Model\PlayerAtTeam::create($player->getId(), $team->getId(), $season->getId());
         $playerAtTeam->save();
