@@ -39,7 +39,7 @@ class Team extends \App\Model
         $query = "
         select
         	pr.player_id, group_concat(distinct tm.name separator '|') as team_played,
-            group_concat(distinct concat(tm.name, '@', t.name) separator '|') as tournaments_played,
+            group_concat(distinct concat(t.name, ' (', tm.name, ')') separator '|') as tournaments_played,
             COALESCE(pfc.amount, (CASE f.type WHEN 'player_per_season' THEN f.amount ELSE sum(f.amount) END)) as amount,
             COALESCE(htm.name, 'Není členem žádného týmu') as home_team, htm.id home_team_id, CONCAT(p.first_name, ' ', p.last_name) as player
         from player p
