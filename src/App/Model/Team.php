@@ -40,7 +40,7 @@ class Team extends \App\Model
         select
         	pr.player_id, group_concat(distinct tm.name separator '|') as team_played,
             COALESCE(pfc.amount, (CASE f.type WHEN 'player_per_season' THEN f.amount ELSE sum(f.amount) END)) as amount,
-            htm.name as home_team, htm.id home_team_id, CONCAT(p.first_name, ' ', p.last_name) as player
+            COALESCE(htm.name, \"Není členem žádného týmu\") as home_team, htm.id home_team_id, CONCAT(p.first_name, ' ', p.last_name) as player
         from player p
         left join player_at_roster pr on pr.player_id = p.id
         left join roster r on r.id = pr.roster_id
