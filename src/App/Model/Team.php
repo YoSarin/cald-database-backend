@@ -60,7 +60,7 @@ class Team extends \App\Model
         	from player_at_team pt
         	left join team t ON pt.team_id = t.id
         	where pt.id = (
-        		select id from player_at_team where player_id = pt.player_id and first_season <= " . (int)$seasonId . " order by first_season desc limit 1
+        		select id from player_at_team where player_id = pt.player_id and first_season <= " . (int)$seasonId . " and last_season >= " . (int)$seasonId . " order by first_season desc limit 1
         	)
         ) htm ON htm.player_id = pr.player_id
         left join player_fee_change pfc on pfc.player_id = p.id AND pfc.season_id = t.season_id
@@ -88,7 +88,7 @@ class Team extends \App\Model
             $out[$row['home_team']]['players'][] = [
                 "name" => $row['player'],
                 "fee" => $row['amount'],
-                "player" => $row['player_id'],
+                "id" => $row['player_id'],
                 "home_team" => $row['home_team'],
                 "on_roster" => $row['team_played']
             ];
