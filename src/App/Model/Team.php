@@ -33,7 +33,7 @@ class Team extends \App\Model
         $teamCondition = "";
 
         if ($teamId) {
-            $teamCondition = "and htm.id = " . (int)$teamId;
+            $teamCondition = "and (htm.id = " . (int)$teamId . ")";
         }
 
         $query = "
