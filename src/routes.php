@@ -24,6 +24,9 @@ $app->post('/admin/fee/pardon', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adm
 $app->delete('/admin/fee/pardon', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "cancelPardonFee"]));
 $app->get('/admin/fee', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "getFee"]));
 $app->put('/admin/user/{user_id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "updateUser"]));
+$app->post('/admin/nationality', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "addNationality"]));
+$app->put('/admin/nationality/{nationality_id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "updateNationality"]));
+$app->delete('/admin/nationality/{nationality_id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "deleteNationality"]));
 
 $app->post('/user', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "create"]));
 $app->post('/user/login', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "login"]));
@@ -44,6 +47,10 @@ $app->get('/team/{team_id}/season/{season_id}/fee', $auth->verify(App\Auth\Check
 $app->get('/player/{player_id}/history', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "history"]));
 $app->post('/player', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "create"]));
 $app->post('/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "update"]));
+$app->post('/player/{player_id}/address', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "addAddress"]));
+$app->get('/player/{player_id}/address', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "getAddress"]));
+$app->post('/player/{player_id}/address/{address_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "updateAddress"]));
+$app->delete('/player/{player_id}/address/{address_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "deleteAddress"]));
 
 $app->post('/roster', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$rosterController, "create"]));
 $app->delete('/roster/{roster_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "remove"]));

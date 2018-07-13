@@ -37,4 +37,22 @@ Smaže konkrétní 'odpustek' poplatků pro hráče
 **Params**: `email`, `login`, `password`, `state`  
 **Auth**: token, musí být admin  
 Upraví data pro daného uživatele  
-**`state`**: změní stav, může být jeden z 'waiting_for_confirmation', 'confirmed', 'blocked', 'password_reset'  
+**`state`**: změní stav, může být jeden z 'waiting_for_confirmation', 'confirmed', 'blocked', 'password_reset'
+
+## `POST /admin/nationality`  
+**Params**: `name`, `country_name`  
+**Auth**:token, musí být admin  
+Přidá novou národnost  
+**`name`**: jméno národnosti (Česká, Slovenská, ...)  
+**`country_name`**: jméno státu ke kterému se národnost váže (Česko, Slovensko, ...); zatím k ničemu, ale pak to můžeme ještě provázat s adresama  
+
+## `PUT /admin/nationality/{nationality_id}`  
+**Params**: `[name]`, `[country_name]`  
+**Auth**:token, musí být admin  
+Upraví národnost  
+**`name`**: jméno národnosti (Česká, Slovenská, ...)  
+**`country_name`**: jméno státu ke kterému se národnost váže (Česko, Slovensko, ...); zatím k ničemu, ale pak to můžeme ještě provázat s adresama  
+
+## `DELETE /admin/nationality/{nationality_id}`  
+**Auth**:token, musí být admin  
+Odstraní národnost  

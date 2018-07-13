@@ -26,8 +26,13 @@ echo " OK"
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald -e "GRANT ALL ON cald.* to 'cald'@'%';" && \
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald_original -e 'GRANT ALL ON cald_original to "cald"@"%";' && \
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald_original -e "GRANT ALL ON cald_original.* to 'cald'@'%';" && \
+    echo "filling DB with data" && \
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald_original < src/caldMembersRecord.sql && \
+    echo "performing migration" && \
     source_db=cald_original target_db=cald user=root pass=$MYSQL_ROOT_PASSWORD host=$IP ./migrate.sh && \
+    echo "running updates" && \
+    ./update.py --host $IP --user root --password $MYSQL_ROOT_PASSWORD && \
+    echo "starting logs" && \
     docker logs -f $CID \
 ) || (\
     echo -n "FAILED - stopping container: " && docker stop $CID \

@@ -63,7 +63,7 @@ Vytvoří nový tým a dá aktuálně přihlášenému uživateli práva k jeho 
 Upravuje data týmu
 
 ## `POST /player`  
-**Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`  
+**Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`  
 **Auth**: token  
 Vytvoří nového hráče  
 **`first_name`**: Křestní jméno nového hráče  
@@ -71,10 +71,12 @@ Vytvoří nového hráče
 **`birth_date`**: Datum narození, formát YYYY-MM-DD  
 **`sex`**: Pohlaví (male/female)  
 **`email`**: Mail hráče (nepovinný)  
-**`phone`**: Telefon na hráče (nepovinné)
+**`phone`**: Telefon na hráče (nepovinné)  
+**`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
+**`nationality_id`**: ID národnosti hráče (nepovinné)  
 
 ## `POST /player/{id}`  
-**Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`  
+**Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`  
 **Auth**: token, musí být správce týmu  
 Upraví data hráče  
 **`first_name`**: Křestní jméno nového hráče  
@@ -83,6 +85,27 @@ Upraví data hráče
 **`sex`**: Pohlaví (male/female)  
 **`email`**: Mail hráče (nepovinný)  
 **`phone`**: Telefon na hráče (nepovinné)  
+**`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
+**`nationality_id`**: ID národnosti hráče (nepovinné)  
+
+## `GET /player/{player_id}/address`  
+**Auth**: token, musí být správce týmu  
+Zobrazí adresy asociované s hráčem  
+
+## `POST /player/{player_id}/address`
+**Params**: `country`, `city`, `[street]`, `[zip_code]`
+**Auth**: token, musí být správce týmu  
+Přidá ke hráči novou adresu  
+
+## `POST /player/{player_id}/address/{address_id}`  
+**Params**: `[country]`, `[city]`, `[street]`, `[zip_code]`
+**Auth**: token, musí být správce týmu  
+Upraví hráčovu adresu  
+
+## `DELETE /player/{player_id}/address/{address_id}`  
+**Auth**: token, musí být správce týmu  
+Smaže hráči adresu  
+
 
 ## `POST /team/{team_id}/player/{player_id}`  
 **Params**: `team_id`, `player_id`, `season_id`  

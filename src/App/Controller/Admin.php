@@ -5,6 +5,7 @@ use App\Model\Player;
 use App\Model\Fee;
 use App\Model\Season;
 use App\Model\Tournament;
+use App\Model\Nationality;
 use App\Model\PlayerFeeChange;
 use App\Model\FeeNeededForLeague;
 use App\Model\TournamentBelongsToLeagueAndDivision;
@@ -156,6 +157,59 @@ class Admin extends \App\Common
         return $this->container->view->render(
             $response,
             ["status" => "OK", "data" => $u->getData()],
+            200
+        );
+    }
+
+
+    public function addNationality($request, $response, $args)
+    {
+        list($name, $countryName) = $request->requireParams(["name", "country_name"]);
+
+        $n = new \App\Model\Nationality();
+        $n->setName($name);
+        $n->setCountryName($countryName);
+        $n->save();
+
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'data' => $n->getData()],
+            200
+        );
+    }
+
+
+    public function updateNationality($request, $response, $args)
+    {
+        list($id) = $request->requireParams(["nationality_id"]);
+        $name = trim($request->getParam("name"));
+        $countryName = trim($request->getParam("country_name"));
+
+        $n = \App\Model\Nationality::loadById($id);
+        if ($name) {
+            $n->setName($name);
+        }
+        if ($countryName) {
+            $n->setCountryName($countryName);
+        }
+        $n->save();
+
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK'],
+            200
+        );
+    }
+
+    public function deleteNationality($request, $response, $args)
+    {
+        list($id) = $request->requireParams(["nationality_id"]);
+        $n = \App\Model\Nationality::loadById($id);
+        $n->delete();
+
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK'],
             200
         );
     }
