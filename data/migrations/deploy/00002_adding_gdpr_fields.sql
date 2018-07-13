@@ -8,16 +8,16 @@ CREATE TABLE nationality (
 CREATE TABLE address (
     id INT NOT NULL AUTO_INCREMENT,
     type ENUM('permanent residence', 'residence in czechia'),
-    player INT NOT NULL,
+    player_id INT NOT NULL,
     city VARCHAR(255),
     street VARCHAR(255),
     zip_code VARCHAR(10),
     country VARCHAR(255),
     PRIMARY KEY(id),
-    CONSTRAINT address_ibfk1 FOREIGN KEY (player) REFERENCES player(id)
+    CONSTRAINT address_ibfk1 FOREIGN KEY (player_id) REFERENCES player(id)
 );
 
 ALTER TABLE player
-    ADD COLUMN nationality INT,
+    ADD COLUMN nationality_id INT,
     ADD COLUMN gdpr_consent BOOL NOT NULL DEFAULT FALSE,
-    ADD CONSTRAINT player_ibfk1 FOREIGN KEY (nationality) REFERENCES nationality(id);
+    ADD CONSTRAINT player_ibfk1 FOREIGN KEY (nationality_id) REFERENCES nationality(id);

@@ -10,6 +10,7 @@ use App\Model\PlayerFeeChange;
 use App\Model\FeeNeededForLeague;
 use App\Model\TournamentBelongsToLeagueAndDivision;
 use App\Exception\Http\Http404;
+use App\Exception\Http\Http400;
 use App\Exception\WrongParam;
 use App\Context;
 
@@ -166,9 +167,11 @@ class Admin extends \App\Common
     {
         list($name, $countryName) = $request->requireParams(["name", "country_name"]);
 
-        $n = new \App\Model\Nationality();
-        $n->setName($name);
-        $n->setCountryName($countryName);
+        if (\App\Model\Nationality::exists(["name" => $name])) {
+            throw new Http400("Nationality '$name' already exists");
+        }
+
+        $n = \App\Model\Nationality::create($name, $countryName);
         $n->save();
 
         return $this->container->view->render(

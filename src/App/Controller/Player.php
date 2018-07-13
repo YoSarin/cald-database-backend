@@ -7,7 +7,6 @@ use App\Model\PlayerAtRoster;
 use App\Model\UserHasPrivilege;
 use App\Model\TournamentBelongsToLeagueAndDivision;
 use App\Model\User as UserModel;
-use App\Model\Player;
 use App\Model\Address;
 use App\Model;
 use Respect\Validation\Validator;
@@ -192,13 +191,11 @@ class Player extends \App\Common
 
     public function addAddress(\App\Request $request, $response, $args)
     {
-        list($playerID, $city, $country) = $request->requireParams(["player_id", "city", "country"]);
+        list($playerID, $type, $city, $country) = $request->requireParams(["player_id", "type", "city", "country"]);
         if (!\App\Model\Player::exists(["id" => $playerID])) {
             throw new \App\Exception\Http\Http404("No such player");
         }
-        $a = new \App\Model\Address();
-        $a->setCountry($country);
-        $a->setCity($city);
+        $a = \App\Model\Address::create($type, $playerID, $city, $country);
 
         $street = trim($request->getParam("street"));
         $zipCode = trim($request->getParam("zip_code"));
@@ -210,7 +207,7 @@ class Player extends \App\Common
             $a->setZipCode($zipCode);
         }
 
-        $a->save()
+        $a->save();
         return $this->container->view->render(
             $response,
             ['status' => 'OK', "info" => "address added", "id" => $a->getId()],
@@ -233,6 +230,7 @@ class Player extends \App\Common
         $zipCode = trim($request->getParam("zip_code"));
         $country = trim($request->getParam("country"));
         $city = trim($request->getParam("city"));
+        $type = trim($request->getParam("type"));
 
         if (!empty($street)) {
             $a->setStreet($street);
@@ -241,13 +239,16 @@ class Player extends \App\Common
             $a->setZipCode($zipCode);
         }
         if (!empty($country)) {
-            $a->setStreet($country);
+            $a->setCountry($country);
         }
         if (!empty($city)) {
-            $a->setZipCode($city);
+            $a->setCity($city);
+        }
+        if (!empty($type)) {
+            $a->setType($type);
         }
 
-        $a->save()
+        $a->save();
         return $this->container->view->render(
             $response,
             ['status' => 'OK', "info" => "address updated", "data" => $a->getData()],

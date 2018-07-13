@@ -93,9 +93,10 @@ Upraví data hráče
 Zobrazí adresy asociované s hráčem  
 
 ## `POST /player/{player_id}/address`
-**Params**: `country`, `city`, `[street]`, `[zip_code]`
+**Params**: `type`, `country`, `city`, `[street]`, `[zip_code]`
 **Auth**: token, musí být správce týmu  
 Přidá ke hráči novou adresu  
+**`type`**: typ adresy: [`'permanent residence'`, `'residence in czechia'`]
 
 ## `POST /player/{player_id}/address/{address_id}`  
 **Params**: `[country]`, `[city]`, `[street]`, `[zip_code]`
