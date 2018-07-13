@@ -77,7 +77,7 @@ class Player extends \App\Common
             if (!\App\Model\Nationality::exists(['id' => $nationalityID])) {
                 throw new \App\Exception\Http\Http404("No such nationality");
             }
-            $p->setNationality($nationalityID);
+            $p->setNationalityId($nationalityID);
         }
         if (!empty($phone)) {
             $p->setPhone($phone);

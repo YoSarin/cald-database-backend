@@ -24,7 +24,7 @@ class Player extends \App\Model
         self::SEX_FEMALE,
     ];
 
-    protected static $fields = ["id", "first_name", "last_name", "birth_date", "created_at", "email", "phone", "sex", "state", "nationality", "gdpr_consent"];
+    protected static $fields = ["id", "first_name", "last_name", "birth_date", "created_at", "email", "phone", "sex", "state", "nationality_id", "gdpr_consent"];
 
     public function getFullName()
     {
