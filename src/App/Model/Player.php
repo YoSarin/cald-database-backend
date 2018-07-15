@@ -31,7 +31,7 @@ class Player extends \App\Model
         return $this->getFirstName() . ' ' . $this->getLastName();
     }
 
-    public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE, $nationality = null, $gdprConsent = false)
+    public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE, $nationalityID = null, $gdprConsent = false)
     {
         $i = new self();
         $i->setFirstName($firstName);
@@ -41,7 +41,7 @@ class Player extends \App\Model
         $i->setEmail($email);
         $i->setPhone($phone);
         $i->setBirthDate($birthDate);
-        $i->setNationality($nationality);
+        $i->setNationalityId($nationalityID);
         $i->setGdprConsent($gdprConsent);
         $i->setCreatedAt(date("Y-m-d H:i:s", time()));
 
