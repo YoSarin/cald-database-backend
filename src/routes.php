@@ -5,6 +5,7 @@ $auth = new App\Auth($container);
 
 $devController = new App\Controller\Developer($container);
 $adminController = new App\Controller\Admin($container);
+$seasonController = new App\Controller\Season($container);
 $userController = new App\Controller\User($container);
 $teamController = new App\Controller\Team($container);
 $playerController = new App\Controller\Player($container);
@@ -27,6 +28,13 @@ $app->put('/admin/user/{user_id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$
 $app->post('/admin/nationality', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "addNationality"]));
 $app->put('/admin/nationality/{nationality_id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "updateNationality"]));
 $app->delete('/admin/nationality/{nationality_id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "deleteNationality"]));
+
+$app->put('/season', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$seasonController, "createSeason"]));
+$app->post('/season/{season_id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$seasonController, "updateSeason"]));
+$app->put('/fee', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$seasonController, "createFee"]));
+$app->post('/fee/{id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$seasonController, "updateFee"]));
+$app->delete('/fee/{id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$seasonController, "deleteFee"]));
+$app->put('/fee/{fee_id}/activate', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$seasonController, "activateFee"]));
 
 $app->post('/user', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "create"]));
 $app->post('/user/login', $auth->verify(App\Auth\Check::ALLOW_ALL, [$userController, "login"]));
