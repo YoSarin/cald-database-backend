@@ -7,7 +7,6 @@ use App\Model\Season;
 use App\Model\Tournament;
 use App\Model\Nationality;
 use App\Model\PlayerFeeChange;
-use App\Model\FeeNeededForLeague;
 use App\Model\TournamentBelongsToLeagueAndDivision;
 use App\Exception\Http\Http404;
 use App\Exception\Http\Http400;
