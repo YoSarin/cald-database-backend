@@ -8,10 +8,8 @@ class Test extends \App\Common
 {
     public function test($request, $response, $args)
     {
-        $joins = [];
-        \App\Model\PlayerAtRoster::extendedJoins($joins);
-        $data = \App\Model\PlayerAtRoster::load(["player_at_roster.id" => 8966], null, 0, $joins);
-        return $this->container->view->render($response, ["data" => $data[0]->getExtendedData()], 200);
+        $tournaments = \App\Model\Tournament::load(["season_id" => 16]);
+        return $this->container->view->render($response, ["data" => $tournaments->getExtendedData()], 200);
     }
 
     public function team($request, $response, $args)
