@@ -12,7 +12,7 @@ class ListItems extends \App\Common
         "player", "team", "player_at_team",
         "roster", "player_at_roster", "tournament",
         "season", "tournament_belongs_to_league_and_division",
-        "division", "league", "user", "nationality"
+        "division", "league", "user", "nationality", "fee", "fee_needed_for_league"
     ];
 
     public function listAll(\Slim\Http\Request $request, $response, $args)
