@@ -12,7 +12,7 @@ class ErrorHandler extends Common
 
         switch (true) {
             case $exception instanceof \App\Exception\Database:
-                $data['error'] = "Database went off";
+                $data['error'] = "Database went off: " . $exception->getMessage();
                 $code = $exception->getCode();
                 $this->container->logger->error($exception->getMessage());
                 break;

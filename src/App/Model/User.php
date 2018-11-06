@@ -61,7 +61,7 @@ class User extends \App\Model
     public static function loggedUser($token)
     {
         $t = Token::load(['token' => $token, 'type' => Token::TYPE_LOGIN]);
-        if (count($t) != 1) {
+        if (count($t) < 1) {
             return null;
         }
         $user = static::load(['id' => $t[0]->getUserId()]);

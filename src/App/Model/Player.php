@@ -31,6 +31,10 @@ class Player extends \App\Model
         return $this->getFirstName() . ' ' . $this->getLastName();
     }
 
+    public function getHomeTeam()
+    {
+    }
+
     public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE, $nationalityID = null, $gdprConsent = false)
     {
         $i = new self();
@@ -46,6 +50,9 @@ class Player extends \App\Model
         $i->setCreatedAt(date("Y-m-d H:i:s", time()));
 
         return $i;
+    }
+
+    public static function playersAtTournament($tournamentId) {
     }
 
     public static function extendedJoins(&$joins = [], $alias = "") {

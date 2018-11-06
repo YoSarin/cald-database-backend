@@ -93,19 +93,23 @@ abstract class Model
         }
 
         $out = [];
-        if (count($select) == 1 && isset($select["id"])) {
-            if (!is_array($select["id"])) {
-                $select["id"] = [$select["id"]];
+        if (!isset($select[static::table() . ".id"]) && isset($select["id"])) {
+          $select[static::table() . ".id"] = $select["id"];
+          unset($select["id"]);
+        }
+        if (count($select) == 1 && (isset($select[static::table().".id"]))) {
+            if (!is_array($select[static::table().".id"])) {
+                $select[static::table().".id"] = [$select[static::table().".id"]];
             }
-            foreach ($select["id"] as $key => $id) {
+            foreach ($select[static::table().".id"] as $key => $id) {
                 $data = static::fromCache($id);
                 if ($data) {
-                    $out[] = static::fromArray($data);
-                    unset($select["id"][$key]);
+                    $out[] = static::fromArray($data, false);
+                    unset($select[static::table().".id"][$key]);
                 }
             }
-            if (empty($select["id"])) {
-                unset($select["id"]);
+            if (empty($select[static::table().".id"])) {
+                unset($select[static::table().".id"]);
                 return $out;
             }
         }
@@ -134,11 +138,11 @@ abstract class Model
             }
             self::$queryCount++;
             $rows = $db->select(static::table(), $joins, $fields, $select);
-            // \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")");
+            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " complex (" . static::table() . ":" . count($rows) . ")");
         } else {
             self::$queryCount++;
             $rows = $db->select(static::table(), static::fields(static::table()), $select);
-            // \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ")");
+            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ")");
             // \App\Context::getContainer()->logger->info($db->last_query());
         }
 
@@ -155,7 +159,7 @@ abstract class Model
 
     public static function loadById($id)
     {
-        $out = static::load(["id" => $id]);
+        $out = static::load([static::table().".id" => $id]);
         return $out[0];
     }
 
@@ -182,14 +186,16 @@ abstract class Model
         return [];
     }
 
-    protected static function fromArray($data)
+    protected static function fromArray($data, $cacheIt = true)
     {
         $t = static::table();
         $i = new static();
         foreach ($data as $table => $row) {
             if ($table == $t) {
                 $i->data = $row;
-                static::cache($row);
+                if ($cacheIt) {
+                  static::cache($row);
+                }
             } else {
                 $table = explode(self::MAGICAL_SEPARATOR_FOR_ALIASES, $table)[0];
                 $class = '\\App\\Model\\' . ucfirst(self::camelcaseNotation($table));
@@ -209,14 +215,18 @@ abstract class Model
         if (!isset(self::$cache[static::table()])) {
             self::$cache[static::table()] = [];
         }
+        // \App\Context::getContainer()->logger->info("storing " . static::table() . "#" . $row["id"] . " to cache");
         self::$cache[static::table()][$row["id"]] = $row;
     }
 
     protected static function fromCache($id)
     {
+        // \App\Context::getContainer()->logger->info("loading " . static::table() . "#" . $id . " from cache");
         if (!isset(self::$cache[static::table()][$id])) {
             return null;
+            // \App\Context::getContainer()->logger->info("failed " . static::table() . "#" . $id . " from cache");
         }
+        // \App\Context::getContainer()->logger->info("success " . static::table() . "#" . $id . " from cache");
         return [static::table() => self::$cache[static::table()][$id]];
     }
 
@@ -239,6 +249,11 @@ abstract class Model
 
         if (strpos($name, "get") === 0 && in_array($field, static::$fields)) {
             return isset($this->data[$field]) ? $this->data[$field] : null;
+        } else if (strpos($name, "get") === 0 && in_array($field . "_id", static::$fields)) {
+            $class = '\\App\\Model\\' . ucfirst($upperCaseField);
+            if (class_exists($class)) {
+                return call_user_func([$class, 'loadById'], $this->data[$field . "_id"]);
+            }
         } elseif (strpos($name, "set") === 0 && in_array($field, static::$fields) && count($args) == 1) {
             if (property_exists(__CLASS__, $upperCaseField . "List")) {
                 if (!array_key_exists($args[0], static::${$upperCaseField . "List"})) {

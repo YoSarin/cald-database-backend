@@ -199,12 +199,24 @@ class Player extends \App\Common
 
         $street = trim($request->getParam("street"));
         $zipCode = trim($request->getParam("zip_code"));
+        $district = trim($request->getParam("district"));
+        $orientationNumber = trim($request->getParam("orientation_number"));
+        $descriptiveNumber = trim($request->getParam("descriptive_number"));
 
         if (!empty($street)) {
             $a->setStreet($street);
         }
         if (!empty($zipCode)) {
             $a->setZipCode($zipCode);
+        }
+        if (!empty($district)) {
+            $a->setDistrict($district);
+        }
+        if (!empty($orientationNumber)) {
+            $a->setOrientationNumber($orientationNumber);
+        }
+        if (!empty($descriptiveNumber)) {
+            $a->setDescriptiveNumber($descriptiveNumber);
         }
 
         $a->save();
@@ -231,6 +243,9 @@ class Player extends \App\Common
         $country = trim($request->getParam("country"));
         $city = trim($request->getParam("city"));
         $type = trim($request->getParam("type"));
+        $district = trim($request->getParam("district"));
+        $orientationNumber = trim($request->getParam("orientation_number"));
+        $descriptiveNumber = trim($request->getParam("descriptive_number"));
 
         if (!empty($street)) {
             $a->setStreet($street);
@@ -246,6 +261,15 @@ class Player extends \App\Common
         }
         if (!empty($type)) {
             $a->setType($type);
+        }
+        if (!empty($district)) {
+            $a->setDistrict($district);
+        }
+        if (!empty($orientationNumber)) {
+            $a->setOrientationNumber($orientationNumber);
+        }
+        if (!empty($descriptiveNumber)) {
+            $a->setDescriptiveNumber($descriptiveNumber);
         }
 
         $a->save();
