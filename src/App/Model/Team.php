@@ -29,6 +29,47 @@ class Team extends \App\Model
         }
     }
 
+    public static function getFeeNew($seasonId, $teamId = null) {
+
+        foreach ($data as $row) {
+            $playerId = (int) $row['player_id'];
+            if (!isset($out[$row['home_team']])) {
+                $out[$row['home_team']] = [
+                    "fee" => 0,
+                    "players" => [],
+                    "id" => $row['home_team_id'],
+                ];
+            }
+            $out[$row['home_team']]["fee"] += (int)$row['amount'];
+            $out[$row['home_team']]['players'][] = [
+                "name" => $row['player'],
+                "fee" => $row['amount'],
+                "id" => $row['player_id'],
+                "home_team" => $row['home_team'],
+                "on_tournament" => $row['tournaments_played'],
+            ];
+
+            if (!isset($players[$playerId])) {
+                $players[$playerId] = [
+                    "id" => $playerId,
+                    "name" => $row['player'],
+                    "fee" => $row['amount'],
+                    "teams" => []
+                ];
+            }
+            $players[$playerId]["teams"] = explode("|", $row["team_played"]);
+        }
+
+        $duplicatePlayers = array_filter($players, function ($teams) {
+            return count($teams["teams"]) > 1;
+        });
+
+        return [
+            'fee' => $out,
+            'duplicate_players' => $duplicatePlayers
+        ];
+    }
+
     public static function getFee($seasonId, $teamId = null) {
         $teamCondition = "";
 

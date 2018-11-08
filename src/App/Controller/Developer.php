@@ -27,6 +27,7 @@ class Developer extends \App\Common
 
     public function drop($request, $response, $args)
     {
+        return $this->container->view->render($response, ['status' => 'NOPE', 'info' => 'ani prd'], 403);
 
         $database = $this->container->db;
         $database->query("
@@ -60,6 +61,11 @@ class Developer extends \App\Common
 
         // Render index view
         return $this->container->view->render($response, ['status' => 'OK', 'info' => 'database dropped'], 200);
+    }
+
+    public function info($request, $response, $args)
+    {
+        return $this->container->view->render($response, ['status' => 'OK', 'info' => 'We\'re here'], 200);
     }
 
     public function healthcheck($request, $response, $args)
