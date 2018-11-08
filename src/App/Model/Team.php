@@ -77,6 +77,11 @@ class Team extends \App\Model
         $players = [];
 
         foreach ($data as $row) {
+            if ($row['amount']) {
+                $row['amount'] = 400;
+            } else {
+                $row['amount'] = 0;
+            }
             $playerId = (int) $row['player_id'];
             if (!isset($out[$row['home_team']])) {
                 $out[$row['home_team']] = [
