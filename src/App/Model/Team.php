@@ -82,7 +82,7 @@ class Team extends \App\Model
         	pr.player_id, 
             group_concat(distinct tm.name separator '|') as team_played,
             group_concat(distinct concat(t.name, ' (', tm.name, ')') separator '|') as tournaments_played,
-            f.name as fee_name,
+            f.name as fee_name, f.type as fee_type,
             COALESCE(pfc.amount, (CASE f.type 
                 WHEN 'player_per_season' THEN f.amount 
                 WHEN 'player_per_tournament' THEN f.amount * count(t.id) 
@@ -95,7 +95,7 @@ class Team extends \App\Model
         left join tournament_belongs_to_league_and_division tld on tld.id = r.tournament_belongs_to_league_and_division_id
         left join tournament t on t.id = tld.tournament_id
         left join team tm on tm.id = r.team_id
-        left join (
+        inner join (
         	select f.*, ffl.league_id
         	from fee f
         	left join fee_needed_for_league ffl ON ffl.fee_id = f.id
@@ -137,6 +137,7 @@ class Team extends \App\Model
                 "name" => $row['player'],
                 "fee" => $row['amount'],
                 "fee_name" => (string) $row['fee_name'],
+                "fee_type" => (string) $row['fee_type'],
                 "id" => $row['player_id'],
                 "home_team" => $row['home_team'],
                 "on_tournament" => $row['tournaments_played'],
