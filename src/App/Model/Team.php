@@ -82,6 +82,7 @@ class Team extends \App\Model
         	pr.player_id, 
             group_concat(distinct tm.name separator '|') as team_played,
             group_concat(distinct concat(t.name, ' (', tm.name, ')') separator '|') as tournaments_played,
+            f.name as fee_name,
             COALESCE(pfc.amount, (CASE f.type 
                 WHEN 'player_per_season' THEN f.amount 
                 WHEN 'player_per_tournament' THEN f.amount * count(t.id) 
@@ -135,6 +136,7 @@ class Team extends \App\Model
             $out[$row['home_team']]['players'][] = [
                 "name" => $row['player'],
                 "fee" => $row['amount'],
+                "fee_name" => (string) $row['fee_name'],
                 "id" => $row['player_id'],
                 "home_team" => $row['home_team'],
                 "on_tournament" => $row['tournaments_played'],
