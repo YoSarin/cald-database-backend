@@ -79,9 +79,14 @@ class Team extends \App\Model
 
         $query = "
         select
-        	pr.player_id, group_concat(distinct tm.name separator '|') as team_played,
+        	pr.player_id, 
+            group_concat(distinct tm.name separator '|') as team_played,
             group_concat(distinct concat(t.name, ' (', tm.name, ')') separator '|') as tournaments_played,
-            COALESCE(pfc.amount, (CASE f.type WHEN 'player_per_season' THEN f.amount ELSE sum(f.amount) END)) as amount,
+            COALESCE(pfc.amount, (CASE f.type 
+                WHEN 'player_per_season' THEN f.amount 
+                WHEN 'player_per_tournament' THEN f.amount * count(t.id) 
+                ELSE 0 
+            END)) as amount,
             COALESCE(htm.name, 'Není členem žádného týmu') as home_team, htm.id home_team_id, CONCAT(p.first_name, ' ', p.last_name) as player
         from player p
         left join player_at_roster pr on pr.player_id = p.id
@@ -108,7 +113,7 @@ class Team extends \App\Model
         left join player_fee_change pfc on pfc.player_id = p.id AND pfc.season_id = t.season_id
         where t.season_id = " . (int)$seasonId . "
         " . $teamCondition . "
-        group by pr.player_id";
+        group by pr.player_id, f.id, pfc.id";
 
         $data = \App\Context::getContainer()->db->query($query);
 
@@ -118,11 +123,6 @@ class Team extends \App\Model
         $players = [];
 
         foreach ($data as $row) {
-            if ($row['amount']) {
-                $row['amount'] = 400;
-            } else {
-                $row['amount'] = 0;
-            }
             $playerId = (int) $row['player_id'];
             if (!isset($out[$row['home_team']])) {
                 $out[$row['home_team']] = [
@@ -148,7 +148,7 @@ class Team extends \App\Model
                     "teams" => []
                 ];
             }
-            $players[$playerId]["teams"] = explode("|", $row["team_played"]);
+            $players[$playerId]["teams"] = array_unique(array_merge($players[$playerId]["teams"], explode("|", $row["team_played"])));
         }
 
         $duplicatePlayers = array_filter($players, function ($teams) {
