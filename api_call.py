@@ -20,14 +20,20 @@ config = {
 user = os.environ["CALD_USER"]
 password = os.environ["CALD_PASS"]
 
-parser = argparse.ArgumentParser(description="perform API calls")
-parser.add_argument('--production', action="store_true", help="if calls shall be done at prod env")
-parser.add_argument('--local', action="store_true", help="if calls shall be done at localhost env")
-parser.add_argument('--api')
-parser.add_argument('--post', action="store_true")
-parser.add_argument('--put', action="store_true")
-parser.add_argument('--delete', action="store_true")
-parser.add_argument('--data', type=parse_qsl, default={})
+def createParser():
+    parser = argparse.ArgumentParser(description="perform API calls")
+    parser.add_argument('--production', action="store_true", help="if calls shall be done at prod env")
+    parser.add_argument('--local', action="store_true", help="if calls shall be done at localhost env")
+    parser.add_argument('--api')
+    parser.add_argument('--post', action="store_true")
+    parser.add_argument('--put', action="store_true")
+    parser.add_argument('--delete', action="store_true")
+    parser.add_argument('--data', type=parseData, default={})
+    return parser
+
+def parseData(data):
+    tuples = parse_qsl(data)
+    return { t[0]:t[1] for t in tuples }
 
 def getToken(domain):
     response = requests.post("http://%s/user/login" % domain, data={"login":user, "password":password})
@@ -39,7 +45,7 @@ def callApi(method, domain, url, token, data={}):
     return response.content
 
 if __name__ == "__main__":
-    args = parser.parse_args()
+    args = createParser().parse_args()
     
     token = None
     domain = config["int"]["domain"]
