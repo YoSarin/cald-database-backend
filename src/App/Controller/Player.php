@@ -117,7 +117,7 @@ class Player extends \App\Common
             // array_filter to get rid of empty values
             "seasons" => array_values(array_filter(
                 array_map(function ($season) use ($playerId) {
-                    $homeTeams = \App\Model\Team::load(["AND" => ["player_at_team.player_id" => $playerId, "player_at_team.first_season[<=]" => $season->getId()], "ORDER" => ["player_at_team.first_season" => "DESC"]], 1, 0, [
+                    $homeTeams = \App\Model\Team::load(["AND" => ["player_at_team.player_id" => $playerId, "player_at_team.first_season[<=]" => $season->getId()], "ORDER" => ["player_at_team.first_season" => "DESC", "player_at_team.id" => "DESC"]], 1, 0, [
                         "[><]player_at_team" => ["team.id" => "team_id"],
                     ], true);
                     if (!$homeTeams) {
