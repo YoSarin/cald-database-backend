@@ -13,4 +13,14 @@ class Roster extends \App\Model
 
         return $i;
     }
+    
+    public function getTournament() {
+        return Tournament::load(
+            ["tournament_belongs_to_league_and_division.id" => $this->getTournamentBelongsToLEagueAndDivisionId()],
+            null, 0,
+            [
+                "[><]tournament_belongs_to_league_and_division" => ["id" => "tournament_id"]
+            ]
+        );
+    }
 }
