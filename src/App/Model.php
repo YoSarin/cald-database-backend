@@ -81,7 +81,16 @@ abstract class Model
         return $data;
     }
 
-    public static function load($select = null, $limit = null, $offset = 0, $joins = [], $skipEnrich = false)
+    public static function load($select = null, $limit = null, $offset = 0, $joins = [], $skipEnrich = false) {
+        return array_map(
+            function($row) {
+                return $row[static::table()];
+            },
+            static::loadAllObjects($select, $limit, $offset, $joins, $skipEnrich)
+        );
+    }
+
+    public static function loadAllObjects($select = null, $limit = null, $offset = 0, $joins = [], $skipEnrich = false)
     {
         if ($select) {
             foreach ($select as $key => $value) {
@@ -142,9 +151,9 @@ abstract class Model
         } else {
             self::$queryCount++;
             $rows = $db->select(static::table(), static::fields(static::table()), $select);
-            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ")");
-            // \App\Context::getContainer()->logger->info($db->last_query());
+            \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ":" . count($rows) . ")");
         }
+        // \App\Context::getContainer()->logger->info($db->last_query());
 
         if (!empty($db->error()[1])) {
             throw new \App\Exception\Database($db->error()[2] . ': ' . $db->last_query());
@@ -165,19 +174,20 @@ abstract class Model
 
     final public static function enrichSelect($select)
     {
-        if ($select == null && static::getExplicitCondtions() == null) {
-            return null;
+        $order = null;
+        if (array_key_exists("ORDER", $select)) {
+            $order = $select["ORDER"];
+            unset($select["ORDER"]);
         }
-        if ($select == null) {
-            return static::getExplicitCondtions();
+        if (!empty($select) || !empty(static::getExplicitCondtions())) {
+            $out = ["AND" => array_merge((array)static::getExplicitCondtions(), (array)$select)];
         }
-        if (static::getExplicitCondtions() == null) {
-            if (count($select) > 0) {
-                $select = ["AND" => $select];
-            }
-            return $select;
+        if ($order) {
+            $out["ORDER"] = $order;
         }
-        $out = ["AND" => array_merge(static::getExplicitCondtions(), $select)];
+        if (count($out) == 0) {
+            $out = null;
+        }
         return $out;
     }
 
@@ -188,6 +198,7 @@ abstract class Model
 
     protected static function fromArray($data, $cacheIt = true)
     {
+        $out = [];
         $t = static::table();
         $i = new static();
         foreach ($data as $table => $row) {
@@ -196,15 +207,16 @@ abstract class Model
                 if ($cacheIt) {
                   static::cache($row);
                 }
+                $out[$t] = $i;
             } else {
                 $table = explode(self::MAGICAL_SEPARATOR_FOR_ALIASES, $table)[0];
                 $class = '\\App\\Model\\' . ucfirst(self::camelcaseNotation($table));
                 if (class_exists($class)) {
-                    call_user_func([$class, 'fromArray'], [$table => $row]);
+                    $out = array_merge($out, call_user_func([$class, 'fromArray'], [$table => $row]));
                 }
             }
         }
-        return $i;
+        return $out;
     }
 
     protected static function cache($row)

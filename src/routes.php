@@ -17,6 +17,7 @@ $testController = new App\Controller\Test($container);
 $app->post('/developer/create', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "create"]));
 $app->post('/developer/drop', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$devController, "drop"]));
 $app->get('/healthcheck', $auth->verify(App\Auth\Check::ALLOW_ALL, [$devController, "healthcheck"]));
+$app->get('/', $auth->verify(App\Auth\Check::ALLOW_ALL, [$devController, "info"]));
 
 $app->post('/admin/tournament', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "createTournament"]));
 $app->put('/admin/tournament/{id}', $auth->verify(App\Auth\Check::ALLOW_ADMIN, [$adminController, "updateTournament"]));
@@ -51,6 +52,7 @@ $app->post('/team/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$t
 $app->post('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "addPlayer"]));
 $app->delete('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "removePlayer"]));
 $app->get('/team/{team_id}/season/{season_id}/fee', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "getFee"]));
+$app->get('/team/{team_id}/privileges', $auth->verify(App\Auth\Check::ALLOW_TEAM_VIEW, [$teamController, "getTeamPrivileges"]));
 
 $app->get('/player/{player_id}/history', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "history"]));
 $app->post('/player', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "create"]));
@@ -66,10 +68,10 @@ $app->post('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Chec
 $app->delete('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "removePlayer"]));
 
 // testing APIs - to be deleted at the end
-$app->get('/test', $auth->verify(App\Auth\Check::ALLOW_ALL, [$testController, "test"]));
-$app->get('/test/req', $auth->verify(App\Auth\Check::ALLOW_ALL, [$testController, "request"]));
-$app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$testController, "team"]));
-$app->post('/test/hs/{highschool_id}', $auth->verify(App\Auth\Check::ALLOW_HIGHSCHOOL_VIEW, [$testController, "hs"]));
+$app->get('/test', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "test"]));
+$app->get('/test/req', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "request"]));
+$app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "team"]));
+$app->post('/test/hs/{highschool_id}', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "hs"]));
 
 $app->options('/{routes:.+}', function ($request, $response, $args) {
     return $response;

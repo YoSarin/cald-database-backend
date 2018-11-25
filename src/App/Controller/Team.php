@@ -225,4 +225,31 @@ class Team extends \App\Common
             200
         );
     }
+    
+    public function getTeamPrivileges(\App\Request $request, $response, $args) {
+        list($teamId) = $request->requireParams(['team_id']);
+
+        if (!\App\Model\Team::exists(['id' => $teamId])) {
+            throw new \App\Exception\Http\Http404("No such team");
+        }
+
+        $data = \App\Model\UserHasPrivilege::load([
+            "OR" => [
+                "AND" => [
+                    "entity" => \App\Model\UserHasPrivilege::ENTITY_TEAM,
+                    "entity_id"  => $teamId
+                ],
+                "privilege" => \App\Model\UserHasPrivilege::PRIVILEGE_ADMIN,
+            ]
+        ]);
+        
+        return $this->container->view->render(
+            $response,
+            [
+                'status' => 'OK',
+                'data' => array_map(function ($item) { return $item->getExtendedData(); }, $data)
+            ],
+            200
+        );
+    }
 }

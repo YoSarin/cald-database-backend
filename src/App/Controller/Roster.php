@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Exception\Http\Http404;
+use App\Exception\Http\Http400;
 use App\Model\PlayerAtRoster;
 
 class Roster extends \App\Common
@@ -42,10 +43,22 @@ class Roster extends \App\Common
             throw new Http404("Wrong roster_id");
         }
 
-        if (PlayerAtRoster::exists(["AND" => ['player_id' => $playerId, 'tournament_id' => $roster->getTournamentId()]], ["[>]roster" => ["roster_id" => "id"]])) {
+        if (PlayerAtRoster::exists(["AND" => ['player_id' => $playerId, 'roster_id' => $roster->getId()]])) {
+            throw new Http400("Player is already on roster of this team");
+        }
+        
+        $tournamentIds = array_map(function ($t) { return $t->getId(); }, $roster->getTournament());
+        
+        if (PlayerAtRoster::exists(
+            ["AND" => ['player_id' => $playerId, 'tournament_id' => $tournamentIds]],
+            [
+                "[>]roster" => ["roster_id" => "id"],
+                "[>]tournament_belongs_to_league_and_division" => ["roster.tournament_belongs_to_league_and_division_id" => "id"]
+            ]
+        )) {
             throw new Http400("Player is already on roster of another team");
         }
-
+        
         $roster = PlayerAtRoster::create($playerId, $rosterId);
         $roster->save();
 
