@@ -320,6 +320,6 @@ class Check
 
     private static function authAllowLocalhost(\Slim\Http\Request $request, $response, $args)
     {
-        return $request->getAttribute('ip_address') == '127.0.0.1';
+        return in_array($request->getAttribute('ip_address'), ['172.17.0.1', '127.0.0.1']);
     }
 }

@@ -11,6 +11,7 @@ Včechna create/modify API by měla vracet na výstupu json, obsahující pole `
 + [Odebrání týmu agentovi](#delete-teamteam_iduseruser_id)  
 + [Historie hráče](#get-playerplayer_idhistory)  
 + [Zobrazení poplatků týmu za sezónu](#)  
++ [Zobrazení uživatelů majících přístup  týmu](#get-teamteam_idprivileges)
 + [Admin API](admin.md)  
   
 # Dostupná API:  
@@ -119,6 +120,11 @@ Přidá existujícího hráče do týmu jako člena. Hráč nemůže být člene
 **Auth**: token, musí být správce týmu  
 Odstraní existujícího hráče z týmu  
 **`season-id`**: ID poslední sezóny, kdy hráč byl členem daného týmu  
+
+## `GET /team/{team_id}/privileges`  
+**Params**: `team_id`  
+**Auth**: token, musí být správce týmu  
+Zobrazí kdo má jaké oprávnění k danému týmu  
   
 ## `POST /team/{team_id}/user/{user_id}`  
 **Params**: `team_id`, `player_id`, `privilege`  
