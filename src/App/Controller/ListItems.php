@@ -38,10 +38,6 @@ class ListItems extends \App\Common
 
         $model = "\\App\\Model\\" . ucfirst(\App\Model::camelcaseNotation($type));
         $joins = [];
-        if ($extend) {
-            // to preload and cache all extended data
-            $model::extendedJoins($joins);
-        }
         $data = $model::load($filter, $limit, $offset, $joins);
         $data = array_map(function ($item) use ($extend) {
             if ($extend) {
