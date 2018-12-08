@@ -27,6 +27,11 @@ class Roster extends \App\Common
         if (!$roster) {
             throw new Http404("Wrong roster_id");
         }
+        
+        if ($roster->getFinalized()) {
+            throw new Http400("Roster finalized");
+        }
+        
         $roster->delete();
         return $this->container->view->render(
             $response,
@@ -41,6 +46,10 @@ class Roster extends \App\Common
         $roster = \App\Model\Roster::loadById($rosterId);
         if (!$roster) {
             throw new Http404("Wrong roster_id");
+        }
+        
+        if ($roster->getFinalized()) {
+            throw new Http400("Roster finalized");
         }
 
         if (PlayerAtRoster::exists(["AND" => ['player_id' => $playerId, 'roster_id' => $roster->getId()]])) {
@@ -68,12 +77,53 @@ class Roster extends \App\Common
             200
         );
     }
+    
+    public function finalize(\App\Request $request, $response, $args)
+    {
+        list($rosterId) = $request->requireParams(['roster_id']);
+        $roster = \App\Model\Roster::loadById($rosterId);
+        if (!$roster) {
+            throw new Http404("Wrong roster_id");
+        }
+        
+        $roster->setFinalized(true);
+        $roster->save();
+        
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'info' => 'Roster finalized', 'data' => $roster->getData()],
+            200
+        );
+    }
+    
+    public function open(\App\Request $request, $response, $args)
+    {
+        list($rosterId) = $request->requireParams(['roster_id']);
+        $roster = \App\Model\Roster::loadById($rosterId);
+        if (!$roster) {
+            throw new Http404("Wrong roster_id");
+        }
+        
+        $roster->setFinalized(false);
+        $roster->save();
+        
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'info' => 'Roster unlocked', 'data' => $roster->getData()],
+            200
+        );
+    }
 
     public function removePlayer(\App\Request $request, $response, $args)
     {
         list($rosterId, $playerId) = $request->requireParams(['roster_id', 'player_id']);
-        if (!\App\Model\Roster::exists(["id" => $rosterId])) {
+        $roster = \App\Model\Roster::loadById($rosterId);
+        if (!$roster) {
             throw new Http404("Wrong roster_id");
+        }
+        
+        if ($roster->getFinalized()) {
+            throw new Http400("Roster finalized");
         }
 
         $playerRoster = PlayerAtRoster::load(['player_id' => $playerId, 'roster_id' => $rosterId]);

@@ -1,6 +1,6 @@
 # Admin Api - dostupná jen pro uživatele s Admin oprávněním  
 ## `POST /admin/tournament`
-**Params**: `name`, `date`, `location`, `duration`, `season_id`, `league_ids`, `division_ids`  
+**Params**: `name`, `date`, `location`, `duration`, `season_id`, `league_ids`, `division_ids`, `organizing_team_id`  
 **Auth**: token (musí být admin)  
 Vytvoří nový turnaj se zadanými parametry  
 **`name`**: jméno turnaje  
@@ -10,6 +10,7 @@ Vytvoří nový turnaj se zadanými parametry
 **`season_id`**: ID sezóny do které turnaj patří (pro výběr sezóny použij `GET /list/season`)  
 **`league_ids`**: pole ID lig (hala|venek|středoškolka|U23|...) do kterých turnaj patří (pro výběr sezóny použij `GET /list/league`)  
 **`division_ids`**: pole ID divizí (open|woman|mix) do kterých turnaj patří (pro výběr divize použij `GET /list/division`)  
+**`organizing_team_id`**: ID týmu který turnaj organizuje  
   
 ## `DELETE /admin/tournament/{id}`
 **Params**: `id`  

@@ -153,7 +153,7 @@ abstract class Model
             $rows = $db->select(static::table(), static::fields(static::table()), $select);
             \App\Context::getContainer()->logger->info("DB calls: " . self::$queryCount . " simple (" . static::table() . ":" . count($rows) . ")");
         }
-        // \App\Context::getContainer()->logger->info($db->last_query());
+        \App\Context::getContainer()->logger->info($db->last_query());
 
         if (!empty($db->error()[1])) {
             throw new \App\Exception\Database($db->error()[2] . ': ' . $db->last_query());

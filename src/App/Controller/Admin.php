@@ -17,11 +17,11 @@ class Admin extends \App\Common
 {
     public function createTournament($request, $response, $args)
     {
-        list($name, $date, $location, $duration, $season_id, $league_ids, $division_ids) = $request->requireParams(
-            ["name", "date", "location", "duration", "season_id", "league_ids", "division_ids"]
+        list($name, $date, $location, $duration, $season_id, $league_ids, $division_ids, $organizing_team_id) = $request->requireParams(
+            ["name", "date", "location", "duration", "season_id", "league_ids", "division_ids", "organizing_team_id"]
         );
 
-        $t = Tournament::create($name, $date, $location, $duration, $season_id);
+        $t = Tournament::create($name, $date, $location, $duration, $season_id, $organizing_team_id);
         $t->save();
         $tldList = [];
         foreach ($league_ids as $league_id) {

@@ -11,7 +11,7 @@ Včechna create/modify API by měla vracet na výstupu json, obsahující pole `
 + [Odebrání týmu agentovi](#delete-teamteam_iduseruser_id)  
 + [Historie hráče](#get-playerplayer_idhistory)  
 + [Zobrazení poplatků týmu za sezónu](#)  
-+ [Zobrazení uživatelů majících přístup  týmu](#get-teamteam_idprivileges)
++ [Zobrazení uživatelů majících přístup  týmu](#get-teamteam_idprivileges)  
 + [Admin API](admin.md)  
   
 # Dostupná API:  
@@ -147,3 +147,13 @@ Vrátí historii uživatele - sezóny kdy byl členem týmu a ČALD turnaje, kte
 **Params**: `team_id`, `season_id`  
 **Auth**: token, musí být správce týmu  
 Zobrazí poplatky které by měl tým za danou sezonu zaplatit ČALDu  
+
+## `POST /roster/{roster_id}/finalize`  
+**Params**: `roster_id`  
+**Auth**: token, musí být správce týmu pořádajícího turnaj  
+Označí danou soupisku za finální - nebude možné do ní provádět další změny  
+
+## `POST /roster/{roster_id}/open`  
+**Params**: `roster_id`  
+**Auth**: token, musí být správce týmu pořádajícího turnaj  
+Označí danou soupisku za nefinální - bude možné do ní provádět změny  

@@ -67,7 +67,7 @@ def main():
 
                 data = f.readlines()
                 if file_version >= 0:
-                    data.append("UPDATE db_metadata SET db_version = %s;\n" % file_version)
+                    data.append("UPDATE db_metadata SET db_version = %s, changed_at = NOW();\n" % file_version)
                 print "Performing: %s\n\t%s" % (os.path.basename(fileName), "\t".join(data))
 
                 if not db.in_transaction:

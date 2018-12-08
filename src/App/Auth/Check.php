@@ -21,6 +21,7 @@ class Check
     const ALLOW_PLAYER_VIEW = 'ALLOW_PLAYER_VIEW';
     const ALLOW_PLAYER_EDIT = 'ALLOW_PLAYER_EDIT';
     const ALLOW_ROSTER_EDIT = 'ALLOW_ROSTER_EDIT';
+    const ALLOW_TOURNAMENT_ORGANIZER = 'ALLOW_TOURNAMENT_ORGANIZER';
 
     private static $verifications = [
         self::ALLOW_ALL   => "authAllowAll",
@@ -36,6 +37,7 @@ class Check
         self::ALLOW_PLAYER_VIEW => 'authAllowPlayerView',
         self::ALLOW_PLAYER_EDIT => 'authAllowPlayerEdit',
         self::ALLOW_ROSTER_EDIT => 'authAllowRosterEdit',
+        self::ALLOW_TOURNAMENT_ORGANIZER => 'authAllowTournamentOrganizer',
     ];
 
     public static function verify($type, $request, $response, $args)
@@ -143,6 +145,35 @@ class Check
                 "privilege" => \App\Model\UserHasPrivilege::PRIVILEGE_EDIT
             ]
         ]);
+    }
+    
+    private static function authAllowTournamentOrganizer($request, $response, $args)
+    {
+        $ids = $request->requireAtLeastOne(["tournament_id", "roster_id"]);
+
+        if (!static::authAllowToken($request, $response, $args)) {
+            return false;
+        }
+        
+        $condition = ["tournament.id" => (int)$ids["tournament_id"]];
+        $joins = ["[><]tournament" => ["entity_id" => "organizing_team_id"]];
+        
+        if (array_key_exists("roster_id", $ids)) {
+            $condition = ["roster.id" => (int)$ids["roster_id"]];
+            $joins["[><]tournament_belongs_to_league_and_division"] = ["tournament.id" => "tournament_id"];
+            $joins["[><]roster"] = ["tournament_belongs_to_league_and_division.id" => "tournament_belongs_to_league_and_division_id"];
+        }
+        
+        return \App\Model\UserHasPrivilege::exists(
+            [
+                "AND" => array_merge([
+                    "user_id" => $request->currentUser()->getId(),
+                    "entity" => \App\Model\UserHasPrivilege::ENTITY_TEAM,
+                    "privilege" => \App\Model\UserHasPrivilege::PRIVILEGE_EDIT,
+                ], $condition)
+            ],
+            $joins
+        );
     }
 
     private static function authAllowHighschoolView($request, $response, $args)

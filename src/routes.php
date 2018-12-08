@@ -66,6 +66,9 @@ $app->post('/roster', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$rosterCon
 $app->delete('/roster/{roster_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "remove"]));
 $app->post('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "addPlayer"]));
 $app->delete('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "removePlayer"]));
+$app->post('/roster/{roster_id}/finalize', $auth->verify(App\Auth\Check::ALLOW_TOURNAMENT_ORGANIZER, [$rosterController, "finalize"]));
+$app->post('/roster/{roster_id}/open', $auth->verify(App\Auth\Check::ALLOW_TOURNAMENT_ORGANIZER, [$rosterController, "open"]));
+
 
 // testing APIs - to be deleted at the end
 $app->get('/test', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "test"]));

@@ -28,6 +28,7 @@ def createParser():
     parser.add_argument('--post', action="store_true")
     parser.add_argument('--put', action="store_true")
     parser.add_argument('--delete', action="store_true")
+    parser.add_argument('--token')
     parser.add_argument('--data', type=parseData, default={})
     return parser
 
@@ -47,13 +48,14 @@ def callApi(method, domain, url, token, data={}):
 if __name__ == "__main__":
     args = createParser().parse_args()
     
-    token = None
+    token = args.token
     domain = config["int"]["domain"]
     if args.production:
         domain = config["prod"]["domain"]
     if args.local:
         domain = config["local"]["domain"]
-        token = "token"
+        if token == None:
+            token = "token"
     
     method = "GET"
     if args.post:

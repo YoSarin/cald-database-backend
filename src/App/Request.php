@@ -44,6 +44,27 @@ class Request extends \Slim\Http\Request
 
         return $output;
     }
+    
+    public function requireAtLeastOne($names)
+    {    
+        $output = [];
+        $params = array_merge(
+            $this->getParams(),
+            $this->getAttribute('route')->getArguments()
+        );
+        $missing = [];
+        foreach ($names as $name) {
+            if (array_key_exists($name, $params)) {
+                $output[$name] = $params[$name];
+            }
+        }
+
+        if (empty($output)) {
+            throw new \App\Exception\MissingParam("At least one of params has to be present: " . implode(', ', $names));
+        }
+
+        return $output;
+    }
 
     public function currentUser()
     {
