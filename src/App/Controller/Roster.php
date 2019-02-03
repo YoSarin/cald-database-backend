@@ -10,12 +10,35 @@ class Roster extends \App\Common
     public function create(\App\Request $request, $response, $args)
     {
         list($teamId, $tournamentBelongsToLeagueAndDivisionId) = $request->requireParams(['team_id', 'tournament_belongs_to_league_and_division_id']);
-        $roster = \App\Model\Roster::create($teamId, $tournamentBelongsToLeagueAndDivisionId);
+        $name = trim($request->getParam("name"));
+        $roster = \App\Model\Roster::create($teamId, $tournamentBelongsToLeagueAndDivisionId, $name);
         $roster->save();
 
         return $this->container->view->render(
             $response,
             ['status' => 'OK', 'info' => 'Roster created', 'data' => $roster->getData()],
+            200
+        );
+    }
+    
+    public function edit(\App\Request $request, $response, $args)
+    {
+        list($rosterId, $name) = $request->requireParams(['roster_id', 'name']);
+        $roster = \App\Model\Roster::loadById($rosterId);
+        if (!$roster) {
+            throw new Http404("Wrong roster_id");
+        }
+        
+        if ($roster->getFinalized()) {
+            throw new Http400("Roster finalized");
+        }
+        
+        $roster->setName($name);
+        $roster->save();
+        
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'info' => 'Roster updated', 'data' => $roster->getData()],
             200
         );
     }

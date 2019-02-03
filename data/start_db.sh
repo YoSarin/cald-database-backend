@@ -24,7 +24,9 @@ echo " OK"
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald -e "GRANT ALL ON cald.* to 'cald'@'%';" && \
     echo "filling DB with data" && \
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < src/cald.data.sql && \
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < add_admin.sql
+    mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < add_admin.sql && \
+    echo "Running updates" && \
+    python update.py --host $IP --password $MYSQL_ROOT_PASSWORD
 ) || (\
     echo -n "FAILED - stopping container: " && docker stop $CID \
 )

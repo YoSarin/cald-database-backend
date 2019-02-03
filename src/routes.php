@@ -63,6 +63,7 @@ $app->post('/player/{player_id}/address/{address_id}', $auth->verify(App\Auth\Ch
 $app->delete('/player/{player_id}/address/{address_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "deleteAddress"]));
 
 $app->post('/roster', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$rosterController, "create"]));
+$app->put('/roster/{roster_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "edit"]));
 $app->delete('/roster/{roster_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "remove"]));
 $app->post('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "addPlayer"]));
 $app->delete('/roster/{roster_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_ROSTER_EDIT, [$rosterController, "removePlayer"]));
