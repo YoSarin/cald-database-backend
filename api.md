@@ -148,6 +148,21 @@ Vrátí historii uživatele - sezóny kdy byl členem týmu a ČALD turnaje, kte
 **Auth**: token, musí být správce týmu  
 Zobrazí poplatky které by měl tým za danou sezonu zaplatit ČALDu  
 
+## `POST /roster`  
+**Params**: `team_id`, `tournament_belongs_to_league_and_division_id`, [`name`]  
+**Auth**: token, musí být správce týmu  
+Přidá týmu nový roster na turnaj  
+
+## `PUT /roster/{roster_id}`  
+**Params**: `roster_id`, `name`  
+**Auth**: token, musí být správce soupisek nebo týmu  
+Změní jméno soupisky pro tým na turnaji  
+
+## `DELETE /roster/{roster_id}`  
+**Params**: `roster_id`  
+**Auth**: token, musí být správce soupisek nebo týmu  
+Odstraní soupisku  
+
 ## `POST /roster/{roster_id}/finalize`  
 **Params**: `roster_id`  
 **Auth**: token, musí být správce týmu pořádajícího turnaj  
