@@ -48,7 +48,7 @@ $app->get('/list/{type}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listContr
 $app->post('/team', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "create"]));
 $app->post('/team/{team_id}/user/{user_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "addUserPriviledge"]));
 $app->delete('/team/{team_id}/user/{user_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "removeUserPriviledge"]));
-$app->get('/team/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_VIEW, [$teamController, "update"]));
+$app->get('/team/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_VIEW, [$teamController, "get"]));
 $app->post('/team/{team_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "update"]));
 $app->post('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "addPlayer"]));
 $app->delete('/team/{team_id}/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_TEAM_EDIT, [$teamController, "removePlayer"]));
