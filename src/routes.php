@@ -75,7 +75,7 @@ $app->post('/roster/{roster_id}/open', $auth->verify(App\Auth\Check::ALLOW_TOURN
 
 // testing APIs - to be deleted at the end
 $app->get('/test', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "test"]));
-$app->get('/test/req', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "request"]));
+$app->get('/test/roster', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "rosterTest"]));
 $app->post('/test/t/{team_id}', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "team"]));
 $app->post('/test/hs/{highschool_id}', $auth->verify(App\Auth\Check::ALLOW_LOCALHOST, [$testController, "hs"]));
 

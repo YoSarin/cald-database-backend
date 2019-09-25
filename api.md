@@ -173,7 +173,20 @@ Změní jméno soupisky pro tým na turnaji
 ## `DELETE /roster/{roster_id}`  
 **Params**: `roster_id`  
 **Auth**: token, musí být správce soupisek nebo týmu  
+Odstraní soupisku 
+ 
+## `POST /roster/{roster_id}/player/{player_id}`  
+**Params**: `roster_id`, `player_id`, [`role`]  
+**Auth**: token, musí být správce soupisek nebo týmu  
+Přidá hráče na soupisku. Kontroluje duplicity - jeden hráč nemůže na stejné soupisce být víckrát se stejnou rolí, stejně. Stejně tak jeden hráč nemůže být na soupisce žádného jiného týmu na stejném turnaji, bez ohledu na role  
+Pro účely vyůčtování se ČALD poplatky počítají pouze pro hráče s rolí "player"
+**`role`**: role uživatele na soupisce, může být jedna z [player | captain | spirit_captain | medical | coach | other_support ]. Není-li zadáno, je defaultní hodnota "player"  
+
+## `DELETE /roster/{roster_id}/player/{player_id}`  
+**Params**: `roster_id`, `player_id`, [`role`]  
+**Auth**: token, musí být správce soupisek nebo týmu  
 Odstraní soupisku  
+**`role`**: není-li zadána, smaže všechny role uživatele na soupisce  
 
 ## `POST /roster/{roster_id}/finalize`  
 **Params**: `roster_id`  
