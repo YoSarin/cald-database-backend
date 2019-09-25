@@ -24,7 +24,7 @@ class Player extends \App\Model
         self::SEX_FEMALE,
     ];
 
-    protected static $fields = ["id", "first_name", "last_name", "birth_date", "created_at", "email", "phone", "sex", "state", "nationality_id", "gdpr_consent"];
+    protected static $fields = ["id", "first_name", "last_name", "birth_date", "created_at", "email", "phone", "sex", "state", "nationality_id", "gdpr_consent", "personal_identification_number"];
 
     public function getFullName()
     {
@@ -35,7 +35,7 @@ class Player extends \App\Model
     {
     }
 
-    public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE, $nationalityID = null, $gdprConsent = false)
+    public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE, $nationalityID = null, $gdprConsent = false, $personalIdentificationNumber = null)
     {
         $i = new self();
         $i->setFirstName($firstName);
@@ -48,7 +48,7 @@ class Player extends \App\Model
         $i->setNationalityId($nationalityID);
         $i->setGdprConsent($gdprConsent);
         $i->setCreatedAt(date("Y-m-d H:i:s", time()));
-
+        $i->setPersonalIdentificationNumber($personalIdentificationNumber);
         return $i;
     }
 

@@ -56,6 +56,7 @@ $app->get('/team/{team_id}/privileges', $auth->verify(App\Auth\Check::ALLOW_TEAM
 
 $app->get('/player/{player_id}/history', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "history"]));
 $app->post('/player', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$playerController, "create"]));
+$app->get('/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "get"]));
 $app->post('/player/{player_id}', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "update"]));
 $app->post('/player/{player_id}/address', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "addAddress"]));
 $app->get('/player/{player_id}/address', $auth->verify(App\Auth\Check::ALLOW_PLAYER_EDIT, [$playerController, "getAddress"]));
