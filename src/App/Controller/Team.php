@@ -17,6 +17,7 @@ class Team extends \App\Common
 
         $name = trim($request->getParam("name"));
         $city = trim($request->getParam("city"));
+        $identificationNumber = trim($request->getParam("identification_number"));
         $www = trim($request->getParam("www"));
         $email = trim($request->getParam("email"));
         $foundedAt = trim($request->getParam("founded_at"));
@@ -31,7 +32,7 @@ class Team extends \App\Common
 
         $user = UserModel::loggedUser($request->getToken());
 
-        $t = \App\Model\Team::create($name, $city, $www, $email, $foundedAt);
+        $t = \App\Model\Team::create($name, $city, $www, $email, $foundedAt, $identificationNumber);
         $t->save();
 
         $up = UserHasPrivilege::create($user->getId(), UserHasPrivilege::PRIVILEGE_EDIT, UserHasPrivilege::ENTITY_TEAM, $t->getId());
@@ -50,6 +51,7 @@ class Team extends \App\Common
 
         $name = trim($request->getParam("name"));
         $city = trim($request->getParam("city"));
+        $identificationNumber = trim($request->getParam("identification_number"));
         $www = trim($request->getParam("www"));
         $email = trim($request->getParam("email"));
 
@@ -67,6 +69,9 @@ class Team extends \App\Common
         if (!empty($name)) {
             $t->setName($name);
         }
+        if (!empty($identificationNumber)) {
+            $t->setIdentificationNumber($identificationNumber);
+        }
         if (!empty($city)) {
             $t->setCity($city);
         }
@@ -82,6 +87,18 @@ class Team extends \App\Common
         $up->save();
 
         // Render index view
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', 'info' => 'Team updated', "data" => $t->getData()],
+            200
+        );
+    }
+
+    public function get(\App\Request $request, $response, $args) {
+        $teamId = $request->requireParams(["team_id"]);
+        
+        $t = \App\Model\Team::loadById($teamId);
+        
         return $this->container->view->render(
             $response,
             ['status' => 'OK', 'info' => 'Team updated', "data" => $t->getData()],

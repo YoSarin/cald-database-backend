@@ -63,6 +63,10 @@ Vytvoří nový tým a dá aktuálně přihlášenému uživateli práva k jeho 
 **Auth**: token, musí být správce týmu  
 Upravuje data týmu  
   
+## `GET /team/{id}`  
+**Auth**: token, musí mít právo zobrazit tým  
+Zobrazí data týmu  
+  
 ## `POST /player`  
 **Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`  
 **Auth**: token  
