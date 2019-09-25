@@ -75,6 +75,7 @@ Vytvoří nového hráče
 **`phone`**: Telefon na hráče (nepovinné)  
 **`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
 **`nationality_id`**: ID národnosti hráče (nepovinné)  
+**`personal_identification_number`**: Rodné číslo hráče
   
 ## `POST /player/{id}`  
 **Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`  
@@ -88,6 +89,11 @@ Upraví data hráče
 **`phone`**: Telefon na hráče (nepovinné)  
 **`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
 **`nationality_id`**: ID národnosti hráče (nepovinné)  
+**`personal_identification_number`**: Rodné číslo hráče  
+  
+## `GET /player/{player_id}`  
+**Auth**: token, musí být správce týmu  
+Zobrazí údaje hráče  
   
 ## `GET /player/{player_id}/address`  
 **Auth**: token, musí být správce týmu  
