@@ -14,3 +14,6 @@ Spustit `./start_db.sh`, vytvoří DB, naplní ji daty (je nutný mít soubor pr
 - `migrate.sh` - one-tim skript pro migraci dat z původní čald DB do nové struktury
 - `start_db.sh` - spustí docker container s databází a naplní ho daty - nepouštět na ostré DB, je to pro testy (naplní to DB daty z lokální SQL zálohy (`./src/caldMembersRecord.sql`))
 - `update.py` - updatuje DB na poslední verzi/rollbackuje na předchozí (použije skripty v `./migrations/deploy`) (see `./update.py -h` for details). Potřebné moduly jsou sepsané v `update.py.requirements.txt`
+
+# Logy:
+docker logs -f cald-api

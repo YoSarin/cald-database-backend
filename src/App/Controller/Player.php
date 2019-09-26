@@ -25,6 +25,7 @@ class Player extends \App\Common
         $phone = trim($request->getParam("phone"));
         $gdprConsent = trim($request->getParam("gdpr_consent"));
         $nationalityID = trim($request->getParam("nationality_id"));
+        $personalIdentificationNumber = trim($request->getParam("personal_identification_number"));
 
         $user = UserModel::loggedUser($request->getToken());
 
@@ -39,6 +40,9 @@ class Player extends \App\Common
         }
         if (!empty($phone)) {
             $p->setPhone($phone);
+        }
+        if (!empty($personalIdentificationNumber)) {
+            $p->setPersonalIdentificationNumber($personalIdentificationNumber);
         }
         $p->save();
 
@@ -62,8 +66,7 @@ class Player extends \App\Common
         $phone = trim($request->getParam("phone"));
         $gdprConsent = trim($request->getParam("gdpr_consent"));
         $nationalityID = trim($request->getParam("nationality_id"));
-
-        $user = UserModel::loggedUser($request->getToken());
+        $personalIdentificationNumber = trim($request->getParam("personal_identification_number"));
 
         $p = \App\Model\Player::loadById($playerId);
         if (!empty($email)) {
@@ -94,6 +97,9 @@ class Player extends \App\Common
         if (!empty($firstName)) {
             $p->setFirstName($firstName);
         }
+        if (!empty($personalIdentificationNumber)) {
+            $p->setPersonalIdentificationNumber($personalIdentificationNumber);
+        }
 
         $p->save();
 
@@ -101,6 +107,20 @@ class Player extends \App\Common
         return $this->container->view->render(
             $response,
             ['status' => 'OK', 'info' => 'Player updated', "data" => $p->getData()],
+            200
+        );
+    }
+    
+    public function get(\Slim\Http\Request $request, $response, $args)
+    {
+        $playerId = $request->requireParams(["player_id"]);
+        
+        $p = \App\Model\Player::loadById($playerId);
+        
+        // Render index view
+        return $this->container->view->render(
+            $response,
+            ['status' => 'OK', "data" => $p->getData()],
             200
         );
     }

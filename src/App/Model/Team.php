@@ -6,9 +6,9 @@ use App\Common;
 
 class Team extends \App\Model
 {
-    protected static $fields = ["id", "name", "founded_at", "city", "www", "email"];
+    protected static $fields = ["id", "name", "identification_number", "founded_at", "city", "www", "email"];
 
-    public static function create($name, $city = null, $www = null, $email = null, $foundedAt = null)
+    public static function create($name, $city = null, $www = null, $email = null, $foundedAt = null, $identificationNumber = null)
     {
         $i = new self();
         $i->setName($name);
@@ -16,6 +16,7 @@ class Team extends \App\Model
         $i->setWww($www);
         $i->setEmail($email);
         $i->setFoundedAt($foundedAt);
+        $i->setIdentificationNumber($identificationNumber);
 
         return $i;
     }

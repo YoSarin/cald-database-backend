@@ -54,17 +54,23 @@ division, league a user (odfiltrované sloupečky salt a password)
 **`offset`**: kolik výsledků se má přeskočit  
   
 ## `POST /team`  
-**Params**: `name`, `[city]`, `[www]`, `[email]`, `[founded_at]`  
+**Params**: `name`, `[city]`, `[www]`, `[email]`, `[founded_at]`, `[identification_number]`  
 **Auth**: token  
 Vytvoří nový tým a dá aktuálně přihlášenému uživateli práva k jeho editaci  
+**`identification_number`**: IČO týmu, je-li  
   
 ## `POST /team/{id}`  
-**Params**: `[name]`, `[city]`, `[www]`, `[email]`  
+**Params**: `[name]`, `[city]`, `[www]`, `[email]`, `[identification_number]`  
 **Auth**: token, musí být správce týmu  
 Upravuje data týmu  
+**`identification_number`**: IČO týmu, je-li  
+  
+## `GET /team/{id}`  
+**Auth**: token, musí mít právo zobrazit tým  
+Zobrazí data týmu  
   
 ## `POST /player`  
-**Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`  
+**Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`, `[personal_identification_number]`  
 **Auth**: token  
 Vytvoří nového hráče  
 **`first_name`**: Křestní jméno nového hráče  
@@ -75,9 +81,10 @@ Vytvoří nového hráče
 **`phone`**: Telefon na hráče (nepovinné)  
 **`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
 **`nationality_id`**: ID národnosti hráče (nepovinné)  
+**`personal_identification_number`**: Rodné číslo hráče
   
 ## `POST /player/{id}`  
-**Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`  
+**Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`, `[personal_identification_number]`  
 **Auth**: token, musí být správce týmu  
 Upraví data hráče  
 **`first_name`**: Křestní jméno nového hráče  
@@ -88,6 +95,11 @@ Upraví data hráče
 **`phone`**: Telefon na hráče (nepovinné)  
 **`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
 **`nationality_id`**: ID národnosti hráče (nepovinné)  
+**`personal_identification_number`**: Rodné číslo hráče  
+  
+## `GET /player/{player_id}`  
+**Auth**: token, musí být správce týmu  
+Zobrazí údaje hráče  
   
 ## `GET /player/{player_id}/address`  
 **Auth**: token, musí být správce týmu  
