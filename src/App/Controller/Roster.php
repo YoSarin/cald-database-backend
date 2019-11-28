@@ -66,6 +66,8 @@ class Roster extends \App\Common
     public function addPlayer(\App\Request $request, $response, $args)
     {
         list($rosterId, $playerId) = $request->requireParams(['roster_id', 'player_id']);
+        $role = trim($request->getParam("role", PlayerAtRoster::DEFAULT_ROLE));
+        
         $roster = \App\Model\Roster::loadById($rosterId);
         if (!$roster) {
             throw new Http404("Wrong roster_id");
@@ -75,14 +77,14 @@ class Roster extends \App\Common
             throw new Http400("Roster finalized");
         }
 
-        if (PlayerAtRoster::exists(["AND" => ['player_id' => $playerId, 'roster_id' => $roster->getId()]])) {
+        if (PlayerAtRoster::exists(["AND" => ['player_id' => $playerId, 'roster_id' => $roster->getId(), 'role' => $role]])) {
             throw new Http400("Player is already on roster of this team");
         }
         
         $tournamentIds = array_map(function ($t) { return $t->getId(); }, $roster->getTournament());
         
         if (PlayerAtRoster::exists(
-            ["AND" => ['player_id' => $playerId, 'tournament_id' => $tournamentIds]],
+            ["AND" => ['roster.id[!]' => $rosterId, 'player_id' => $playerId, 'tournament_id' => $tournamentIds]],
             [
                 "[>]roster" => ["roster_id" => "id"],
                 "[>]tournament_belongs_to_league_and_division" => ["roster.tournament_belongs_to_league_and_division_id" => "id"]
@@ -91,7 +93,7 @@ class Roster extends \App\Common
             throw new Http400("Player is already on roster of another team");
         }
         
-        $roster = PlayerAtRoster::create($playerId, $rosterId);
+        $roster = PlayerAtRoster::create($playerId, $rosterId, $role);
         $roster->save();
 
         return $this->container->view->render(
@@ -140,6 +142,9 @@ class Roster extends \App\Common
     public function removePlayer(\App\Request $request, $response, $args)
     {
         list($rosterId, $playerId) = $request->requireParams(['roster_id', 'player_id']);
+        
+        $role = trim($request->getParam("role"));
+        
         $roster = \App\Model\Roster::loadById($rosterId);
         if (!$roster) {
             throw new Http404("Wrong roster_id");
@@ -149,7 +154,13 @@ class Roster extends \App\Common
             throw new Http400("Roster finalized");
         }
 
-        $playerRoster = PlayerAtRoster::load(['player_id' => $playerId, 'roster_id' => $rosterId]);
+        $params = ['player_id' => $playerId, 'roster_id' => $rosterId];
+        
+        if (!empty($role)) {
+            $params["role"] = $role;
+        }
+        
+        $playerRoster = PlayerAtRoster::load($params);
         if (empty($playerRoster)) {
             throw new Http400("Player is already on roster of another team");
         }

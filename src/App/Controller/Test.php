@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Model\User as UserModel;
 use App\Model\UserHasPrivilege;
+use App\Model\PlayerAtRoster;
 
 class Test extends \App\Common
 {
@@ -61,6 +62,21 @@ class Test extends \App\Common
             "teams" => array_map(function ($t) { return $t->getData(); }, $teams),
             "players" => array_map(function ($r) { return array_map(function ($p) { return $p->getData(); }, $r); }, $players),
         ]], 200);
+    }
+
+    public function rosterTest($request, $response, $args)
+    {
+        $data = PlayerAtRoster::exists(
+            ["AND" => ['roster.id[!]' => 18, 'player_id' => 64, 'tournament_id' => 2]],
+            [
+                "[>]roster" => ["roster_id" => "id"],
+                "[>]tournament_belongs_to_league_and_division" => ["roster.tournament_belongs_to_league_and_division_id" => "id"]
+            ]
+        );
+        
+        $query = \App\Context::getContainer()->db->last_query();
+        
+        return $this->container->view->render($response, ["data" => $data, "query" => $query], 200);
     }
 
     public function team($request, $response, $args)

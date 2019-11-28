@@ -91,7 +91,7 @@ class Team extends \App\Model
             END)) as amount,
             COALESCE(htm.name, 'Není členem žádného týmu') as home_team, htm.id home_team_id, CONCAT(p.first_name, ' ', p.last_name) as player
         from player p
-        left join player_at_roster pr on pr.player_id = p.id
+        left join player_at_roster pr on pr.player_id = p.id and pr.role = 'player'
         left join roster r on r.id = pr.roster_id
         left join tournament_belongs_to_league_and_division tld on tld.id = r.tournament_belongs_to_league_and_division_id
         left join tournament t on t.id = tld.tournament_id
