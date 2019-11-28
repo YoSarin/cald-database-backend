@@ -83,7 +83,8 @@ class Team extends \App\Model
         	pr.player_id, 
             group_concat(distinct tm.name separator '|') as team_played,
             group_concat(distinct concat(t.name, ' (', tm.name, ')') separator '|') as tournaments_played,
-            f.name as fee_name, f.type as fee_type,
+            group_concat(distinct COALESCE(f.name, CONCAT('Fee-free league (', l.name, ')')) separator '|') as fee_name,
+            group_concat(distinct COALESCE(f.type, 'no_fee') separator '|') as fee_type,
             COALESCE(pfc.amount, (CASE f.type 
                 WHEN 'player_per_season' THEN f.amount 
                 WHEN 'player_per_tournament' THEN f.amount * count(t.id) 
@@ -95,8 +96,9 @@ class Team extends \App\Model
         left join roster r on r.id = pr.roster_id
         left join tournament_belongs_to_league_and_division tld on tld.id = r.tournament_belongs_to_league_and_division_id
         left join tournament t on t.id = tld.tournament_id
+        left join league l on l.id = tld.league_id
         left join team tm on tm.id = r.team_id
-        inner join (
+        left join (
         	select f.*, ffl.league_id
         	from fee f
         	left join fee_needed_for_league ffl ON ffl.fee_id = f.id
@@ -118,6 +120,9 @@ class Team extends \App\Model
         group by pr.player_id, f.id, pfc.id";
 
         $data = \App\Context::getContainer()->db->query($query);
+        # print_r(\App\Context::getContainer()->db->last_query());
+        # print_r(\App\Context::getContainer()->db->error());
+        # exit;
 
         $data = $data->fetchAll();
 
@@ -134,15 +139,22 @@ class Team extends \App\Model
                 ];
             }
             $out[$row['home_team']]["fee"] += (int)$row['amount'];
-            $out[$row['home_team']]['players'][] = [
-                "name" => $row['player'],
-                "fee" => $row['amount'],
-                "fee_name" => (string) $row['fee_name'],
-                "fee_type" => (string) $row['fee_type'],
-                "id" => $row['player_id'],
-                "home_team" => $row['home_team'],
-                "on_tournament" => $row['tournaments_played'],
-            ];
+            if (isset($out[$row['home_team']]['players'][$row['player_id']])) {
+                $out[$row['home_team']]['players'][$row['player_id']]["fee"] += $row['amount'];
+                $out[$row['home_team']]['players'][$row['player_id']]["fee_name"] .= "|" . $row["fee_name"];
+                $out[$row['home_team']]['players'][$row['player_id']]["fee_type"] .= "|" . $row["fee_type"];
+                $out[$row['home_team']]['players'][$row['player_id']]["on_tournament"] .= "|" . $row["tournaments_played"];
+            } else {
+                $out[$row['home_team']]['players'][$row['player_id']] = [
+                    "name" => $row['player'],
+                    "fee" => (int)$row['amount'],
+                    "fee_name" => (string) $row['fee_name'],
+                    "fee_type" => (string) $row['fee_type'],
+                    "id" => $row['player_id'],
+                    "home_team" => $row['home_team'],
+                    "on_tournament" => $row['tournaments_played'],
+                ];    
+            }
 
             if (!isset($players[$playerId])) {
                 $players[$playerId] = [
@@ -151,6 +163,8 @@ class Team extends \App\Model
                     "fee" => $row['amount'],
                     "teams" => []
                 ];
+            } else {
+                $players[$playerId]["fee"] += $row["amount"];
             }
             $players[$playerId]["teams"] = array_unique(array_merge($players[$playerId]["teams"], explode("|", $row["team_played"])));
         }
