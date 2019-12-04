@@ -23,8 +23,15 @@ echo " OK"
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald -e "GRANT ALL ON cald to 'cald'@'%';" && \
     mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald -e "GRANT ALL ON cald.* to 'cald'@'%';" && \
     echo "filling DB with data" && \
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < src/cald.data.sql && \
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < add_admin.sql && \
+    if [[ -e "src/live.data.sql" ]]; then
+        echo "using live dump" && \
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < src/live.data.sql && \
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < add_admin.sql
+    else
+        echo "creating DB from scratch" && \
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < src/cald.data.sql && \
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < add_admin.sql
+    fi
     echo "Running updates" && \
     python update.py --host $IP --password $MYSQL_ROOT_PASSWORD
 ) || (\
