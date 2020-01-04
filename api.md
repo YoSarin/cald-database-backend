@@ -70,7 +70,7 @@ Upravuje data týmu
 Zobrazí data týmu  
   
 ## `POST /player`  
-**Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`, `[personal_identification_number]`  
+**Params**: `first_name`, `last_name`, `birth_date`, `sex`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`, `[personal_identification_number]`, `[jersey_number]`  
 **Auth**: token  
 Vytvoří nového hráče  
 **`first_name`**: Křestní jméno nového hráče  
@@ -81,10 +81,11 @@ Vytvoří nového hráče
 **`phone`**: Telefon na hráče (nepovinné)  
 **`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
 **`nationality_id`**: ID národnosti hráče (nepovinné)  
-**`personal_identification_number`**: Rodné číslo hráče
+**`personal_identification_number`**: Rodné číslo hráče  
+**`jersey_number`**: Číslo dresu  
   
 ## `POST /player/{id}`  
-**Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`, `[personal_identification_number]`  
+**Params**: `[first_name]`, `[last_name]`, `[birth_date]`, `[sex]`, `[email]`, `[phone]`, `[gdpr_consent]`, `[nationality_id]`, `[personal_identification_number]`, `[jersey_number]`  
 **Auth**: token, musí být správce týmu  
 Upraví data hráče  
 **`first_name`**: Křestní jméno nového hráče  
@@ -96,6 +97,7 @@ Upraví data hráče
 **`gdpr_consent`**: Flag zda hráč poskytl souhlas se zpracováním osobních údajů (nepovinné)  
 **`nationality_id`**: ID národnosti hráče (nepovinné)  
 **`personal_identification_number`**: Rodné číslo hráče  
+**`jersey_number`**: Číslo dresu  
   
 ## `GET /player/{player_id}`  
 **Auth**: token, musí být správce týmu  
@@ -176,11 +178,12 @@ Změní jméno soupisky pro tým na turnaji
 Odstraní soupisku 
  
 ## `POST /roster/{roster_id}/player/{player_id}`  
-**Params**: `roster_id`, `player_id`, [`role`]  
+**Params**: `roster_id`, `player_id`, [`role`], [`jersey_number`]  
 **Auth**: token, musí být správce soupisek nebo týmu  
 Přidá hráče na soupisku. Kontroluje duplicity - jeden hráč nemůže na stejné soupisce být víckrát se stejnou rolí, stejně. Stejně tak jeden hráč nemůže být na soupisce žádného jiného týmu na stejném turnaji, bez ohledu na role  
 Pro účely vyůčtování se ČALD poplatky počítají pouze pro hráče s rolí "player"  
 **`role`**: role uživatele na soupisce, může být jedna z [player | captain | spirit_captain | medical | coach | other_support ]. Není-li zadáno, je defaultní hodnota "player"  
+**`jersey_number`**: Číslo dresu (není-li vyplněno, vezme jako default číslo z hráčova profilu)  
 
 ## `DELETE /roster/{roster_id}/player/{player_id}`  
 **Params**: `roster_id`, `player_id`, [`role`]  
