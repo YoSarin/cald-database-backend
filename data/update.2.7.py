@@ -1,11 +1,10 @@
-#! /usr/bin/python3
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 # yeah, i know, it's ugly. I have no time to do it nice way... :(
 import argparse
 import getpass
-import pymysql
-from pymysql.constants import CLIENT
+import mysql.connector
 import os, sys, traceback
 
 def main():
@@ -23,13 +22,12 @@ def main():
     if not password:
         password = getpass.getpass(prompt=("Password for user %s: " % args.username))
 
-    db = pymysql.connect(
+    db = mysql.connector.connect(
         host         = args.host,
         user         = args.username,
         password     = password,
         database     = args.dbname,
-        port         = args.port,
-        client_flag  = CLIENT.MULTI_STATEMENTS
+        port         = args.port
     )
 
     version = -1
@@ -41,7 +39,7 @@ def main():
     except mysql.connector.Error as e:
         pass  # table does not exist yet. Thats okay.
 
-    print("Current DB version: %s" % version)
+    print "Current DB version: %s" % version
 
     files_to_perform = []
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "migrations"))
@@ -64,7 +62,7 @@ def main():
                 files_to_perform.append(os.path.join(basedir, "deploy", fileName))
 
     if len(files_to_perform) == 0:
-        print("Nothing to do, we're okay!")
+        print "Nothing to do, we're okay!"
 
     try:
         for fileName in files_to_perform:
@@ -74,13 +72,16 @@ def main():
                     file_version -= 1
 
                 data = f.read()
-                print("Performing: {0} {1}\n\t{2}".format(os.path.basename(fileName), type(data), data))
+                print "Performing: {0} {1}\n\t{2}".format(os.path.basename(fileName), type(data), data)
                 
+                if not db.in_transaction:
+                    db.start_transaction()
                 cur = db.cursor()
                 
-                cur.execute(data)
+                for result in cur.execute(data, multi=True):
+                    print result
                 if file_version >= 0:
-                    cur.execute("UPDATE db_metadata SET db_version = {0}, changed_at = NOW();".format(file_version))
+                    print cur.execute("UPDATE db_metadata SET db_version = {0}, changed_at = NOW();".format(file_version))
                     
                 verify(cur)
                 db.commit()
@@ -88,15 +89,15 @@ def main():
 
     except mysql.connector.Error as e:
         traceback.print_exc(file=sys.stdout)
-        print("Error code:", e.errno)         # error number
-        print("SQLSTATE value:", e.sqlstate)  # SQLSTATE value
-        print("Error message:", e.msg)        # error message
-        print("Error:", e)                    # errno, sqlstate, msg values
+        print "Error code:", e.errno         # error number
+        print "SQLSTATE value:", e.sqlstate  # SQLSTATE value
+        print "Error message:", e.msg        # error message
+        print "Error:", e                    # errno, sqlstate, msg values
         s = str(e)
-        print("Error:", s)                    # errno, sqlstate, msg values
+        print "Error:", s                    # errno, sqlstate, msg values
 
-        print("Stopping execution")
-        print("rolling back (any created tables stays there :()")
+        print "Stopping execution"
+        print "rolling back (any created tables stays there :()"
         db.rollback()
 
     db.close()
@@ -106,7 +107,7 @@ def verify(cur):
         cur.fetchall()
     except mysql.connector.errors.InterfaceError as ie:
         if ie.msg == 'No result set to fetch from.':
-            print("nothing to fetch, no other error")
+            print "nothing to fetch, no other error"
             pass
         else:
             raise

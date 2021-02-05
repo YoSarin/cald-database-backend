@@ -33,7 +33,7 @@ echo " OK"
         mysql -u root -p$MYSQL_ROOT_PASSWORD -h$IP -D cald < add_admin.sql
     fi
     echo "Running updates" && \
-    python update.py --host $IP --password $MYSQL_ROOT_PASSWORD
+    python3 update.py --host $IP --password $MYSQL_ROOT_PASSWORD
 ) || (\
     echo -n "FAILED - stopping container: " && docker stop $CID \
 )
