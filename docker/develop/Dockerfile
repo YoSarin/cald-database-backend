@@ -10,4 +10,4 @@ RUN a2enmod rewrite
 RUN apt-get update -y
 RUN apt-get install -y python3 python3-pip
 
-EXPOSE 8080:80
+EXPOSE 80

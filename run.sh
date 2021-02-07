@@ -11,7 +11,7 @@ fi
 
 if ! docker ps | grep "cald-api" > /dev/null 2>&1 ; then
   docker build -t cald-api docker/develop/
-  docker run -v $(pwd):/var/www/cald-database-backend:Z --rm -d -e DB_HOST=$IP --name=cald-api cald-api
+  docker run -p8080:80 -v $(pwd):/var/www/cald-database-backend:Z --rm -d -e DB_HOST=$IP --name=cald-api cald-api
 fi
 if ! docker ps | grep "cald-api" > /dev/null 2>&1 ; then
   echo "Api not running"
