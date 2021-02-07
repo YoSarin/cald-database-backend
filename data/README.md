@@ -1,7 +1,7 @@
 # test
 ```
-mysql -u root -D cald_test -p < data/create.sql
-mysql -u root -D cald_test -p < data/test.sql
+mysql -u root -D cald_test -p < data/sql/reate.sql
+mysql -u root -D cald_test -p < data/sql/test.sql
 
 curl -H "X-Auth-Token: token" 172.17.0.2/admin/fee?season_id=2
 
@@ -12,7 +12,7 @@ Spustit `./start_db.sh`, vytvoří DB, naplní ji daty (je nutný mít soubor pr
 
 # Skripty v tomhle adresáři:
 - `migrate.sh` - one-tim skript pro migraci dat z původní čald DB do nové struktury
-- `start_db.sh` - spustí docker container s databází a naplní ho daty - nepouštět na ostré DB, je to pro testy (naplní to DB daty z lokální SQL zálohy (`./src/cald.data.sql` (data před migrací) nebo `./src/live.data.sql` (dump aktuální db)))
+- `start_db.sh` - spustí docker container s databází a naplní ho daty - nepouštět na ostré DB, je to pro testy (naplní to DB daty z lokální SQL zálohy (`./src/live.data.sql` (dump aktuální db)))
 - `update.py` - updatuje DB na poslední verzi/rollbackuje na předchozí (použije skripty v `./migrations/deploy`) (see `./update.py -h` for details). Potřebné moduly jsou sepsané v `update.py.requirements.txt`
 
 # Logy:

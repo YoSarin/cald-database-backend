@@ -7,4 +7,7 @@ RUN docker-php-ext-install pdo pdo_mysql gettext
 
 RUN a2enmod rewrite
 
-EXPOSE 80
+RUN apt-get update -y
+RUN apt-get install -y python3 python3-pip
+
+EXPOSE 8080:80
