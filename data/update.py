@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # yeah, i know, it's ugly. I have no time to do it nice way... :(
@@ -29,6 +29,7 @@ def main():
         password     = password,
         database     = args.dbname,
         port         = args.port,
+        charset      = 'utf8',
         client_flag  = CLIENT.MULTI_STATEMENTS
     )
 
@@ -68,13 +69,14 @@ def main():
 
     try:
         for fileName in files_to_perform:
-            with open(fileName, "r") as f:
+            with open(fileName, "r", encoding="utf-8") as f:
                 file_version = int(os.path.basename(fileName).split("_")[0])
                 if args.rollback:
                     file_version -= 1
 
                 data = f.read()
-                print("Performing: {0} {1}\n\t{2}".format(os.path.basename(fileName), type(data), data))
+                print(u"Performing: {0}".format(os.path.basename(fileName)))
+                # print(data)
                 
                 cur = db.cursor()
                 
@@ -86,14 +88,14 @@ def main():
                 db.commit()
                 cur.close()
 
-    except mysql.connector.Error as e:
+    except Exception as e:
         traceback.print_exc(file=sys.stdout)
-        print("Error code:", e.errno)         # error number
-        print("SQLSTATE value:", e.sqlstate)  # SQLSTATE value
-        print("Error message:", e.msg)        # error message
+        # print("Error code:", e.errno)         # error number
+        # print("SQLSTATE value:", e.sqlstate)  # SQLSTATE value
+        #print("Error message:", e.msg)        # error message
         print("Error:", e)                    # errno, sqlstate, msg values
         s = str(e)
-        print("Error:", s)                    # errno, sqlstate, msg values
+        # print("Error:", s)                    # errno, sqlstate, msg values
 
         print("Stopping execution")
         print("rolling back (any created tables stays there :()")
@@ -104,7 +106,7 @@ def main():
 def verify(cur):
     try:
         cur.fetchall()
-    except mysql.connector.errors.InterfaceError as ie:
+    except Exception as ie:
         if ie.msg == 'No result set to fetch from.':
             print("nothing to fetch, no other error")
             pass

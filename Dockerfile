@@ -14,5 +14,7 @@ RUN a2enmod rewrite
 
 RUN apt-get update -y
 RUN apt-get install -y python3 python3-pip
+ENV PYTHONENCODING=utf8
+RUN pip3 install -r /var/www/cald-database-backend/update.py.requirements.txt
 
 EXPOSE 80
