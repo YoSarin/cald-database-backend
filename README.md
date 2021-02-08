@@ -27,7 +27,7 @@
     ```conf
     DB_HOST=172.17.0.2
     ```
-1. měj [docker/deveop/database/src/dev.data.sql](docker/deveop/database/src/dev.data.sql) a v SQL pro vytvoření a naplnění tabulek
+1. měj [docker/develop/database/src/dev.data.sql](docker/develop/database/src/dev.data.sql) a v SQL pro vytvoření a naplnění tabulek
 1. to je myslím všechno
 
 ### Lokální server
