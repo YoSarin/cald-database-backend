@@ -1,7 +1,7 @@
 FROM php:5-apache
 
-COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
-COPY docker/php.ini /usr/local/etc/php/php.ini
+COPY docker/release/apache.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/release/php.ini /usr/local/etc/php/php.ini
 
 RUN mkdir /var/www/cald-database-backend
 COPY . /var/www/cald-database-backend
