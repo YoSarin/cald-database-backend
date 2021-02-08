@@ -164,13 +164,13 @@ class Admin extends \App\Common
 
     public function addNationality($request, $response, $args)
     {
-        list($name, $countryName) = $request->requireParams(["name", "country_name"]);
+        list($name, $countryName, $isoCode) = $request->requireParams(["name", "country_name", "iso_code"]);
 
         if (\App\Model\Nationality::exists(["name" => $name])) {
             throw new Http400("Nationality '$name' already exists");
         }
 
-        $n = \App\Model\Nationality::create($name, $countryName);
+        $n = \App\Model\Nationality::create($name, $countryName, $isoCode);
         $n->save();
 
         return $this->container->view->render(
@@ -186,6 +186,7 @@ class Admin extends \App\Common
         list($id) = $request->requireParams(["nationality_id"]);
         $name = trim($request->getParam("name"));
         $countryName = trim($request->getParam("country_name"));
+        $isoCode = trim($request->getParam("iso_code"));
 
         $n = \App\Model\Nationality::loadById($id);
         if ($name) {
@@ -193,6 +194,9 @@ class Admin extends \App\Common
         }
         if ($countryName) {
             $n->setCountryName($countryName);
+        }
+        if ($isoCode) {
+            $n->setIsoCode($isoCode);
         }
         $n->save();
 

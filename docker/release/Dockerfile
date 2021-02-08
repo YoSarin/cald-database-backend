@@ -1,7 +1,7 @@
 FROM php:5-apache
 
-COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
-COPY docker/php.ini /usr/local/etc/php/php.ini
+COPY docker/release/apache.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/release/php.ini /usr/local/etc/php/php.ini
 
 RUN mkdir /var/www/cald-database-backend
 COPY . /var/www/cald-database-backend
@@ -14,5 +14,7 @@ RUN a2enmod rewrite
 
 RUN apt-get update -y
 RUN apt-get install -y python3 python3-pip
+ENV PYTHONENCODING=utf8
+RUN pip3 install -r /var/www/cald-database-backend/update.py.requirements.txt
 
 EXPOSE 80
