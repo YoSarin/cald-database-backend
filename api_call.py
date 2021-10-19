@@ -3,14 +3,14 @@
 import argparse
 import requests
 import os
-from urlparse import parse_qsl
+from urllib.parse import parse_qsl
 
 config = {
     "int" : {
         "domain": "cald.yosarin.net"
     },
     "prod" : {
-        "domain": "api.evidence.cald.cz"
+        "domain": "api.evidence.czechultimate.cz"
     },
     "local" : {
         "domain": "172.17.0.3"
@@ -37,12 +37,12 @@ def parseData(data):
     return { t[0]:t[1] for t in tuples }
 
 def getToken(domain):
-    response = requests.post("http://%s/user/login" % domain, data={"login":user, "password":password})
+    response = requests.post("https://%s/user/login" % domain, data={"login":user, "password":password})
     return response.json()["token"]["token"]
     
 def callApi(method, domain, url, token, data={}):
     data["token"] = token
-    response = requests.request(method, "http://%s/%s" % (domain, url), data=data)
+    response = requests.request(method, "https://%s/%s" % (domain, url), data=data)
     return response.content
 
 if __name__ == "__main__":
@@ -69,4 +69,4 @@ if __name__ == "__main__":
         token = getToken(domain)
         
     response = callApi(method, domain, args.api, token, args.data)
-    print response
+    print(response.decode())
