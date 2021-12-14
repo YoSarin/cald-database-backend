@@ -43,6 +43,7 @@ $app->get('/user/verify/{hash}', $auth->verify(App\Auth\Check::ALLOW_ALL, [$user
 $app->get('/user/me', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$userController, "getCurrent"]));
 $app->put('/user/me', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$userController, "updateCurrent"]));
 
+$app->get('/list/category/{category}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listController, "listCategory"]));
 $app->get('/list/{type}', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$listController, "listAll"]));
 
 $app->post('/team', $auth->verify(App\Auth\Check::ALLOW_TOKEN, [$teamController, "create"]));

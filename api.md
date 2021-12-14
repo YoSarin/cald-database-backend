@@ -41,7 +41,16 @@ Upraví údaje přihlášeného uživatele
 **`login`**: změnit přihlašovací jméno  
 **`email`**: změnit kontaktní email  
 **`password`**: změnít heslo  
-  
+
+## `GET /list/category/{category}`
+**Params**: `category`, `[year]`, `[gender]`, `[max_inactive_seasons]`  
+**Auth**: token  
+Vrací seznam hráčů dané kategorie (U17, U20, M, GM, GGM)  
+**`category`**: kategorie hráčů (`u17`, `u20`, `u24`, `m` (masters), `gm` (grand masters), `ggm` (great grand masters))  
+**`year`**: pro který rok nás seznam zajímá (default: aktuální rok)  
+**`gender`**: filter přes gender  
+**`max_inactive_seasons`**: Jak dlouho může hráč být neaktivní (default = `0` &rarr; aktivní v aktuální sezóně)  
+
 ## `GET /list/{type}`  
 **Params**: `type`, `[filter]`, `[extend]`, `[limit]`, `[offset]`  
 **Auth**: token  
@@ -118,8 +127,7 @@ Upraví hráčovu adresu
   
 ## `DELETE /player/{player_id}/address/{address_id}`  
 **Auth**: token, musí být správce týmu  
-Smaže hráči adresu  
-  
+Smaže hráči adresu    
   
 ## `POST /team/{team_id}/player/{player_id}`  
 **Params**: `team_id`, `player_id`, `season_id`  

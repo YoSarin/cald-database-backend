@@ -15,7 +15,7 @@ class ListItems extends \App\Common
         "division", "league", "user", "nationality", "fee", "fee_needed_for_league"
     ];
 
-    public function listAll(\Slim\Http\Request $request, $response, $args)
+    public function listAll(\App\Request $request, $response, $args)
     {
         list($type) = $request->requireParams(["type"]);
         $type = strtolower($type);
@@ -52,4 +52,34 @@ class ListItems extends \App\Common
             200
         );
     }
+
+    public function listCategory(\App\Request $request, $response, $args)
+    {
+        list($category) = $request->requireParams(["category"]);
+        
+        $category = strtolower($category);
+        
+        $year = $request->getParam("year", date("Y"));
+        $gender = $request->getParam("gender", null);
+        $maxInactiveSeasons = $request->getParam("max_inactive_seasons", 1);
+
+        $data = \App\Model\Player::listPlayersInCategory($category, $year, $gender, $maxInactiveSeasons);
+
+        \App\Context::getContainer()->logger->info($data[0]->firstName);
+
+        return $this->container->view->render(
+            $response,
+            [
+                'status' => 'OK',
+                'data' => array_map(function ($person) { return $person->getData(); }, $data),
+                "category" => $category,
+                "year" => $year,
+                "gender" => $gender,
+                "max_inactive_seasons" => $maxInactiveSeasons
+            ],
+            200
+        );
+    }
+
+
 }
