@@ -5,6 +5,7 @@ COPY docker/release/php.ini /usr/local/etc/php/php.ini
 
 RUN mkdir /var/www/cald-database-backend
 COPY . /var/www/cald-database-backend
+COPY ./data/update.py.requirements.txt /var/www/cald-database-backend 
 
 RUN touch /var/www/cald-database-backend/public/.env
 RUN chown www-data:www-data /var/www/cald-database-backend/logs
