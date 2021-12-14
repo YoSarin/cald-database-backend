@@ -23,6 +23,31 @@ class PlayerAtRoster extends \App\Model
         return $i;
     }
 
+    public static function allInSeason($seasonId, $playerId = null)
+    {
+        $condition = [
+            "AND" => [
+                "tournament.deleted" => false,
+                "tournament.season_id" => $seasonId
+            ]
+        ];
+
+        if ($playerId != null) {
+            $condition["AND"]["player_id"] = $playerId;
+        }
+
+        return self::load(
+            $condition,
+            null,
+            0,
+            [
+                "[><]roster(roster)" => ["roster.id" => "roster_id"],
+                "[><]tournament_belongs_to_league_and_division(tournament_belongs_to_league_and_division_id)" => ["tournament_belongs_to_league_and_division.id" => "tournament_belongs_to_league_and_division_id"],
+                "[><]tournament(tournament)" => ["tournament.id" => "tournament_belongs_to_league_and_division.tournament_id"],
+            ]
+        );
+    }
+
     protected function onSaveValidation()
     {
         if (!in_array($this->getRole(), self::$allowedRoles)) {
