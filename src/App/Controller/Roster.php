@@ -67,6 +67,7 @@ class Roster extends \App\Common
     {
         list($rosterId, $playerId) = $request->requireParams(['roster_id', 'player_id']);
         $role = trim($request->getParam("role", PlayerAtRoster::DEFAULT_ROLE));
+        $jerseyNumber = trim($request->getParam("jersey_number", null));
         
         $roster = \App\Model\Roster::loadById($rosterId);
         if (!$roster) {
@@ -93,7 +94,7 @@ class Roster extends \App\Common
             throw new Http400("Player is already on roster of another team");
         }
         
-        $roster = PlayerAtRoster::create($playerId, $rosterId, $role);
+        $roster = PlayerAtRoster::create($playerId, $rosterId, $role, $jerseyNumber);
         $roster->save();
 
         return $this->container->view->render(
