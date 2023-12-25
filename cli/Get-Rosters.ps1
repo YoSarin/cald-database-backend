@@ -50,9 +50,11 @@ $rostersData = ((Invoke-WebRequest -Uri "$domain/list/roster?filter[tournament_b
 $rostersData | ForEach-Object {
     $teamData = ((Invoke-WebRequest -Uri "$domain/list/team?filter[id]=$($_.team_id)" -Body @{ token = $token }).Content | ConvertFrom-Json).data
     $teamRostersData = ((Invoke-WebRequest -Uri "$domain/list/player_at_roster?filter[roster_id]=$($_.id)&extend=1" -Body @{ token = $token }).Content | ConvertFrom-Json).data
+    $actualRosterData = $_
 
     $teamRostersData | Foreach-Object { @{
         "team" = $teamData.Name
+        "roster_name" = $actualRosterData.Name
         "first_name" = $_.player.first_name
         "last_name" = $_.player.last_name
         "jersey_number" = $_.player.jersey_number
