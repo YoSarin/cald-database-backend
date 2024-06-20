@@ -26,6 +26,7 @@ class Player extends \App\Common
         $gdprConsent = trim($request->getParam("gdpr_consent"));
         $nationalityID = trim($request->getParam("nationality_id"));
         $personalIdentificationNumber = trim($request->getParam("personal_identification_number"));
+        $jerseyNumber = trim($request->getParam("jersey_number"));
 
         $user = UserModel::loggedUser($request->getToken());
 
@@ -43,6 +44,9 @@ class Player extends \App\Common
         }
         if (!empty($personalIdentificationNumber)) {
             $p->setPersonalIdentificationNumber($personalIdentificationNumber);
+        }
+        if (!empty($jerseyNumber) && is_numeric($jerseyNumber)) {
+            $p->setJerseyNumber($jerseyNumber);
         }
         $p->save();
 
@@ -67,6 +71,7 @@ class Player extends \App\Common
         $gdprConsent = trim($request->getParam("gdpr_consent"));
         $nationalityID = trim($request->getParam("nationality_id"));
         $personalIdentificationNumber = trim($request->getParam("personal_identification_number"));
+        $jerseyNumber = trim($request->getParam("jersey_number"));
 
         $p = \App\Model\Player::loadById($playerId);
         if (!empty($email)) {
@@ -99,6 +104,9 @@ class Player extends \App\Common
         }
         if (!empty($personalIdentificationNumber)) {
             $p->setPersonalIdentificationNumber($personalIdentificationNumber);
+        }
+        if (!empty($jerseyNumber) && is_numeric($jerseyNumber)) {
+            $p->setJerseyNumber($jerseyNumber);
         }
 
         $p->save();

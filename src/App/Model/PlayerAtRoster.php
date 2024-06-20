@@ -6,18 +6,25 @@ use \App\Exception\WrongParam;
 
 class PlayerAtRoster extends \App\Model
 {
-    protected static $fields = ["id", "player_id", "roster_id", "role"];
+    protected static $fields = ["id", "player_id", "roster_id", "role", "jersey_number"];
     
     protected static $allowedRoles = ["player", "captain", "spirit_captain", "medical", "coach", "other_support"];
     
     const DEFAULT_ROLE = "player";
 
-    public static function create($playerId, $rosterId, $role = PlayerAtRoster::DEFAULT_ROLE)
+    public static function create($playerId, $rosterId, $role = PlayerAtRoster::DEFAULT_ROLE, $jerseyNumber = null)
     {
         $i = new self();
+        
+        if (empty($jerseyNumber) || !is_numeric($jerseyNumber)) {
+            $player = Player::loadById($playerId);
+            $jerseyNumber = $player->getJerseyNumber();
+        }
+        
         $i->setPlayerId($playerId);
         $i->setRosterId($rosterId);
         $i->setRole($role);
+        $i->setJerseyNumber($jerseyNumber);
         $i->setSince(date("Y-m-d H:i:s", time()));
 
         return $i;
@@ -27,6 +34,9 @@ class PlayerAtRoster extends \App\Model
     {
         if (!in_array($this->getRole(), self::$allowedRoles)) {
             throw new WrongParam("Role {$this->getRole()} does not exist.");
+        }
+        if ($this->getJerseyNumber() < 0) {
+            throw new WrongParam("Jersey number '{$this->getJerseyNumber()}' is not valid - it has to be higher than 0");
         }
         if (self::exists(["player_id" => $this->getPlayerId(), "roster_id" => $this->getRosterId(), "role" => $this->getRole()])) {
             throw new Duplicate("Player is already part of this team with same role");

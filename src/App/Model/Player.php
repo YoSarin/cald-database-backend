@@ -24,7 +24,13 @@ class Player extends \App\Model
         self::SEX_FEMALE,
     ];
 
-    protected static $fields = ["id", "first_name", "last_name", "birth_date", "created_at", "email", "phone", "sex", "state", "nationality_id", "gdpr_consent", "personal_identification_number"];
+    protected static $fields = [
+        "id", "first_name", "last_name",
+        "birth_date", "created_at", "email",
+        "phone", "sex", "state",
+        "nationality_id", "gdpr_consent", "personal_identification_number",
+        "jersey_number"
+    ];
 
     public function getFullName()
     {
@@ -35,8 +41,12 @@ class Player extends \App\Model
     {
     }
 
-    public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE, $nationalityID = null, $gdprConsent = false, $personalIdentificationNumber = null)
-    {
+    public static function create($firstName, $lastName, $sex, $email = null, $birthDate = null, $phone = null, $state = self::STATE_ACTIVE, $nationalityID = null, $gdprConsent = false, $personalIdentificationNumber = null, $jerseyNumber = null)
+    {    
+        if ($jerseyNumber !== null && $jerseyNumber !== "" && (int)$jerseyNumber <= 0) {
+            throw new WrongParam("Jersey number '{$this->getJerseyNumber()}' is not valid - it has to be higher than 0");
+        }
+        
         $i = new self();
         $i->setFirstName($firstName);
         $i->setLastName($lastName);
@@ -49,6 +59,7 @@ class Player extends \App\Model
         $i->setGdprConsent($gdprConsent);
         $i->setCreatedAt(date("Y-m-d H:i:s", time()));
         $i->setPersonalIdentificationNumber($personalIdentificationNumber);
+        $i->setJerseyNumber($jerseyNumber);
         return $i;
     }
 
