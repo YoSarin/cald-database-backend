@@ -115,7 +115,7 @@ class Team extends \App\Model
         	)
         ) htm ON htm.player_id = pr.player_id
         left join player_fee_change pfc on pfc.player_id = p.id AND pfc.season_id = t.season_id
-        where t.season_id = " . (int)$seasonId . "
+        where t.season_id = " . (int)$seasonId . " AND t.deleted == false
         " . $teamCondition . "
         group by pr.player_id, f.id, pfc.id";
 
